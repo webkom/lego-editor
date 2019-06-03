@@ -91,6 +91,10 @@
   font-size: 14px;
 }
 
+.img {
+  border: none;
+}
+
 .imgSelected {
   border: 2px solid #ccc;
   box-shadow: 0 0 8px #ccc;

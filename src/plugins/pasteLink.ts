@@ -1,14 +1,17 @@
-import isUrl from 'is-url';
+import isUrl from "is-url";
+import { Command, Editor } from "slate";
 
-export default function pasteLink(options = {}) {
-  const {
-    isActiveQuery = 'isLinkActive',
-    wrapCommand = 'wrapLink',
-    unwrapCommand = 'unwrapLink'
-  } = options;
+export default function pasteLink(
+  options: {
+    isActiveQuery?: string;
+    wrapCommand?: string;
+    unwrapCommand?: string;
+  } = {},
+) {
+  const { isActiveQuery = "isLinkActive", wrapCommand = "wrapLink", unwrapCommand = "unwrapLink" } = options;
 
   return {
-    onCommand(command, editor, next) {
+    onCommand(command: Command, editor: Editor, next: () => any) {
       const { type, args } = command;
       const { value } = editor;
       const { selection } = value;
@@ -16,8 +19,8 @@ export default function pasteLink(options = {}) {
       let url;
 
       if (
-        (type === 'insertText' && isUrl((url = args[0]))) ||
-        (type === 'insertFragment' && isUrl((url = args[0].text)))
+        (type === "insertText" && isUrl((url = args[0]))) ||
+        (type === "insertFragment" && isUrl((url = args[0].text)))
       ) {
         // If there is already a link active, unwrap it so that we don't end up
         // with a confusing overlapping inline situation.
@@ -29,9 +32,7 @@ export default function pasteLink(options = {}) {
         // to occur instead of just wrapping the existing text in a link.
         if (isCollapsed) {
           next();
-          editor
-            .moveAnchorTo(start.offset)
-            .moveFocusTo(start.offset + url.length);
+          editor.moveAnchorTo(start.offset).moveFocusTo(start.offset + url.length);
         }
 
         // Wrap the selection in a link, and collapse to the end of it.
@@ -40,6 +41,6 @@ export default function pasteLink(options = {}) {
       }
 
       next();
-    }
+    },
   };
 }
