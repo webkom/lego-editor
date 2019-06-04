@@ -1,4 +1,4 @@
-import React, { Component, createRef } from "react";
+import * as React from "react";
 import { Editor, Inline, Block } from "slate";
 import ImageUpload from "./ImageUpload";
 
@@ -7,12 +7,12 @@ interface ButtonProps {
   active?: boolean;
 }
 
-class ToolbarButton extends Component<ButtonProps, {}> {
-  handleClick(e: React.PointerEvent) {
+class ToolbarButton extends React.Component<ButtonProps, {}> {
+  handleClick(e: React.PointerEvent): void {
     this.props.handler(e);
   }
 
-  render() {
+  render(): React.ReactNode {
     const { children, active } = this.props;
 
     const className = active ? "active" : "inactive";
@@ -36,8 +36,8 @@ interface LinkInputState {
   value: string;
 }
 
-class LinkInput extends Component<LinkInputProps, LinkInputState> {
-  private input = createRef<HTMLInputElement>();
+class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
+  private input = React.createRef<HTMLInputElement>();
 
   state = {
     value: this.props.activeLink ? this.props.activeLink.data.get("url") : "",
@@ -56,17 +56,19 @@ class LinkInput extends Component<LinkInputProps, LinkInputState> {
     e.preventDefault();
     const { value } = this.state;
     this.props.toggleLinkInput();
-    if (value == "") return;
+    if (value == "") {
+      return;
+    }
     this.props.updateLink({ url: value });
   };
 
-  componentDidMount() {
+  componentDidMount(): void {
     if (this.input.current) {
       this.input.current.focus();
     }
   }
 
-  render() {
+  render(): React.ReactNode {
     return (
       <div className={"linkInput"}>
         <input
@@ -92,23 +94,25 @@ interface ToolbarState {
   insertingImage: boolean;
 }
 
-export default class Toolbar extends Component<ToolbarProps, ToolbarState> {
+export default class Toolbar extends React.Component<ToolbarProps, ToolbarState> {
   state = {
     insertingLink: false,
     insertingImage: false,
   };
 
-  checkActiveMark(type: string) {
+  checkActiveMark(type: string): boolean {
     const { editor } = this.props;
     return editor.value.activeMarks.some(mark => mark != undefined && mark.type === type);
   }
 
-  checkActiveBlock(type: string) {
+  checkActiveBlock(type: string): boolean {
     const { editor } = this.props;
     const { document } = editor.value;
 
     if (type == "ol_list" || type == "ul_list") {
-      if (!editor.value.startBlock) return false;
+      if (!editor.value.startBlock) {
+        return false;
+      }
       const parentList = document.getClosest(
         editor.value.startBlock.key,
         a => a.object == "block" && (a.type == "ol_list" || a.type == "ul_list"),
@@ -120,49 +124,60 @@ export default class Toolbar extends Component<ToolbarProps, ToolbarState> {
     return editor.value.blocks.some(block => block != undefined && block.type === type);
   }
 
-  checkActiveInline(type: string) {
+  checkActiveInline(type: string): boolean {
     const { editor } = this.props;
     return editor.value.inlines.some(inline => inline != undefined && inline.type === type);
   }
 
-  setListType(e: React.PointerEvent, type: string) {
+  setListType(e: React.PointerEvent, type: string): void {
     const { editor } = this.props;
     e.preventDefault();
+    // TODO remove with updated types
+    // @ts-ignore
     editor.command("setListType", editor.query("getCurrentBlock").key, type);
   }
 
-  increaseIndent(e: React.PointerEvent) {
+  increaseIndent(e: React.PointerEvent): void {
     const { editor } = this.props;
     e.preventDefault();
-    if (editor.query("isList")) editor.command("increaseListDepth", editor.query("getCurrentBlock").key);
-    else editor.insertText("\t");
+    if (editor.query("isList")) {
+      // TODO remove with updated types
+      // @ts-ignore
+      editor.command("increaseListDepth", editor.query("getCurrentBlock").key);
+    } else {
+      editor.insertText("\t");
+    }
   }
 
-  decreaseIndent(e: React.PointerEvent) {
+  decreaseIndent(e: React.PointerEvent): void {
     const { editor } = this.props;
     e.preventDefault();
-    if (editor.query("isList")) editor.command("decreaseListDepth", editor.query("getCurrentBlock").key);
+    if (editor.query("isList")) {
+      // TODO remove with updated types
+      // @ts-ignore
+      editor.command("decreaseListDepth", editor.query("getCurrentBlock").key);
+    }
   }
 
-  toggleMark(e: React.PointerEvent, type: string) {
+  toggleMark(e: React.PointerEvent, type: string): void {
     e.preventDefault();
     const { editor } = this.props;
 
     editor.toggleMark(type);
   }
 
-  toggleBlock(e: React.PointerEvent, type: string) {
+  toggleBlock(e: React.PointerEvent, type: string): void {
     e.preventDefault();
     const { editor } = this.props;
 
     editor.command("toggleBlock", type);
   }
 
-  toggleLinkInput() {
+  toggleLinkInput(): void {
     this.setState({ insertingLink: !this.state.insertingLink });
   }
 
-  updateLink(data: { url: string }) {
+  updateLink(data: { url: string }): void {
     const { editor } = this.props;
     const { selection } = editor.value;
     const { start, isCollapsed } = selection;
@@ -181,30 +196,32 @@ export default class Toolbar extends Component<ToolbarProps, ToolbarState> {
     }
   }
 
-  getCurrentLink() {
+  getCurrentLink(): Inline | undefined {
     const { editor } = this.props;
 
-    if (!this.checkActiveInline("link")) return;
+    if (!this.checkActiveInline("link")) {
+      return undefined;
+    }
 
     // @ts-ignore - previous line already checks that inline is not undefined
     return editor.value.inlines.find(inline => inline.type == "link");
   }
 
-  insertImage(e: React.PointerEvent) {
+  insertImage(e: React.PointerEvent): void {
     e.preventDefault();
     this.setState({ insertingImage: true });
   }
 
-  onClose() {
+  onClose(): void {
     this.setState({ insertingImage: false });
   }
 
-  onSubmit(image: Blob) {
+  onSubmit(image: Blob): void {
     const { editor } = this.props;
     editor.command("insertImage", image);
   }
 
-  render() {
+  render(): React.ReactNode {
     const { insertingLink, insertingImage } = this.state;
 
     return (

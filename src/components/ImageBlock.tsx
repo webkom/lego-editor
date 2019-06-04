@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { Editor, Node } from "slate";
 import { RenderAttributes } from "slate-react";
 
@@ -11,8 +11,6 @@ interface Props {
   attributes: RenderAttributes;
   node: Node;
 }
-
-interface state {}
 
 export default class ImageBlock extends React.Component<Props> {
   componentDidMount() {

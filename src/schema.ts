@@ -11,7 +11,7 @@ const schema: SchemaProperties = {
   document: {
     last: { type: "paragraph" },
     normalize: (editor: Slate.Editor, error: Slate.SlateError) => {
-      const { code, node, child } = error;
+      const { code, node } = error;
       switch (code) {
         case "last_child_type_invalid": {
           const paragraph = Slate.Block.create("paragraph");
@@ -25,6 +25,8 @@ const schema: SchemaProperties = {
     image: {
       isVoid: true,
       parent: { type: "figure" },
+      //TODO remove this when types are updated
+      //@ts-ignore
       next: { type: "image_caption" },
       normalize: (editor: Slate.Editor, error: Slate.SlateError) => {
         const { code, node } = error;
@@ -34,6 +36,13 @@ const schema: SchemaProperties = {
             return;
           }
           case "next_sibling_type_invalid": {
+            const sibling = editor.value.document.getNextSibling(node.key);
+            const parent = editor.value.document.getParent(node.key);
+            if (sibling) {
+              editor.removeNodeByKey(sibling.key);
+            }
+            // @ts-ignore parent node is checked above
+            editor.insertNodeByKey(parent.key, 2, Slate.Block.create({ type: "image_caption" }));
           }
         }
       },
@@ -42,20 +51,18 @@ const schema: SchemaProperties = {
       first: { type: "image" },
       last: { type: "image_caption" },
       normalize: (editor: Slate.Editor, error: Slate.SlateError) => {
-        const { code, node, child } = error;
+        const { code, node } = error;
         switch (code) {
           case "first_child_type_invalid": {
             return editor.removeNodeByKey(node.key);
           }
           case "last_child_type_invalid": {
-            const { document } = editor.value;
             const caption = Slate.Block.create("image_caption");
             return editor.insertNodeByKey(node.key, 1, caption);
           }
         }
       },
     },
-    image_caption: {},
     list_item: {
       nodes: [
         {

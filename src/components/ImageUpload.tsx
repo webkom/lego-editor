@@ -33,7 +33,7 @@ export default class ImageUpload extends React.Component<Props, State> {
     currentImage: undefined,
   };
 
-  onDrop = (files: Array<Blob>) => {
+  onDrop = (files: Blob[]) => {
     if (files.length === 1) {
       const file = files[0];
       this.setState({
@@ -46,7 +46,7 @@ export default class ImageUpload extends React.Component<Props, State> {
     this.setState({ crop });
   };
 
-  render() {
+  render(): React.ReactNode {
     const { currentImage, crop } = this.state;
 
     return currentImage === undefined ? (

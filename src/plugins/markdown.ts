@@ -1,4 +1,4 @@
-import { Editor, Value } from "slate";
+import { Editor } from "slate";
 
 /**
  * On key down, check for our specific key shortcuts.
@@ -17,7 +17,7 @@ const MarkdownShortcuts = {
   },
 };
 
-const getType = (chars: string) => {
+const getType = (chars: string): string | null => {
   switch (chars) {
     case "*":
     case "-":
@@ -44,7 +44,7 @@ const getType = (chars: string) => {
  * node into the shortcut's corresponding type.
  */
 
-const onSpace = (event: KeyboardEvent, editor: Editor, next: () => void) => {
+const onSpace = (event: KeyboardEvent, editor: Editor, next: () => void): any => {
   const { value } = editor;
   const { selection } = value;
   if (selection.isExpanded) {
@@ -77,7 +77,7 @@ const onSpace = (event: KeyboardEvent, editor: Editor, next: () => void) => {
  * paragraph node.
  */
 
-const onBackspace = (event: KeyboardEvent, editor: Editor, next: () => void) => {
+const onBackspace = (event: KeyboardEvent, editor: Editor, next: () => void): any => {
   const { value } = editor;
   const { selection } = value;
   if (selection.isExpanded) {

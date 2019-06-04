@@ -32,7 +32,7 @@ const MARK_TAGS: TAGS = {
   code: "code",
 };
 
-const rules: Array<Rule> = [
+const rules: Rule[] = [
   // Blocks
   {
     deserialize(el, next) {

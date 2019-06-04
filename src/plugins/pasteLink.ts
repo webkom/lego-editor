@@ -1,5 +1,5 @@
 import isUrl from "is-url";
-import { Command, Editor } from "slate";
+import { Command, Editor, Plugin } from "slate";
 
 export default function pasteLink(
   options: {
@@ -7,7 +7,7 @@ export default function pasteLink(
     wrapCommand?: string;
     unwrapCommand?: string;
   } = {},
-) {
+): Plugin {
   const { isActiveQuery = "isLinkActive", wrapCommand = "wrapLink", unwrapCommand = "unwrapLink" } = options;
 
   return {

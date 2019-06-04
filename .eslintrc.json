@@ -1,5 +1,8 @@
 {
   "parser": "@typescript-eslint/parser",
+  "env": {
+    "node": true
+  },
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
@@ -16,10 +19,18 @@
   },
   "rules": {
     "curly": ["error", "all"],
-    "@typescript-eslint/explicit-function-return-type": [
-      "warning",
+    "camelcase": [
+      "warn",
       {
-        "allowTypedFunctionExpressions": true
+        "properties": "never"
+      }
+    ],
+    "no-use-before-define": ["warn", { "functions": false, "variables": false }],
+    "@typescript-eslint/explicit-function-return-type": [
+      "warn",
+      {
+        "allowTypedFunctionExpressions": true,
+        "allowExpressions": true
       }
     ],
     "@typescript-eslint/no-explicit-any": ["warning", "false"],
@@ -28,7 +39,9 @@
       {
         "accessibility": "no-public"
       }
-    ]
+    ],
+    "@typescript-eslint/camelcase": ["warn", { "properties": "never" }],
+    "@typescript-eslint/no-use-before-define": ["warn", { "functions": false, "variables": false }]
   },
   "settings": {
     "react": {

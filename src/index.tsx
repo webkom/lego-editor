@@ -204,8 +204,8 @@ export default class Editor extends React.Component<Props, State> {
     }
   };
 
-  // Components te be rendered for block nodes
-  private renderBlock = (props: RenderNodeProps, editor: Slate.Editor, next: Next) => {
+  // Components te be rendered for nodes
+  private renderNode = (props: RenderNodeProps, editor: Slate.Editor, next: Next) => {
     const { attributes, node, children } = props;
     switch (node.type) {
       case "paragraph":
@@ -248,15 +248,6 @@ export default class Editor extends React.Component<Props, State> {
             <code>{children}</code>
           </pre>
         );
-      default:
-        return next();
-    }
-  };
-
-  // Components to be rendered for inline nodes
-  private renderInline = (props: RenderNodeProps, editor: Slate.Editor, next: Next) => {
-    const { attributes, node, children } = props;
-    switch (node.type) {
       case "link":
         return (
           <a {...attributes} href={node.data.get("url")}>
@@ -268,7 +259,7 @@ export default class Editor extends React.Component<Props, State> {
     }
   };
 
-  // Render function for how the editor should render
+  // Render function for how the editor
   // practical for passing props and the 'editor' prop to other components
   private renderEditor = (props: RenderAttributes, editor: Slate.Editor, next: Next) => {
     const children = next();
@@ -300,7 +291,7 @@ export default class Editor extends React.Component<Props, State> {
     }
   }
 
-  render() {
+  render(): any {
     return (
       <div className={this.props.disabled || this.props.simple ? "disabled" : "styles.root"}>
         <SlateEditor
@@ -314,8 +305,7 @@ export default class Editor extends React.Component<Props, State> {
           onKeyDown={this.onKeyDown}
           schema={schema}
           renderMark={this.renderMark}
-          renderBlock={this.renderBlock}
-          renderInline={this.renderInline}
+          renderNode={this.renderNode}
           readOnly={this.props.disabled}
           placeholder={this.props.placeholder}
         />

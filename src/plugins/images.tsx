@@ -1,13 +1,12 @@
 import React from "react";
 import ImageBlock from "../components/ImageBlock";
-import { Editor, Block } from "slate";
-import { List } from "immutable";
-import { RenderNodeProps } from "slate-react";
+import { Editor } from "slate";
+import { RenderNodeProps, Plugin } from "slate-react";
 
 // plugin to insert images: Creates an imageBlock from a file blob
 // and creates a URL to the file for local storage
 // TODO consider only uploading after submit
-export default function images(options?: object) {
+export default function images(options?: object): Plugin {
   return {
     renderNode(props: RenderNodeProps, editor: Editor, next: () => void) {
       const { attributes, node, children, isFocused } = props;
@@ -43,13 +42,11 @@ export default function images(options?: object) {
           return next();
       }
     },
+    // TODO remove with updated type definition
+    // @ts-ignore
     commands: {
       insertImage(editor: Editor, file: Blob) {
         const imageUrl = URL.createObjectURL(file);
-        const imageBlock = Block.create({
-          data: { file, imageUrl },
-          type: "image",
-        });
         return editor.insertBlock({ data: { file, imageUrl }, type: "image" });
       },
     },
