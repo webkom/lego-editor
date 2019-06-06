@@ -1,101 +1,101 @@
-.root {
+._legoEditor.root {
   border: 1px solid #ccc;
   border-radius: 3px;
   padding: 10px;
 }
 
-.root:focus-within {
+._legoEditor.root:focus-within {
   box-shadow: 0 0 5px #ccc;
   border-color: #aaa;
   outline: none;
 }
 
-.disabled {
+._legoEditor.disabled {
   border: none;
 }
 
-.root a {
+._legoEditor.root a {
   cursor: text;
 }
 
-.root code {
+._legoEditor.root code {
   background-color: #efefef;
   padding: 2px 3px;
   border-radius: 2px;
 }
 
-.root pre {
+._legoEditor.root pre {
   background-color: #efefef;
   border-radius: 2px;
   padding-left: 5px;
   margin: 10px 0;
 }
 
-.ul_list {
+._legoEditor.ul_list {
   display: block;
   list-style: disc;
   padding-inline-start: 20px;
   padding-left: 20px;
 }
 
-.ol_list {
+._legoEditor.ol_list {
   display: block;
   list-style: decimal;
   padding-inline-start: 20px;
   padding-left: 20px;
 }
 
-.li {
+._legoEditor.li {
   display: list-item;
   margin-block-start: 1em;
   margin-block-end: 1em;
 }
 
-.ul_list > ul {
+._legoEditor.ul_list > ul {
   list-style: circle;
 }
 
-.ul_list > ul > ul {
+._legoEditor.ul_list > ul > ul {
   list-style: square;
 }
 
-.ol_list > ol {
+._legoEditor.ol_list > ol {
   list-style: lower-alpha;
 }
 
-.ol_list > ol > ol {
+._legoEditor.ol_list > ol > ol {
   list-style: lower-roman;
 }
 
-.li > p {
+._legoEditor.li > p {
   margin-block-start: 0;
   margin-block-end: 0;
 }
 
-.paragraph {
+._legoEditor.paragraph {
   display: block;
   margin-block-start: 1em;
   margin-block-end: 1em;
   line-height: 24px;
 }
 
-.figure {
+._legoEditor.figure {
   background-color: #fcfcfc;
   padding: 20px 10px 0;
   border: 0.5px solid #f4f4f4;
   border-radius: 2px;
 }
 
-.figcaption {
+._legoEditor.figcaption {
   text-align: center;
   font-size: 14px;
 }
 
-.img {
+._legoEditor.img {
   border: none;
 }
 
-.imgSelected {
+._legoEditor.imgSelected {
   border: 2px solid #ccc;
   box-shadow: 0 0 8px #ccc;
 }

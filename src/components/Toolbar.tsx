@@ -15,7 +15,7 @@ class ToolbarButton extends React.Component<ButtonProps, {}> {
   render(): React.ReactNode {
     const { children, active } = this.props;
 
-    const className = active ? "active" : "inactive";
+    const className = active ? "_legoEditor.Toolbar.active" : "_legoEditor.Toolbar.inactive";
 
     return (
       <button className={className} onPointerDown={e => this.handleClick(e)} type="button">
@@ -70,7 +70,7 @@ class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
 
   render(): React.ReactNode {
     return (
-      <div className={"linkInput"}>
+      <div className={"_legoEditor.Toolbar.linkInput"}>
         <input
           type="link"
           placeholder="Link"
@@ -225,7 +225,7 @@ export default class Toolbar extends React.Component<ToolbarProps, ToolbarState>
     const { insertingLink, insertingImage } = this.state;
 
     return (
-      <div className={"root"}>
+      <div className={"_legoEditor.Toolbar.root"}>
         <ToolbarButton active={this.checkActiveBlock("h1")} handler={e => this.toggleBlock(e, "h1")}>
           H1
         </ToolbarButton>
@@ -265,7 +265,7 @@ export default class Toolbar extends React.Component<ToolbarProps, ToolbarState>
         {insertingLink && (
           <LinkInput
             active={this.checkActiveMark("link")}
-            toggleLinkInput={this.toggleLinkInput}
+            toggleLinkInput={() => this.toggleLinkInput()}
             updateLink={(...args) => this.updateLink(...args)}
             activeLink={this.getCurrentLink()}
           />

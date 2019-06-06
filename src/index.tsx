@@ -210,7 +210,7 @@ export default class Editor extends React.Component<Props, State> {
     switch (node.type) {
       case "paragraph":
         return (
-          <p className={"paragraph"} {...attributes}>
+          <p className={"_legoEditor.paragraph"} {...attributes}>
             {children}
           </p>
         );
@@ -226,19 +226,19 @@ export default class Editor extends React.Component<Props, State> {
         return <h5 {...attributes}>{children}</h5>;
       case "ul_list":
         return (
-          <ul className={"ul_list"} {...attributes}>
+          <ul className={"_legoEditor.ul_list"} {...attributes}>
             {children}
           </ul>
         );
       case "ol_list":
         return (
-          <ol className={"ol_list"} {...attributes}>
+          <ol className={"_legoEditor.ol_list"} {...attributes}>
             {children}
           </ol>
         );
       case "list_item":
         return (
-          <li className={"li"} {...attributes}>
+          <li className={"_legoEditor.li"} {...attributes}>
             {children}
           </li>
         );
@@ -293,7 +293,7 @@ export default class Editor extends React.Component<Props, State> {
 
   render(): any {
     return (
-      <div className={this.props.disabled || this.props.simple ? "disabled" : "styles.root"}>
+      <div className={this.props.disabled || this.props.simple ? "_legoEditor.disabled" : "_legoEditor.root"}>
         <SlateEditor
           onFocus={this.onFocus.bind(this)}
           onBlur={this.onBlur.bind(this)}
