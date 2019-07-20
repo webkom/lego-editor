@@ -1,0 +1,41 @@
+._legoEditor_imageUploader_wrapper {
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: fixed;
+  min-width: 100%;
+  min-height: 100%;
+  left: 0;
+  top: 0;
+  background-color: rgba(0,0,0,0.5);
+}
+
+._legoEditor_imageUploader_root {
+  opacity: 1;
+  background-color: #ddd;
+  width: 60%;
+  top: 10%;
+  left: 20%;
+  margin: auto;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding: 15px;
+  border-radius: 5px;
+  flex: 1 1 auto;
+}
+
+._legoEditor_imageUploader_dropZone {
+  width: 80%;
+  height: 200px;
+  border: 2px dashed rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  margin: auto;
+  text-align: center;
+  color: #909090;
+}
+
+._legoEditor_imageUploader_crop_container {
+  border: 3px solid #b5b5b5;
+  background-color: #bbb;
+}
