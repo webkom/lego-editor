@@ -1,5 +1,5 @@
-import isUrl from "is-url";
-import { Command, Editor, Plugin } from "slate";
+import isUrl from 'is-url';
+import { Command, Editor, Plugin } from 'slate';
 
 export default function pasteLink(
   options: {
@@ -8,7 +8,7 @@ export default function pasteLink(
     unwrapCommand?: string;
   } = {},
 ): Plugin {
-  const { isActiveQuery = "isLinkActive", wrapCommand = "wrapLink", unwrapCommand = "unwrapLink" } = options;
+  const { isActiveQuery = 'isLinkActive', wrapCommand = 'wrapLink', unwrapCommand = 'unwrapLink' } = options;
 
   return {
     onCommand(command: Command, editor: Editor, next: () => any) {
@@ -19,8 +19,8 @@ export default function pasteLink(
       let url;
 
       if (
-        (type === "insertText" && isUrl((url = args[0]))) ||
-        (type === "insertFragment" && isUrl((url = args[0].text)))
+        (type === 'insertText' && isUrl((url = args[0]))) ||
+        (type === 'insertFragment' && isUrl((url = args[0].text)))
       ) {
         // If there is already a link active, unwrap it so that we don't end up
         // with a confusing overlapping inline situation.

@@ -1,15 +1,22 @@
-import * as React from "react";
-import { Editor as SlateEditor, RenderMarkProps, RenderNodeProps, RenderAttributes, Plugin } from "slate-react";
-import * as Slate from "slate";
-import isHotKey from "is-hotkey";
-import Toolbar from "./components/Toolbar";
-import { BoldMark, ItalicMark, UnderlineMark, CodeMark } from "./components/marks";
-import editList from "./plugins/editList";
-import pasteLink from "./plugins/pasteLink";
-import images from "./plugins/images";
-import markdownShortcuts from "./plugins/markdown";
-import { html } from "./serializer";
-import schema from "./schema";
+import * as React from 'react';
+import {
+  Editor as SlateEditor,
+  RenderMarkProps,
+  RenderBlockProps,
+  RenderInlineProps,
+  RenderAttributes,
+  Plugin,
+} from 'slate-react';
+import * as Slate from 'slate';
+import isHotKey from 'is-hotkey';
+import Toolbar from './components/Toolbar';
+import { BoldMark, ItalicMark, UnderlineMark, CodeMark } from './components/marks';
+import editList from './plugins/editList';
+import pasteLink from './plugins/pasteLink';
+import images from './plugins/images';
+import markdownShortcuts from './plugins/markdown';
+import { html } from './serializer';
+import schema from './schema';
 
 interface Props {
   value: string;
@@ -27,7 +34,7 @@ interface State {
   editorValue: Slate.Value | null;
 }
 
-const DEFAULT_BLOCK = "paragraph";
+const DEFAULT_BLOCK = 'paragraph';
 export type Next = () => any;
 
 // Simply enables the user to insert tabs when editing
@@ -36,9 +43,9 @@ function insertTab(options?: object): Plugin {
   return {
     onKeyDown(e: Event, editor: Slate.Editor, next: Next): Editor | undefined {
       const event = e as KeyboardEvent;
-      if (event.key == "Tab") {
+      if (event.key == 'Tab') {
         event.preventDefault();
-        editor.insertText("\t");
+        editor.insertText('\t');
       } else {
         return next();
       }
@@ -61,13 +68,13 @@ function softEnter(types: string[]): Plugin {
       if (!editor.value.blocks.some(block => block !== undefined && types.includes(block.type))) {
         return next();
       }
-      if (event.key == "Enter") {
+      if (event.key == 'Enter') {
         // if user is holding shift, default behaviour, (new block)
         if (event.shiftKey) {
           return next();
         }
         event.preventDefault();
-        editor.insertText("\n");
+        editor.insertText('\n');
       } else {
         return next();
       }
@@ -79,14 +86,14 @@ function softEnter(types: string[]): Plugin {
 const linkCommands = {
   commands: {
     // wrap current selection in a link
-    wrapLink: (editor: Slate.Editor, url: string) => editor.wrapInline({ data: { url: url, text: url }, type: "link" }),
+    wrapLink: (editor: Slate.Editor, url: string) => editor.wrapInline({ data: { url: url, text: url }, type: 'link' }),
     // unwrap the link in the current selection
-    unwrapLink: (editor: Slate.Editor) => editor.unwrapInline("link"),
+    unwrapLink: (editor: Slate.Editor) => editor.unwrapInline('link'),
   },
   queries: {
     // returns true if there is a link in the current selection
     isLinkActive: (editor: Slate.Editor): boolean =>
-      editor.value.inlines.some(inline => inline != undefined && inline.type == "link"),
+      editor.value.inlines.some(inline => inline != undefined && inline.type == 'link'),
   },
 };
 
@@ -94,8 +101,8 @@ const basePlugin = {
   commands: {
     // Toggles the block type of everything except lists
     toggleBlock: (editor: Slate.Editor, type: string) => {
-      if (type !== "ul_list" && type !== "ol_list") {
-        const isActive = editor.query("hasBlock", type);
+      if (type !== 'ul_list' && type !== 'ol_list') {
+        const isActive = editor.query('hasBlock', type);
         return isActive ? editor.setBlocks(DEFAULT_BLOCK) : editor.setBlocks(type);
       }
       return editor;
@@ -115,7 +122,7 @@ const plugins = [
   basePlugin,
   editList(),
   insertTab(),
-  softEnter(["code-block"]),
+  softEnter(['code-block']),
   linkCommands,
   pasteLink(),
   images(),
@@ -130,11 +137,11 @@ export default class Editor extends React.Component<Props, State> {
           document: {
             nodes: [
               {
-                object: "block",
-                type: "paragraph",
+                object: 'block',
+                type: 'paragraph',
                 nodes: [
                   {
-                    object: "text",
+                    object: 'text',
                     leaves: [],
                   },
                 ],
@@ -152,32 +159,32 @@ export default class Editor extends React.Component<Props, State> {
 
   onKeyDown = (event: Event, editor: Slate.Editor, next: Next): Slate.Editor | void => {
     const e = event as KeyboardEvent;
-    if (!isHotKey("mod")(e)) {
+    if (!isHotKey('mod')(e)) {
       return next();
     }
 
     switch (e.key) {
-      case "b": {
+      case 'b': {
         e.preventDefault();
-        editor.toggleMark("bold");
+        editor.toggleMark('bold');
         break;
       }
-      case "i": {
+      case 'i': {
         e.preventDefault();
-        editor.toggleMark("italic");
+        editor.toggleMark('italic');
         break;
       }
-      case "l": {
+      case 'l': {
         e.preventDefault();
-        editor.command("setListType", "ul_list");
+        editor.command('setListType', 'ul_list');
         break;
       }
-      case "z": {
+      case 'z': {
         e.preventDefault();
         editor.undo();
         break;
       }
-      case "r": {
+      case 'r': {
         e.preventDefault();
         editor.redo();
         break;
@@ -191,13 +198,13 @@ export default class Editor extends React.Component<Props, State> {
   // Components to be rendered for mark nodes
   private renderMark = (props: RenderMarkProps, editor: Slate.Editor, next: Next) => {
     switch (props.mark.type) {
-      case "bold":
+      case 'bold':
         return <BoldMark {...props} />;
-      case "italic":
+      case 'italic':
         return <ItalicMark {...props} />;
-      case "underline":
+      case 'underline':
         return <UnderlineMark {...props} />;
-      case "code":
+      case 'code':
         return <CodeMark {...props} />;
       default:
         return next();
@@ -205,52 +212,60 @@ export default class Editor extends React.Component<Props, State> {
   };
 
   // Components te be rendered for nodes
-  private renderNode = (props: RenderNodeProps, editor: Slate.Editor, next: Next) => {
+  private renderBlock = (props: RenderBlockProps, editor: Slate.Editor, next: Next) => {
     const { attributes, node, children } = props;
     switch (node.type) {
-      case "paragraph":
+      case 'paragraph':
         return (
-          <p className={"_legoEditor.paragraph"} {...attributes}>
+          <p className={'_legoEditor_paragraph'} {...attributes}>
             {children}
           </p>
         );
-      case "h1":
+      case 'h1':
         return <h1 {...attributes}>{children}</h1>;
-      case "h2":
+      case 'h2':
         return <h2 {...attributes}>{children}</h2>;
-      case "h3":
+      case 'h3':
         return <h3 {...attributes}>{children}</h3>;
-      case "h4":
+      case 'h4':
         return <h4 {...attributes}>{children}</h4>;
-      case "h5":
+      case 'h5':
         return <h5 {...attributes}>{children}</h5>;
-      case "ul_list":
+      case 'ul_list':
         return (
-          <ul className={"_legoEditor.ul_list"} {...attributes}>
+          <ul className={'_legoEditor_ul_list'} {...attributes}>
             {children}
           </ul>
         );
-      case "ol_list":
+      case 'ol_list':
         return (
-          <ol className={"_legoEditor.ol_list"} {...attributes}>
+          <ol className={'_legoEditor_ol_list'} {...attributes}>
             {children}
           </ol>
         );
-      case "list_item":
+      case 'list_item':
         return (
-          <li className={"_legoEditor.li"} {...attributes}>
+          <li className={'_legoEditor_li'} {...attributes}>
             {children}
           </li>
         );
-      case "code-block":
+      case 'code-block':
         return (
           <pre {...attributes}>
             <code>{children}</code>
           </pre>
         );
-      case "link":
+      default:
+        return next();
+    }
+  };
+
+  private renderInline = (props: RenderInlineProps, editor: Slate.Editor, next: Next) => {
+    const { attributes, node, children } = props;
+    switch (node.type) {
+      case 'link':
         return (
-          <a {...attributes} href={node.data.get("url")}>
+          <a {...attributes} href={node.data.get('url')}>
             {children}
           </a>
         );
@@ -293,7 +308,7 @@ export default class Editor extends React.Component<Props, State> {
 
   render(): any {
     return (
-      <div className={this.props.disabled || this.props.simple ? "_legoEditor.disabled" : "_legoEditor.root"}>
+      <div className={this.props.disabled || this.props.simple ? '_legoEditor_disabled' : '_legoEditor_root'}>
         <SlateEditor
           onFocus={this.onFocus.bind(this)}
           onBlur={this.onBlur.bind(this)}
@@ -305,7 +320,8 @@ export default class Editor extends React.Component<Props, State> {
           onKeyDown={this.onKeyDown}
           schema={schema}
           renderMark={this.renderMark}
-          renderNode={this.renderNode}
+          renderBlock={this.renderBlock}
+          renderInline={this.renderInline}
           readOnly={this.props.disabled}
           placeholder={this.props.placeholder}
         />

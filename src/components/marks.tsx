@@ -1,5 +1,5 @@
-import * as React from "react";
-import { RenderMarkProps } from "slate-react";
+import * as React from 'react';
+import { RenderMarkProps } from 'slate-react';
 
 export const ItalicMark: React.FunctionComponent<RenderMarkProps> = (props: RenderMarkProps) => (
   <em property="italic">{props.children}</em>

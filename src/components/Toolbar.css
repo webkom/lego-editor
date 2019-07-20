@@ -1,4 +1,4 @@
-._legoEditor.Toolbar.root {
+._legoEditor_Toolbar_root {
   border-bottom: 1px solid #ddd;
   padding-left: 10px;
   position: sticky;
@@ -6,22 +6,22 @@
   background-color: #fff;
 }
 
-._legoEdito.Toolbar.root > button {
+._legoEditor_Toolbar_root > button {
   border-radius: 2px;
   margin: 2px;
   height: 30px;
   width: 30px;
 }
 
-._legoEditor.Toolbar.active {
+._legoEditor_Toolbar_active {
   background-color: #eee;
 }
 
-._legoEditor.Toolbar.inactive:hover {
+._legoEditor_Toolbar_inactive:hover {
   background-color: #eee;
 }
 
-._legoEditor.Toolbar.linkInput {
+._legoEditor_Toolbar_linkInput {
   position: absolute;
   top: 30px;
   left: 40%;
@@ -31,19 +31,19 @@
   padding: 15px;
 }
 
-._legoEditor.Toolbar.linkInput input {
+._legoEditor_Toolbar_linkInput input {
   border: 1px solid #cdcdcd;
   border-radius: 4px;
   height: 30px;
   padding: 5px;
 }
 
-._legoEditor.Toolbar.linkInput input:focus {
+._legoEditor_Toolbar_linkInput input:focus {
   outline: none;
   box-shadow: 2px 2px 1px #efefef;
 }
 
-._legoEditor.Toolbar.linkInput button {
+._legoEditor_Toolbar_linkInput button {
   border: 1px solid #cdcdcd;
   border-radius: 3px;
   background-color: #fafafa;
@@ -51,7 +51,7 @@
   margin-left: 5px;
 }
 
-._legoEditor.Toolbar.linkInput button:hover {
+._legoEditor_Toolbar_linkInput button:hover {
   background-color: #fefefe;
   border-color: #c1c1c1;
 }

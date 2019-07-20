@@ -1,101 +1,104 @@
-._legoEditor.root {
+._legoEditor_root {
   border: 1px solid #ccc;
   border-radius: 3px;
   padding: 10px;
 }
 
-._legoEditor.root:focus-within {
+._legoEditor_root:focus-within {
   box-shadow: 0 0 5px #ccc;
   border-color: #aaa;
   outline: none;
 }
 
-._legoEditor.disabled {
+._legoEditor_disabled {
   border: none;
 }
 
-._legoEditor.root a {
+._legoEditor_root a {
   cursor: text;
 }
 
-._legoEditor.root code {
+._legoEditor_root code {
   background-color: #efefef;
   padding: 2px 3px;
   border-radius: 2px;
+  font-family: sans-serif;
 }
 
-._legoEditor.root pre {
+._legoEditor_root pre {
   background-color: #efefef;
   border-radius: 2px;
-  padding-left: 5px;
+  padding: 15px;
   margin: 10px 0;
 }
 
-._legoEditor.ul_list {
+._legoEditor_ul_list {
   display: block;
   list-style: disc;
   padding-inline-start: 20px;
   padding-left: 20px;
 }
 
-._legoEditor.ol_list {
+._legoEditor_ol_list {
   display: block;
   list-style: decimal;
   padding-inline-start: 20px;
   padding-left: 20px;
 }
 
-._legoEditor.li {
+._legoEditor_li {
   display: list-item;
   margin-block-start: 1em;
   margin-block-end: 1em;
 }
 
-._legoEditor.ul_list > ul {
+._legoEditor_ul_list > ul {
   list-style: circle;
 }
 
-._legoEditor.ul_list > ul > ul {
+._legoEditor_ul_list > ul > ul {
   list-style: square;
 }
 
-._legoEditor.ol_list > ol {
+._legoEditor_ol_list > ol {
   list-style: lower-alpha;
 }
 
-._legoEditor.ol_list > ol > ol {
+._legoEditor_ol_list > ol > ol {
   list-style: lower-roman;
 }
 
-._legoEditor.li > p {
+._legoEditor_li > p {
   margin-block-start: 0;
   margin-block-end: 0;
 }
 
-._legoEditor.paragraph {
+._legoEditor_paragraph {
   display: block;
   margin-block-start: 1em;
   margin-block-end: 1em;
   line-height: 24px;
 }
 
-._legoEditor.figure {
+._legoEditor_figure {
   background-color: #fcfcfc;
   padding: 20px 10px 0;
   border: 0.5px solid #f4f4f4;
   border-radius: 2px;
 }
 
-._legoEditor.figcaption {
+._legoEditor_figcaption {
   text-align: center;
   font-size: 14px;
 }
 
-._legoEditor.img {
+._legoEditor_img {
   border: none;
+  max-width: -webkit-fill-available;
 }
 
-._legoEditor.imgSelected {
+._legoEditor_imgSelected {
+  max-width: -webkit-fill-available;
   border: 2px solid #ccc;
   box-shadow: 0 0 8px #ccc;
 }
