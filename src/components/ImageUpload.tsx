@@ -1,17 +1,8 @@
 import * as React from 'react';
 import { useDropzone } from 'react-dropzone';
-import ReactCrop from 'react-image-crop';
+import ReactCrop, { Crop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import cropImage from '../utils/cropImage';
-
-interface Crop {
-  unit?: 'px' | '%';
-  aspect?: number;
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
-}
 
 interface Props {
   uploadFunction?: (image: Blob) => void;
@@ -27,6 +18,8 @@ interface State {
   hasImage: boolean;
   currentImage?: Image;
   crop?: Crop;
+  imageWidth?: number;
+  imageHeight?: number;
 }
 
 interface ImageDropProps {
@@ -49,6 +42,10 @@ const ImageDrop: React.StatelessComponent<ImageDropProps> = (props: ImageDropPro
 export default class ImageUpload extends React.Component<Props, State> {
   state = {
     hasImage: false,
+    currentImage: undefined,
+    crop: undefined,
+    imageWidth: undefined,
+    imageHeight: undefined,
   };
 
   onDrop = (files: Blob[]) => {
@@ -61,7 +58,11 @@ export default class ImageUpload extends React.Component<Props, State> {
   };
 
   onImageLoaded = (image: HTMLImageElement) => {
-    this.setState({ crop: { x: 0, y: 0, width: image.width, height: image.height } });
+    this.setState({
+      crop: { x: 0, y: 0, width: image.width, height: image.height },
+      imageWidth: image.width,
+      imageHeight: image.height,
+    });
     return false;
   };
 
@@ -73,13 +74,15 @@ export default class ImageUpload extends React.Component<Props, State> {
     //@ts-ignore
     const { url } = this.state.currentImage;
     const { crop } = this.state;
-    const image = new Image();
+    const image = new Image(this.state.imageWidth, this.state.imageHeight);
     image.src = url;
 
-    if (this.props.uploadFunction) {
-      cropImage(image, crop, 'croppedImage').then((result: Blob) => {
-        this.props.uploadFunction(result);
-      });
+    if (crop) {
+      if (this.props.uploadFunction) {
+        cropImage(image, crop, 'croppedImage').then((result: Blob) => {
+          this.props.uploadFunction(result);
+        });
+      }
     }
   };
 
@@ -88,7 +91,6 @@ export default class ImageUpload extends React.Component<Props, State> {
   };
 
   render(): React.ReactNode {
-    // @ts-ignore
     const { currentImage, crop } = this.state;
 
     return (
@@ -100,7 +102,6 @@ export default class ImageUpload extends React.Component<Props, State> {
             </div>
           ) : (
             <div className="_legoEditor_imageUploader_crop_container">
-              {/* @ts-ignore */}
               <ReactCrop
                 src={currentImage.url}
                 onChange={this.handleCrop}

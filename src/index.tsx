@@ -159,39 +159,27 @@ export default class Editor extends React.Component<Props, State> {
 
   onKeyDown = (event: Event, editor: Slate.Editor, next: Next): Slate.Editor | void => {
     const e = event as KeyboardEvent;
-    if (!isHotKey('mod')(e)) {
-      return next();
-    }
 
-    switch (e.key) {
-      case 'b': {
-        e.preventDefault();
-        editor.toggleMark('bold');
-        break;
-      }
-      case 'i': {
-        e.preventDefault();
-        editor.toggleMark('italic');
-        break;
-      }
-      case 'l': {
-        e.preventDefault();
-        editor.command('setListType', 'ul_list');
-        break;
-      }
-      case 'z': {
-        e.preventDefault();
-        editor.undo();
-        break;
-      }
-      case 'r': {
-        e.preventDefault();
-        editor.redo();
-        break;
-      }
-      default: {
-        return next();
-      }
+    if (isHotKey('mod+b')(e)) {
+      e.preventDefault();
+      editor.toggleMark('bold');
+    } else if (isHotKey('mod+i')(e)) {
+      e.preventDefault();
+      editor.toggleMark('italic');
+    } else if (isHotKey('mod+u')(e)) {
+      e.preventDefault();
+      editor.toggleMark('underline');
+    } else if (isHotKey('mod+l')(e)) {
+      e.preventDefault();
+      editor.command('setListType', 'ul_list');
+    } else if (isHotKey('mod+z')(e)) {
+      e.preventDefault();
+      editor.undo();
+    } else if (isHotKey('mod+r')(e)) {
+      e.preventDefault();
+      editor.redo();
+    } else {
+      return next();
     }
   };
 

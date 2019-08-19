@@ -2,7 +2,8 @@ import { Crop } from 'react-image-crop';
 
 const cropImage = (image: HTMLImageElement, crop: Crop, fileName: string): Promise<Blob> => {
   if (!crop.width || !crop.height) {
-    return;
+    crop.width = image.width;
+    crop.height = image.height;
   }
   const canvas = document.createElement('canvas');
   const scaleX = image.naturalWidth / image.width;
@@ -23,7 +24,7 @@ const cropImage = (image: HTMLImageElement, crop: Crop, fileName: string): Promi
     crop.height,
   );
 
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     canvas.toBlob(blob => {
       blob.name = fileName;
       resolve(blob);
