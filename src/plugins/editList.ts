@@ -63,8 +63,6 @@ export default function editList(options = { useKeyHandlers: true }): Plugin {
           return next();
       }
     },
-    // TODO remove when types are updated
-    //@ts-ignore
     commands: {
       increaseListDepth,
       decreaseListDepth,

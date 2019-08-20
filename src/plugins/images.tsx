@@ -33,7 +33,7 @@ export default function images(options?: object): Plugin {
         }
         case 'image_caption': {
           return (
-            <figcaption className="figcaption" {...attributes}>
+            <figcaption className="_legoEditor_figcaption" {...attributes}>
               {children}
             </figcaption>
           );

@@ -134,8 +134,6 @@ export default class Toolbar extends React.Component<ToolbarProps, ToolbarState>
   setListType(e: React.PointerEvent, type: string): void {
     const { editor } = this.props;
     e.preventDefault();
-    // TODO remove with updated types
-    // @ts-ignore
     editor.command('setListType', editor.query('getCurrentBlock').key, type);
   }
 
@@ -143,8 +141,6 @@ export default class Toolbar extends React.Component<ToolbarProps, ToolbarState>
     const { editor } = this.props;
     e.preventDefault();
     if (editor.query('isList')) {
-      // TODO remove with updated types
-      // @ts-ignore
       editor.command('increaseListDepth', editor.query('getCurrentBlock').key);
     } else {
       editor.insertText('\t');
@@ -155,8 +151,6 @@ export default class Toolbar extends React.Component<ToolbarProps, ToolbarState>
     const { editor } = this.props;
     e.preventDefault();
     if (editor.query('isList')) {
-      // TODO remove with updated types
-      // @ts-ignore
       editor.command('decreaseListDepth', editor.query('getCurrentBlock').key);
     }
   }

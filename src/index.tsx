@@ -171,7 +171,7 @@ export default class Editor extends React.Component<Props, State> {
       editor.toggleMark('underline');
     } else if (isHotKey('mod+l')(e)) {
       e.preventDefault();
-      editor.command('setListType', 'ul_list');
+      editor.command('setListType', editor.query('getCurrentBlock').key, 'ul_list');
     } else if (isHotKey('mod+z')(e)) {
       e.preventDefault();
       editor.undo();

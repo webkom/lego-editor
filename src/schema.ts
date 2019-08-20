@@ -24,24 +24,21 @@ const schema: SchemaProperties = {
     image: {
       isVoid: true,
       parent: { type: 'figure' },
-      //TODO remove this when types are updated
-      //@ts-ignore
       next: { type: 'image_caption' },
       normalize: (editor: Slate.Editor, error: Slate.SlateError) => {
         const { code, node } = error;
         switch (code) {
           case 'parent_type_invalid': {
-            editor.wrapBlockByKey(node.key, 'figure');
-            return;
+            return editor.wrapBlockByKey(node.key, 'figure');
           }
           case 'next_sibling_type_invalid': {
             const sibling = editor.value.document.getNextSibling(node.key);
             const parent = editor.value.document.getParent(node.key);
             if (sibling) {
-              editor.removeNodeByKey(sibling.key);
+              return editor.removeNodeByKey(sibling.key);
             }
             // @ts-ignore parent node is checked above
-            editor.insertNodeByKey(parent.key, 2, Slate.Block.create({ type: 'image_caption' }));
+            return editor.insertNodeByKey(parent.key, 2, Slate.Block.create('image_caption'));
           }
         }
       },
@@ -57,7 +54,7 @@ const schema: SchemaProperties = {
           }
           case 'last_child_type_invalid': {
             if (node.nodes.some((node: Slate.Block) => node.type === 'paragraph')) {
-              editor.setBlocks('image_caption');
+              return editor.setBlocks('image_caption');
             } else {
               const caption = Slate.Block.create('image_caption');
               return editor.insertNodeByKey(node.key, 1, caption);
