@@ -1,0 +1,19 @@
+pipeline:
+  setup:
+    image: node:10
+    when:
+      event: push
+    commands:
+      - yarn
+  lint:
+    image: node:10
+    when:
+      event: push
+    commands:
+      - yarn lint
+  build:
+    image: node:10
+    when:
+      event: push
+    commands:
+      - yarn build
