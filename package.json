@@ -23,6 +23,7 @@
   "homepage": "https://github.com/webkom/lego-editor#readme",
   "dependencies": {
     "is-url": "^1.2.4",
+    "lodash": "^4.17.15",
     "react-dropzone": "^10.1.4",
     "react-image-crop": "^7.0.1",
     "slate": "0.45.0",
