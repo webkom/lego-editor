@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default class ImageBlock extends React.Component<Props> {
-  componentDidMount() {
+  componentDidMount(): void {
     //if (this.props.file) {
     //this.props.uploadFile({ file: this.props.file, isPublic: true }).then(({ meta }) => {
     //});

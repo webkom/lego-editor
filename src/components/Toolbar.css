@@ -6,20 +6,24 @@
   background-color: #fff;
 }
 
-._legoEditor_Toolbar_root > button {
+._legoEditor_Toolbar_button {
   border-radius: 2px;
+  border: none;
+  background-color: #fff;
+  cursor: pointer;
   margin: 2px;
   height: 30px;
   width: 30px;
+}
+
+._legoEditor_Toolbar_button:hover {
+  background-color: #eee;
 }
 
 ._legoEditor_Toolbar_active {
   background-color: #eee;
 }
 
-._legoEditor_Toolbar_inactive:hover {
-  background-color: #eee;
-}
 
 ._legoEditor_Toolbar_linkInput {
   position: absolute;

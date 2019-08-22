@@ -1,6 +1,6 @@
 import { Crop } from 'react-image-crop';
 
-const cropImage = (image: HTMLImageElement, crop: Crop, fileName: string): Promise<Blob> => {
+const cropImage = (image: HTMLImageElement, crop: Crop): Promise<Blob> => {
   if (!crop.width || !crop.height) {
     crop.width = image.width;
     crop.height = image.height;
@@ -12,6 +12,9 @@ const cropImage = (image: HTMLImageElement, crop: Crop, fileName: string): Promi
   canvas.height = crop.height;
   const ctx = canvas.getContext('2d');
 
+  // canvas.getContext(<identifier>) returns null if
+  // identifier is not supported, which '2d' is
+  // @ts-ignore
   ctx.drawImage(
     image,
     crop.x * scaleX,
@@ -21,13 +24,12 @@ const cropImage = (image: HTMLImageElement, crop: Crop, fileName: string): Promi
     0,
     0,
     crop.width,
-    crop.height,
+    crop.height
   );
 
-  return new Promise(resolve => {
-    canvas.toBlob(blob => {
-      blob.name = fileName;
-      resolve(blob);
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(result => {
+      result ? resolve(result) : reject();
     }, 'image/jpeg');
   });
 };

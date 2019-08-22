@@ -66,7 +66,7 @@ const onSpace = (event: KeyboardEvent, editor: Editor, next: () => void): any =>
   editor.setBlocks(type);
 
   if (type === 'ul_list') {
-    editor.command('setListType', type);
+    editor.command('setListType', editor.query('getCurrentBlock').key, type);
   }
 
   editor.moveFocusToStartOfNode(startBlock).delete();

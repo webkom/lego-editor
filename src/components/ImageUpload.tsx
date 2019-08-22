@@ -26,33 +26,35 @@ interface ImageDropProps {
   onDrop: (images: File[]) => void;
 }
 
-const ImageDrop: React.StatelessComponent<ImageDropProps> = (props: ImageDropProps) => {
+const ImageDrop: React.StatelessComponent<ImageDropProps> = (
+  props: ImageDropProps
+) => {
   const { onDrop } = props;
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
     <div className="_legoEditor_imageUploader_dropZone" {...getRootProps()}>
       <input {...getInputProps()} />
-      {isDragActive ? <h4>Drop files here...</h4> : <h4>Click to select or drop files here</h4>}
+      {isDragActive ? (
+        <h4>Drop files here...</h4>
+      ) : (
+        <h4>Click to select or drop files here</h4>
+      )}
     </div>
   );
 };
 
 // TODO Allow for several images in one component
 export default class ImageUpload extends React.Component<Props, State> {
-  state = {
-    hasImage: false,
-    currentImage: undefined,
-    crop: undefined,
-    imageWidth: undefined,
-    imageHeight: undefined,
+  readonly state: State = {
+    hasImage: false
   };
 
   onDrop = (files: Blob[]) => {
     if (files.length === 1) {
       const file = files[0];
       this.setState({
-        currentImage: { file: file, url: URL.createObjectURL(file) },
+        currentImage: { file: file, url: URL.createObjectURL(file) }
       });
     }
   };
@@ -61,7 +63,7 @@ export default class ImageUpload extends React.Component<Props, State> {
     this.setState({
       crop: { x: 0, y: 0, width: image.width, height: image.height },
       imageWidth: image.width,
-      imageHeight: image.height,
+      imageHeight: image.height
     });
     return false;
   };
@@ -74,16 +76,13 @@ export default class ImageUpload extends React.Component<Props, State> {
     //@ts-ignore
     const { url } = this.state.currentImage;
     const { crop } = this.state;
+    const { uploadFunction } = this.props;
     const image = new Image(this.state.imageWidth, this.state.imageHeight);
     image.src = url;
 
-    if (crop) {
-      if (this.props.uploadFunction) {
-        cropImage(image, crop, 'croppedImage').then((result: Blob) => {
-          this.props.uploadFunction(result);
-        });
-      }
-    }
+    crop &&
+      uploadFunction &&
+      cropImage(image, crop).then((result: Blob) => uploadFunction(result));
   };
 
   cancel = () => {
@@ -96,11 +95,7 @@ export default class ImageUpload extends React.Component<Props, State> {
     return (
       <div className="_legoEditor_imageUploader_wrapper">
         <div className="_legoEditor_imageUploader_root">
-          {!currentImage ? (
-            <div>
-              <ImageDrop onDrop={this.onDrop} />
-            </div>
-          ) : (
+          {currentImage ? (
             <div className="_legoEditor_imageUploader_crop_container">
               <ReactCrop
                 src={currentImage.url}
@@ -108,12 +103,23 @@ export default class ImageUpload extends React.Component<Props, State> {
                 onImageLoaded={this.onImageLoaded}
                 crop={crop}
               />
-              <button className="_legoEditor_imageUploader_applyButton" onClick={this.submitImage}>
-                Apply
-              </button>
+            </div>
+          ) : (
+            <div>
+              <ImageDrop onDrop={this.onDrop} />
             </div>
           )}
-          <button className="_legoEditor_imageUploader_cancelButton" onClick={this.cancel}>
+          <button
+            className="_legoEditor_imageUploader_applyButton"
+            onClick={this.submitImage}
+          >
+            Apply
+          </button>
+
+          <button
+            className="_legoEditor_imageUploader_cancelButton"
+            onClick={this.cancel}
+          >
             Cancel
           </button>
         </div>

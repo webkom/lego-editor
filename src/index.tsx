@@ -142,7 +142,7 @@ export default class Editor extends React.Component<Props, State> {
                 nodes: [
                   {
                     object: 'text',
-                    leaves: [],
+                    text: '',
                   },
                 ],
               },

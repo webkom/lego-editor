@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepublish": "yarn build",
-    "build": "yarn tsc && cd src && cp *.css",
+    "build": "yarn tsc && rsync -a --include '*/' --include '*.css' --exclude '*' ./src/ ./dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint 'src/**/*.{js,ts,tsx}' && prettier 'src/**' --list-different",
     "prettier": "prettier 'src/**' --write",
@@ -24,7 +24,6 @@
   },
   "homepage": "https://github.com/webkom/lego-editor#readme",
   "dependencies": {
-    "@types/classnames": "^2.2.8",
     "classnames": "^2.2.6",
     "is-url": "^1.2.4",
     "lodash": "^4.17.15",
@@ -38,6 +37,7 @@
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0",
+    "@types/classnames": "^2.2.8",
     "@types/immutable": "^3.8.7",
     "@types/is-hotkey": "^0.1.1",
     "@types/is-url": "^1.2.28",
@@ -65,5 +65,8 @@
     "webpack": "^4.33.0",
     "webpack-cli": "^3.3.3",
     "webpack-dev-server": "^3.7.1"
+  },
+  "prettier": {
+    "singleQuote": true
   }
 }

@@ -88,8 +88,12 @@
   padding: 20px 10px 0;
   border: 0.5px solid #f4f4f4;
   border-radius: 2px;
-  width: fit-content;
   margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
 }
 
 ._legoEditor_figcaption {
@@ -99,11 +103,9 @@
 
 ._legoEditor_img {
   border: none;
-  max-width: -webkit-fill-available;
 }
 
 ._legoEditor_imgSelected {
-  max-width: -webkit-fill-available;
   border: 2px solid #ccc;
   box-shadow: 0 0 8px #ccc;
 }

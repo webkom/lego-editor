@@ -3,6 +3,12 @@
   "env": {
     "node": true
   },
+  "globals": {
+    "Image": "readonly",
+    "URL": "readonly",
+    "document": "readonly",
+    "Promise": "readonly"
+  },
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
@@ -25,7 +31,10 @@
         "properties": "never"
       }
     ],
-    "no-use-before-define": ["warn", { "functions": false, "variables": false }],
+    "no-use-before-define": [
+      "warn",
+      { "functions": false, "variables": false }
+    ],
     "@typescript-eslint/explicit-function-return-type": [
       "warn",
       {
@@ -41,7 +50,10 @@
       }
     ],
     "@typescript-eslint/camelcase": ["warn", { "properties": "never" }],
-    "@typescript-eslint/no-use-before-define": ["warn", { "functions": false, "variables": false }]
+    "@typescript-eslint/no-use-before-define": [
+      "warn",
+      { "functions": false, "variables": false }
+    ]
   },
   "settings": {
     "react": {
