@@ -6,10 +6,12 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepublish": "yarn build",
-    "build": "yarn tsc",
+    "build": "yarn tsc && rsync -a --include '*/' --include '*.css' --exclude '*' ./src/ ./dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint 'src/**/*.{js,ts,tsx}' && prettier 'src/**' --list-different",
-    "prettier": "prettier 'src/**' --write"
+    "prettier": "prettier 'src/**' --write",
+    "example:build": "webpack --mode development",
+    "example": "webpack-dev-server --config ./example/webpack/webpack.config.js --open --mode development"
   },
   "repository": {
     "type": "git",
@@ -22,32 +24,49 @@
   },
   "homepage": "https://github.com/webkom/lego-editor#readme",
   "dependencies": {
+    "classnames": "^2.2.6",
     "is-url": "^1.2.4",
     "lodash": "^4.17.15",
     "react-dropzone": "^10.1.4",
     "react-image-crop": "^7.0.1",
-    "slate": "0.45.0",
+    "slate": "^0.47.4",
     "slate-html-serializer": "^0.8.5",
-    "slate-react": "0.21"
+    "slate-react": "^0.22.4"
   },
   "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-react": "^7.0.0",
+    "@types/classnames": "^2.2.8",
     "@types/immutable": "^3.8.7",
     "@types/is-hotkey": "^0.1.1",
     "@types/is-url": "^1.2.28",
     "@types/react": "^16.8.14",
     "@types/react-image-crop": "^6.0.2",
-    "@types/slate": "^0.44.3",
+    "@types/slate": "^0.47.1",
     "@types/slate-html-serializer": "^0.6.3",
-    "@types/slate-react": "^0.21.2",
+    "@types/slate-react": "^0.22.1",
     "@typescript-eslint/eslint-plugin": "^1.7.0",
     "@typescript-eslint/parser": "^1.7.0",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^2.1.1",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.2.0",
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-react": "^7.12.4",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
     "prettier": "^1.17.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "typescript": "^3.4.4"
+    "source-map-loader": "^0.2.4",
+    "style-loader": "^0.23.1",
+    "typescript": "^3.4.4",
+    "webpack": "^4.33.0",
+    "webpack-cli": "^3.3.3",
+    "webpack-dev-server": "^3.7.1"
+  },
+  "prettier": {
+    "singleQuote": true
   }
 }

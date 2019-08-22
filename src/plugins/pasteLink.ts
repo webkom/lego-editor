@@ -1,14 +1,18 @@
-import isUrl from "is-url";
-import { Command, Editor, Plugin } from "slate";
+import isUrl from 'is-url';
+import { Command, Editor, Plugin } from 'slate';
 
 export default function pasteLink(
   options: {
     isActiveQuery?: string;
     wrapCommand?: string;
     unwrapCommand?: string;
-  } = {},
+  } = {}
 ): Plugin {
-  const { isActiveQuery = "isLinkActive", wrapCommand = "wrapLink", unwrapCommand = "unwrapLink" } = options;
+  const {
+    isActiveQuery = 'isLinkActive',
+    wrapCommand = 'wrapLink',
+    unwrapCommand = 'unwrapLink'
+  } = options;
 
   return {
     onCommand(command: Command, editor: Editor, next: () => any) {
@@ -19,8 +23,8 @@ export default function pasteLink(
       let url;
 
       if (
-        (type === "insertText" && isUrl((url = args[0]))) ||
-        (type === "insertFragment" && isUrl((url = args[0].text)))
+        (type === 'insertText' && isUrl((url = args[0]))) ||
+        (type === 'insertFragment' && isUrl((url = args[0].text)))
       ) {
         // If there is already a link active, unwrap it so that we don't end up
         // with a confusing overlapping inline situation.
@@ -32,7 +36,9 @@ export default function pasteLink(
         // to occur instead of just wrapping the existing text in a link.
         if (isCollapsed) {
           next();
-          editor.moveAnchorTo(start.offset).moveFocusTo(start.offset + url.length);
+          editor
+            .moveAnchorTo(start.offset)
+            .moveFocusTo(start.offset + url.length);
         }
 
         // Wrap the selection in a link, and collapse to the end of it.
@@ -41,6 +47,6 @@ export default function pasteLink(
       }
 
       next();
-    },
+    }
   };
 }
