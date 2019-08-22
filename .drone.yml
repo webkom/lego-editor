@@ -1,18 +1,18 @@
 pipeline:
   setup:
-    image: node:10
+    image: abakus/node-rsync:latest
     when:
       event: push
     commands:
       - yarn --frozen-lockfile --ignore-scripts
   lint:
-    image: node:10
+    image: abakus/node-rsync:latest
     when:
       event: push
     commands:
       - yarn lint
   build:
-    image: node:10
+    image: abakus/node-rsync:latest
     when:
       event: push
     commands:
