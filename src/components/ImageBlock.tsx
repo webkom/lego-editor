@@ -21,7 +21,7 @@ export default class ImageBlock extends React.Component<Props> {
     const { editor, file, imageUrl } = this.props;
     editor.setNodeByKey(this.props.node.key, {
       data: { imageUrl, file /*, fileKey: meta.fileToken.split(":")[0]*/ },
-      type: 'image',
+      type: 'image'
     });
   }
 

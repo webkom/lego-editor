@@ -6,7 +6,7 @@ import { RenderBlockProps, Plugin } from 'slate-react';
 // plugin to insert images: Creates an imageBlock from a file blob
 // and creates a URL to the file for local storage
 // TODO consider only uploading after submit
-export default function images(options?: object): Plugin {
+export default function images(): Plugin {
   return {
     renderBlock(props: RenderBlockProps, editor: Editor, next: () => void) {
       const { attributes, node, children, isFocused } = props;
@@ -46,7 +46,7 @@ export default function images(options?: object): Plugin {
       insertImage(editor: Editor, file: Blob) {
         const imageUrl = URL.createObjectURL(file);
         return editor.insertBlock({ data: { file, imageUrl }, type: 'image' });
-      },
-    },
+      }
+    }
   };
 }

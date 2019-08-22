@@ -14,7 +14,7 @@ const MarkdownShortcuts = {
       default:
         return next();
     }
-  },
+  }
 };
 
 const getType = (chars: string): string | null => {
@@ -44,7 +44,11 @@ const getType = (chars: string): string | null => {
  * node into the shortcut's corresponding type.
  */
 
-const onSpace = (event: KeyboardEvent, editor: Editor, next: () => void): any => {
+const onSpace = (
+  event: KeyboardEvent,
+  editor: Editor,
+  next: () => void
+): any => {
   const { value } = editor;
   const { selection } = value;
   if (selection.isExpanded) {
@@ -77,7 +81,11 @@ const onSpace = (event: KeyboardEvent, editor: Editor, next: () => void): any =>
  * paragraph node.
  */
 
-const onBackspace = (event: KeyboardEvent, editor: Editor, next: () => void): any => {
+const onBackspace = (
+  event: KeyboardEvent,
+  editor: Editor,
+  next: () => void
+): any => {
   const { value } = editor;
   const { selection } = value;
   if (selection.isExpanded) {
