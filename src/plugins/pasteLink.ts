@@ -6,9 +6,13 @@ export default function pasteLink(
     isActiveQuery?: string;
     wrapCommand?: string;
     unwrapCommand?: string;
-  } = {},
+  } = {}
 ): Plugin {
-  const { isActiveQuery = 'isLinkActive', wrapCommand = 'wrapLink', unwrapCommand = 'unwrapLink' } = options;
+  const {
+    isActiveQuery = 'isLinkActive',
+    wrapCommand = 'wrapLink',
+    unwrapCommand = 'unwrapLink'
+  } = options;
 
   return {
     onCommand(command: Command, editor: Editor, next: () => any) {
@@ -32,7 +36,9 @@ export default function pasteLink(
         // to occur instead of just wrapping the existing text in a link.
         if (isCollapsed) {
           next();
-          editor.moveAnchorTo(start.offset).moveFocusTo(start.offset + url.length);
+          editor
+            .moveAnchorTo(start.offset)
+            .moveFocusTo(start.offset + url.length);
         }
 
         // Wrap the selection in a link, and collapse to the end of it.
@@ -41,6 +47,6 @@ export default function pasteLink(
       }
 
       next();
-    },
+    }
   };
 }

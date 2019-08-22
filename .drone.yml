@@ -16,4 +16,6 @@ pipeline:
     when:
       event: push
     commands:
+      - apt-get update
+      - apt-get install rsync -y
       - yarn build

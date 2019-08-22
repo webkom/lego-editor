@@ -5,12 +5,17 @@ import {
   RenderBlockProps,
   RenderInlineProps,
   RenderAttributes,
-  Plugin,
+  Plugin
 } from 'slate-react';
 import * as Slate from 'slate';
 import isHotKey from 'is-hotkey';
 import Toolbar from './components/Toolbar';
-import { BoldMark, ItalicMark, UnderlineMark, CodeMark } from './components/marks';
+import {
+  BoldMark,
+  ItalicMark,
+  UnderlineMark,
+  CodeMark
+} from './components/marks';
 import editList from './plugins/editList';
 import pasteLink from './plugins/pasteLink';
 import images from './plugins/images';
@@ -39,7 +44,7 @@ export type Next = () => any;
 
 // Simply enables the user to insert tabs when editing
 // TODO switch tabs for spaces in code blocks, make backspace remove two spaces
-function insertTab(options?: object): Plugin {
+function insertTab(): Plugin {
   return {
     onKeyDown(e: Event, editor: Slate.Editor, next: Next): Editor | undefined {
       const event = e as KeyboardEvent;
@@ -49,7 +54,7 @@ function insertTab(options?: object): Plugin {
       } else {
         return next();
       }
-    },
+    }
   };
 }
 
@@ -65,7 +70,11 @@ function softEnter(types: string[]): Plugin {
   return {
     onKeyDown(e: Event, editor: Slate.Editor, next: () => void): void {
       const event = e as KeyboardEvent;
-      if (!editor.value.blocks.some(block => block !== undefined && types.includes(block.type))) {
+      if (
+        !editor.value.blocks.some(
+          block => block !== undefined && types.includes(block.type)
+        )
+      ) {
         return next();
       }
       if (event.key == 'Enter') {
@@ -78,7 +87,7 @@ function softEnter(types: string[]): Plugin {
       } else {
         return next();
       }
-    },
+    }
   };
 }
 
@@ -86,15 +95,18 @@ function softEnter(types: string[]): Plugin {
 const linkCommands = {
   commands: {
     // wrap current selection in a link
-    wrapLink: (editor: Slate.Editor, url: string) => editor.wrapInline({ data: { url: url, text: url }, type: 'link' }),
+    wrapLink: (editor: Slate.Editor, url: string) =>
+      editor.wrapInline({ data: { url: url, text: url }, type: 'link' }),
     // unwrap the link in the current selection
-    unwrapLink: (editor: Slate.Editor) => editor.unwrapInline('link'),
+    unwrapLink: (editor: Slate.Editor) => editor.unwrapInline('link')
   },
   queries: {
     // returns true if there is a link in the current selection
     isLinkActive: (editor: Slate.Editor): boolean =>
-      editor.value.inlines.some(inline => inline != undefined && inline.type == 'link'),
-  },
+      editor.value.inlines.some(
+        inline => inline != undefined && inline.type == 'link'
+      )
+  }
 };
 
 const basePlugin = {
@@ -103,19 +115,25 @@ const basePlugin = {
     toggleBlock: (editor: Slate.Editor, type: string) => {
       if (type !== 'ul_list' && type !== 'ol_list') {
         const isActive = editor.query('hasBlock', type);
-        return isActive ? editor.setBlocks(DEFAULT_BLOCK) : editor.setBlocks(type);
+        return isActive
+          ? editor.setBlocks(DEFAULT_BLOCK)
+          : editor.setBlocks(type);
       }
       return editor;
-    },
+    }
   },
   queries: {
     // returns true if there exists a block of type 'type' in the current selection
     hasBlock: (editor: Slate.Editor, type: string): boolean => {
       const { value } = editor;
-      return value.blocks.some((node: Slate.Block | undefined) => node !== undefined && node.type == type);
+      return value.blocks.some(
+        (node: Slate.Block | undefined) =>
+          node !== undefined && node.type == type
+      );
     },
-    getCurrentBlock: (editor: Slate.Editor): Slate.Node => editor.value.startBlock,
-  },
+    getCurrentBlock: (editor: Slate.Editor): Slate.Node =>
+      editor.value.startBlock
+  }
 };
 
 const plugins = [
@@ -126,7 +144,7 @@ const plugins = [
   linkCommands,
   pasteLink(),
   images(),
-  markdownShortcuts,
+  markdownShortcuts
 ];
 
 export default class Editor extends React.Component<Props, State> {
@@ -142,14 +160,14 @@ export default class Editor extends React.Component<Props, State> {
                 nodes: [
                   {
                     object: 'text',
-                    text: '',
-                  },
-                ],
-              },
-            ],
-          },
+                    text: ''
+                  }
+                ]
+              }
+            ]
+          }
         }),
-    value: this.props.value,
+    value: this.props.value
   };
 
   onChange = ({ value: value }: { value: Slate.Value }): void => {
@@ -157,7 +175,11 @@ export default class Editor extends React.Component<Props, State> {
     this.props.onChange && this.props.onChange(html.serialize(value));
   };
 
-  onKeyDown = (event: Event, editor: Slate.Editor, next: Next): Slate.Editor | void => {
+  onKeyDown = (
+    event: Event,
+    editor: Slate.Editor,
+    next: Next
+  ): Slate.Editor | void => {
     const e = event as KeyboardEvent;
 
     if (isHotKey('mod+b')(e)) {
@@ -171,7 +193,11 @@ export default class Editor extends React.Component<Props, State> {
       editor.toggleMark('underline');
     } else if (isHotKey('mod+l')(e)) {
       e.preventDefault();
-      editor.command('setListType', editor.query('getCurrentBlock').key, 'ul_list');
+      editor.command(
+        'setListType',
+        editor.query('getCurrentBlock').key,
+        'ul_list'
+      );
     } else if (isHotKey('mod+z')(e)) {
       e.preventDefault();
       editor.undo();
@@ -184,7 +210,11 @@ export default class Editor extends React.Component<Props, State> {
   };
 
   // Components to be rendered for mark nodes
-  private renderMark = (props: RenderMarkProps, editor: Slate.Editor, next: Next) => {
+  private renderMark = (
+    props: RenderMarkProps,
+    editor: Slate.Editor,
+    next: Next
+  ) => {
     switch (props.mark.type) {
       case 'bold':
         return <BoldMark {...props} />;
@@ -200,7 +230,11 @@ export default class Editor extends React.Component<Props, State> {
   };
 
   // Components te be rendered for nodes
-  private renderBlock = (props: RenderBlockProps, editor: Slate.Editor, next: Next) => {
+  private renderBlock = (
+    props: RenderBlockProps,
+    editor: Slate.Editor,
+    next: Next
+  ) => {
     const { attributes, node, children } = props;
     switch (node.type) {
       case 'paragraph':
@@ -248,7 +282,11 @@ export default class Editor extends React.Component<Props, State> {
     }
   };
 
-  private renderInline = (props: RenderInlineProps, editor: Slate.Editor, next: Next) => {
+  private renderInline = (
+    props: RenderInlineProps,
+    editor: Slate.Editor,
+    next: Next
+  ) => {
     const { attributes, node, children } = props;
     switch (node.type) {
       case 'link':
@@ -264,11 +302,17 @@ export default class Editor extends React.Component<Props, State> {
 
   // Render function for how the editor
   // practical for passing props and the 'editor' prop to other components
-  private renderEditor = (props: RenderAttributes, editor: Slate.Editor, next: Next) => {
+  private renderEditor = (
+    props: RenderAttributes,
+    editor: Slate.Editor,
+    next: Next
+  ) => {
     const children = next();
     return (
       <>
-        {!this.props.disabled && !this.props.simple && <Toolbar editor={editor} />}
+        {!this.props.disabled && !this.props.simple && (
+          <Toolbar editor={editor} />
+        )}
         {children}
       </>
     );
@@ -278,7 +322,11 @@ export default class Editor extends React.Component<Props, State> {
   // via props to make the editor work with redux-form, (or any other handlers)
   // These methods need to by async because slates event handlers need to be called
   // before redux-forms handlers.
-  private async onFocus(event: Event, editor: Slate.Editor, next: Next) {
+  private async onFocus(
+    event: Event,
+    editor: Slate.Editor,
+    next: Next
+  ): Promise<any> {
     event.preventDefault();
     await next();
     if (this.props.onFocus) {
@@ -286,7 +334,11 @@ export default class Editor extends React.Component<Props, State> {
     }
   }
 
-  private async onBlur(event: Event, editor: Slate.Editor, next: Next) {
+  private async onBlur(
+    event: Event,
+    editor: Slate.Editor,
+    next: Next
+  ): Promise<any> {
     event.preventDefault();
     await next();
     if (this.props.onBlur) {
@@ -296,7 +348,13 @@ export default class Editor extends React.Component<Props, State> {
 
   render(): any {
     return (
-      <div className={this.props.disabled || this.props.simple ? '_legoEditor_disabled' : '_legoEditor_root'}>
+      <div
+        className={
+          this.props.disabled || this.props.simple
+            ? '_legoEditor_disabled'
+            : '_legoEditor_root'
+        }
+      >
         <SlateEditor
           onFocus={this.onFocus.bind(this)}
           onBlur={this.onBlur.bind(this)}

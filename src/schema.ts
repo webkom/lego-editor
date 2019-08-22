@@ -18,7 +18,7 @@ const schema: SchemaProperties = {
           return;
         }
       }
-    },
+    }
   },
   blocks: {
     image: {
@@ -37,11 +37,16 @@ const schema: SchemaProperties = {
             if (sibling) {
               return editor.removeNodeByKey(sibling.key);
             }
-            // @ts-ignore parent node is checked above
-            return editor.insertNodeByKey(parent.key, 2, Slate.Block.create('image_caption'));
+            if (parent) {
+              return editor.insertNodeByKey(
+                parent.key,
+                2,
+                Slate.Block.create('image_caption')
+              );
+            }
           }
         }
-      },
+      }
     },
     figure: {
       first: { type: 'image' },
@@ -53,7 +58,9 @@ const schema: SchemaProperties = {
             return editor.removeNodeByKey(node.key);
           }
           case 'last_child_type_invalid': {
-            if (node.nodes.some((node: Slate.Block) => node.type === 'paragraph')) {
+            if (
+              node.nodes.some((node: Slate.Block) => node.type === 'paragraph')
+            ) {
               return editor.setBlocks('image_caption');
             } else {
               const caption = Slate.Block.create('image_caption');
@@ -61,13 +68,18 @@ const schema: SchemaProperties = {
             }
           }
         }
-      },
+      }
     },
     list_item: {
       nodes: [
         {
-          match: [{ type: 'paragraph' }, { type: 'h2' }, { type: 'h4' }, { type: 'link' }],
-        },
+          match: [
+            { type: 'paragraph' },
+            { type: 'h2' },
+            { type: 'h4' },
+            { type: 'link' }
+          ]
+        }
       ],
       // Normalize lists to have blocks inside
       normalize: (editor: Slate.Editor, error: Slate.SlateError) => {
@@ -75,20 +87,22 @@ const schema: SchemaProperties = {
         switch (code) {
           case 'child_type_invalid': {
             if (Slate.Text.isText(child)) {
-              return editor.setNodeByKey(node.key, 'paragraph').wrapBlockByKey(node.key, 'list_item');
+              return editor
+                .setNodeByKey(node.key, 'paragraph')
+                .wrapBlockByKey(node.key, 'list_item');
             } else {
               return editor.setNodeByKey(child.key, 'paragraph');
             }
           }
         }
-      },
-    },
+      }
+    }
   },
   inlines: {
     link: {
       text: /.+/,
       data: {
-        url: (url: string) => isUrl(url),
+        url: (url: string) => isUrl(url)
       },
       normalize: (editor: Slate.Editor, error: Slate.SlateError) => {
         const { code, node } = error;
@@ -97,9 +111,9 @@ const schema: SchemaProperties = {
             editor.removeNodeByKey(node.key);
           }
         }
-      },
-    },
-  },
+      }
+    }
+  }
 };
 
 export default schema;

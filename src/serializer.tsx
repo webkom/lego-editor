@@ -18,18 +18,18 @@ const BLOCK_TAGS: TAGS = {
   pre: 'code-block',
   figure: 'figure',
   img: 'image',
-  figcaption: 'image_caption',
+  figcaption: 'image_caption'
 };
 
 const INLINE_TAGS: TAGS = {
-  a: 'link',
+  a: 'link'
 };
 
 const MARK_TAGS: TAGS = {
   em: 'italic',
   strong: 'bold',
   u: 'underline',
-  code: 'code',
+  code: 'code'
 };
 
 const rules: Rule[] = [
@@ -44,7 +44,7 @@ const rules: Rule[] = [
               object: 'block',
               type: type,
               data: {},
-              nodes: next(el.childNodes),
+              nodes: next(el.childNodes)
             };
           }
           case 'image': {
@@ -53,8 +53,8 @@ const rules: Rule[] = [
               type: type,
               data: {
                 src: el.getAttribute('src'),
-                fileKey: el.getAttribute('data-file-key'),
-              },
+                fileKey: el.getAttribute('data-file-key')
+              }
             };
           }
           case 'image_caption': {
@@ -62,7 +62,7 @@ const rules: Rule[] = [
               object: 'block',
               type: type,
               data: {},
-              nodes: next(el.childNodes),
+              nodes: next(el.childNodes)
             };
           }
           default:
@@ -70,9 +70,9 @@ const rules: Rule[] = [
               object: 'block',
               type: type,
               data: {
-                className: el.getAttribute('class'),
+                className: el.getAttribute('class')
               },
-              nodes: next(el.childNodes),
+              nodes: next(el.childNodes)
             };
         }
       }
@@ -106,12 +106,18 @@ const rules: Rule[] = [
           case 'figure':
             return <figure>{children}</figure>;
           case 'image':
-            return <img src={obj.data.get('src')} data-file-key={obj.data.get('fileKey')} alt="Placeholder" />;
+            return (
+              <img
+                src={obj.data.get('src')}
+                data-file-key={obj.data.get('fileKey')}
+                alt="Placeholder"
+              />
+            );
           case 'image_caption':
             return <figcaption>{children}</figcaption>;
         }
       }
-    },
+    }
   },
   // Inlines
   {
@@ -123,9 +129,9 @@ const rules: Rule[] = [
             object: 'inline',
             type: type,
             data: {
-              url: el.getAttribute('href'),
+              url: el.getAttribute('href')
             },
-            nodes: next(el.childNodes),
+            nodes: next(el.childNodes)
           };
         }
       }
@@ -141,7 +147,7 @@ const rules: Rule[] = [
             );
         }
       }
-    },
+    }
   },
   // Marks
   {
@@ -151,7 +157,7 @@ const rules: Rule[] = [
         return {
           object: 'mark',
           type: type,
-          nodes: next(el.childNodes),
+          nodes: next(el.childNodes)
         };
       }
     },
@@ -170,7 +176,7 @@ const rules: Rule[] = [
                 style={{
                   backgroundColor: '#efefef',
                   padding: '2px 3px',
-                  borderRadius: '2px',
+                  borderRadius: '2px'
                 }}
               >
                 {children}
@@ -178,8 +184,8 @@ const rules: Rule[] = [
             );
         }
       }
-    },
-  },
+    }
+  }
 ];
 
 export const html = new Html({ rules });
