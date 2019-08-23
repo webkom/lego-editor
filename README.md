@@ -18,6 +18,9 @@
     import '@webkom/lego-editor/dist/Editor.css'
     import '@webkom/lego-editor/dist/components/Toolbar.css'
     import '@webkom/lego-editor/dist/components/ImageUpload.css'
+    // Also add the stylesheet from react-image-crop
+    import 'react-image-crop/dist/ReactCrop.css'
+
 
     const YourComponent = () => (
       <div>
