@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useDropzone } from 'react-dropzone';
 import ReactCrop, { Crop } from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
 import cropImage from '../utils/cropImage';
 
 interface Props {
