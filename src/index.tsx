@@ -22,6 +22,7 @@ import images from './plugins/images';
 import markdownShortcuts from './plugins/markdown';
 import { html } from './serializer';
 import schema from './schema';
+import * as _ from 'lodash';
 
 interface Props {
   value: string;
@@ -172,7 +173,9 @@ export default class Editor extends React.Component<Props, State> {
 
   onChange = ({ value: value }: { value: Slate.Value }): void => {
     this.setState({ editorValue: value });
-    this.props.onChange && this.props.onChange(html.serialize(value));
+    // Debounce onchange function to improve performance
+    this.props.onChange &&
+      _.debounce(this.props.onChange, 250)(html.serialize(value));
   };
 
   onKeyDown = (
@@ -327,7 +330,6 @@ export default class Editor extends React.Component<Props, State> {
     editor: Slate.Editor,
     next: Next
   ): Promise<any> {
-    event.preventDefault();
     await next();
     if (this.props.onFocus) {
       await this.props.onFocus();
@@ -339,7 +341,6 @@ export default class Editor extends React.Component<Props, State> {
     editor: Slate.Editor,
     next: Next
   ): Promise<any> {
-    event.preventDefault();
     await next();
     if (this.props.onBlur) {
       await this.props.onBlur();

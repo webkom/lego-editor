@@ -2,7 +2,7 @@
 
 ![DroneCI](https://ci.abakus.no/api/badges/webkom/lego-editor/status.svg?branch=master)
 
-> Work-in-progress editor for [lego-webapp](https://github.com/webkom/lego-webapp) written with [Slate.js](https://docs.slatejs.org)
+> Work-in-progress editor for [lego-webapp](https://github.com/webkom/lego-webapp) written with [Slate.js](https://docs.slatejs.org) ![npm (scoped)](https://img.shields.io/npm/v/@webkom/lego-editor?style=flat-square)
 
 <img src="https://i.imgur.com/6zIQhYm.png" />
 

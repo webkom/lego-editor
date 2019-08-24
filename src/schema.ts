@@ -96,6 +96,36 @@ const schema: SchemaProperties = {
           }
         }
       }
+    },
+    ul_list: {
+      nodes: [
+        {
+          match: [
+            { type: 'list_item' },
+            { type: 'ul_list' },
+            { type: 'ol_list' },
+            { type: 'paragraph' },
+            { type: 'h1' },
+            { type: 'h4' },
+            { type: 'code' }
+          ]
+        }
+      ]
+    },
+    ol_list: {
+      nodes: [
+        {
+          match: [
+            { type: 'list_item' },
+            { type: 'ul_list' },
+            { type: 'ol_list' },
+            { type: 'paragraph' },
+            { type: 'h1' },
+            { type: 'h4' },
+            { type: 'code' }
+          ]
+        }
+      ]
     }
   },
   inlines: {
