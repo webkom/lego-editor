@@ -15,7 +15,7 @@ const BLOCK_TAGS: TAGS = {
   ul: 'ul_list',
   ol: 'ol_list',
   li: 'list_item',
-  pre: 'code-block',
+  pre: 'code_block',
   figure: 'figure',
   img: 'image',
   figcaption: 'image_caption'
@@ -97,7 +97,7 @@ const rules: Rule[] = [
             return <ol>{children}</ol>;
           case 'list_item':
             return <li>{children}</li>;
-          case 'code-block':
+          case 'code_block':
             return (
               <pre>
                 <code>{children}</code>

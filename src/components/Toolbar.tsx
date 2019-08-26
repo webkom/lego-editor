@@ -277,8 +277,8 @@ export default class Toolbar extends React.Component<
           <i className="fa fa-code" />
         </ToolbarButton>
         <ToolbarButton
-          active={this.checkActiveBlock('code-block')}
-          handler={e => this.toggleBlock(e, 'code-block')}
+          active={this.checkActiveBlock('code_block')}
+          handler={e => this.toggleBlock(e, 'code_block')}
         >
           <i className="fa fa-file-code-o" />
         </ToolbarButton>

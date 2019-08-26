@@ -44,7 +44,6 @@ const ImageDrop: React.StatelessComponent<ImageDropProps> = (
   );
 };
 
-// TODO Allow for several images in one component
 export default class ImageUpload extends React.Component<Props, State> {
   readonly state: State = {
     hasImage: false

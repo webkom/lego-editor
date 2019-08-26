@@ -22,7 +22,7 @@ import images from './plugins/images';
 import markdownShortcuts from './plugins/markdown';
 import { html } from './serializer';
 import schema from './schema';
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 interface Props {
   value: string;
@@ -33,6 +33,8 @@ interface Props {
   onFocus?: () => void;
   autoFocus?: boolean;
   placeholder?: string;
+  imageUpload: (file: Blob) => Promise<string>;
+  plugins: Plugin[];
 }
 
 interface State {
@@ -43,9 +45,10 @@ interface State {
 const DEFAULT_BLOCK = 'paragraph';
 export type Next = () => any;
 
-// Simply enables the user to insert tabs when editing
-// TODO switch tabs for spaces in code blocks, make backspace remove two spaces
 function insertTab(): Plugin {
+  /*
+   *  A simple plugin that inserts a 'tab' character on pressing tab.
+   */
   return {
     onKeyDown(e: Event, editor: Slate.Editor, next: Next): Editor | undefined {
       const event = e as KeyboardEvent;
@@ -59,15 +62,12 @@ function insertTab(): Plugin {
   };
 }
 
-/*
- *  softEnter(Array<string>) => onKeyDown()
- *  A plugin that enables soft enter if selection has blocks
- *  of a type specified. Takes an array of types as its only argument
- *  TODO consider adding soft enter on shift for paragraphs and removing the need for shift+enter in
- *  lists
- */
-
 function softEnter(types: string[]): Plugin {
+  /*
+   *  softEnter(Array<string>) => onKeyDown()
+   *  A plugin that enables soft enter if selection has blocks
+   *  of a type specified. Takes an array of block types as its only argument.
+   */
   return {
     onKeyDown(e: Event, editor: Slate.Editor, next: () => void): void {
       const event = e as KeyboardEvent;
@@ -92,13 +92,14 @@ function softEnter(types: string[]): Plugin {
   };
 }
 
-// A set of commands and queries to edit links
-const linkCommands = {
+const linkCommands = (): Plugin => ({
+  /*
+   *  A plugin that adds basic commands and queries for links
+   */
   commands: {
     // wrap current selection in a link
     wrapLink: (editor: Slate.Editor, url: string) =>
       editor.wrapInline({ data: { url: url, text: url }, type: 'link' }),
-    // unwrap the link in the current selection
     unwrapLink: (editor: Slate.Editor) => editor.unwrapInline('link')
   },
   queries: {
@@ -108,9 +109,9 @@ const linkCommands = {
         inline => inline != undefined && inline.type == 'link'
       )
   }
-};
+});
 
-const basePlugin = {
+const basePlugin = (): Plugin => ({
   commands: {
     // Toggles the block type of everything except lists
     toggleBlock: (editor: Slate.Editor, type: string) => {
@@ -135,18 +136,7 @@ const basePlugin = {
     getCurrentBlock: (editor: Slate.Editor): Slate.Node =>
       editor.value.startBlock
   }
-};
-
-const plugins = [
-  basePlugin,
-  editList(),
-  insertTab(),
-  softEnter(['code-block']),
-  linkCommands,
-  pasteLink(),
-  images(),
-  markdownShortcuts
-];
+});
 
 export default class Editor extends React.Component<Props, State> {
   state = {
@@ -168,7 +158,18 @@ export default class Editor extends React.Component<Props, State> {
             ]
           }
         }),
-    value: this.props.value
+    value: this.props.value,
+    plugins: [
+      basePlugin(),
+      editList(),
+      insertTab(),
+      softEnter(['code_block']),
+      linkCommands(),
+      pasteLink(),
+      images({ uploadFunction: this.props.imageUpload }),
+      markdownShortcuts,
+      ...this.props.plugins
+    ]
   };
 
   onChange = ({ value: value }: { value: Slate.Value }): void => {
@@ -274,7 +275,7 @@ export default class Editor extends React.Component<Props, State> {
             {children}
           </li>
         );
-      case 'code-block':
+      case 'code_block':
         return (
           <pre {...attributes}>
             <code>{children}</code>
@@ -362,7 +363,7 @@ export default class Editor extends React.Component<Props, State> {
           autoFocus={this.props.autoFocus}
           renderEditor={this.renderEditor}
           value={this.state.editorValue}
-          plugins={plugins}
+          plugins={this.state.plugins}
           onChange={this.onChange}
           onKeyDown={this.onKeyDown}
           schema={schema}

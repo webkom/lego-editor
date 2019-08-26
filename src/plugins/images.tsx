@@ -3,10 +3,15 @@ import ImageBlock from '../components/ImageBlock';
 import { Editor } from 'slate';
 import { RenderBlockProps, Plugin } from 'slate-react';
 
-// plugin to insert images: Creates an imageBlock from a file blob
-// and creates a URL to the file for local storage
-// TODO consider only uploading after submit
-export default function images(): Plugin {
+interface Options {
+  uploadFunction: (file: Blob) => Promise<string>;
+}
+
+export default function images(options: Options): Plugin {
+  /*
+   *  Plugin to insert and render images, needs a function for uloading the file.
+   */
+  const { uploadFunction } = options;
   return {
     renderBlock(props: RenderBlockProps, editor: Editor, next: () => void) {
       const { attributes, node, children, isFocused } = props;
@@ -22,9 +27,7 @@ export default function images(): Plugin {
           return (
             <ImageBlock
               editor={editor}
-              imageUrl={node.data.get('imageUrl')}
               src={node.data.get('src')}
-              file={node.data.get('file')}
               isFocused={isFocused}
               attributes={attributes}
               node={node}
@@ -44,8 +47,13 @@ export default function images(): Plugin {
     },
     commands: {
       insertImage(editor: Editor, file: Blob) {
-        const imageUrl = URL.createObjectURL(file);
-        return editor.insertBlock({ data: { file, imageUrl }, type: 'image' });
+        /*
+         *  Inserts the ImageBlock, and runs the provided callback.
+         */
+        uploadFunction(file).then((src: string) =>
+          editor.insertBlock({ data: { src }, type: 'image' })
+        );
+        return editor;
       }
     }
   };
