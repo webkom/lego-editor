@@ -50,15 +50,16 @@ class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
   };
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // TODO move this to onInput
-    //if (e.key == "Enter") {
-    //this.submit(e);
-    //return;
-    //}
     this.setState({ value: e.currentTarget.value });
   };
 
-  submit = (e: React.FocusEvent | React.MouseEvent) => {
+  onKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key == 'Enter') {
+      this.submit(e);
+    }
+  };
+
+  submit = (e: React.FocusEvent | React.KeyboardEvent | React.MouseEvent) => {
     e.preventDefault();
     const { value } = this.state;
     this.props.toggleLinkInput();
@@ -67,12 +68,6 @@ class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
     }
     this.props.updateLink({ url: value });
   };
-
-  componentDidMount(): void {
-    if (this.input.current) {
-      this.input.current.focus();
-    }
-  }
 
   render(): React.ReactNode {
     const validUrl = isUrl(this.state.value);
@@ -83,6 +78,7 @@ class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
           placeholder="Link"
           ref={this.input}
           onChange={this.onChange}
+          onKeyDown={this.onKeyPress}
           value={this.state.value}
         />
         <button disabled={!validUrl} onClick={this.submit}>
@@ -211,7 +207,7 @@ export default class Toolbar extends React.Component<
     const { editor } = this.props;
 
     if (!this.checkActiveInline('link')) {
-      return undefined;
+      return;
     }
 
     // @ts-ignore - previous line already checks that inline is not undefined
@@ -237,28 +233,6 @@ export default class Toolbar extends React.Component<
   onSubmit(image: Blob): void {
     const { editor } = this.props;
     editor.command('insertImage', image);
-  }
-
-  // TODO see if this actually works...
-  shouldComponentUpdate(
-    nextProps: ToolbarProps,
-    nextState: ToolbarState
-  ): boolean {
-    /*
-     * Re-rendering every time the 'Editor' changes causes a lot of lag.
-     * It should only update if the current selections block type or marks changes
-     */
-
-    const currentValue = this.props.editor.value;
-    const newValue = nextProps.editor.value;
-
-    const marksChanged = currentValue.activeMarks != newValue.activeMarks;
-    const blockChanged = currentValue.blocks != newValue.blocks;
-    const inlineChanged = currentValue.inlines != newValue.inlines;
-
-    return (
-      marksChanged || blockChanged || inlineChanged || this.state != nextState
-    );
   }
 
   render(): React.ReactNode {
@@ -303,8 +277,8 @@ export default class Toolbar extends React.Component<
           <i className="fa fa-code" />
         </ToolbarButton>
         <ToolbarButton
-          active={this.checkActiveBlock('code-block')}
-          handler={e => this.toggleBlock(e, 'code-block')}
+          active={this.checkActiveBlock('code_block')}
+          handler={e => this.toggleBlock(e, 'code_block')}
         >
           <i className="fa fa-file-code-o" />
         </ToolbarButton>

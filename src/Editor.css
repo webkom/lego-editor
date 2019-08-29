@@ -51,9 +51,6 @@
   margin-block-start: 1em;
   margin-block-end: 1em;
 }
-/*
- * TODO: Use psudo-selectors for 3n, 2n, n-th... list element
- */
 
 ._legoEditor_ul_list > ul {
   list-style: circle;
@@ -84,10 +81,7 @@
 }
 
 ._legoEditor_figure {
-  background-color: #fcfcfc;
   padding: 20px 10px 0;
-  border: 0.5px solid #f4f4f4;
-  border-radius: 2px;
   margin: auto;
   display: flex;
   flex-direction: column;

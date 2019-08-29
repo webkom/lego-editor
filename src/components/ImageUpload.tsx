@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useDropzone } from 'react-dropzone';
 import ReactCrop, { Crop } from 'react-image-crop';
 import cropImage from '../utils/cropImage';
+import cx from 'classnames';
 
 interface Props {
   uploadFunction?: (image: Blob) => void;
@@ -43,7 +44,6 @@ const ImageDrop: React.StatelessComponent<ImageDropProps> = (
   );
 };
 
-// TODO Allow for several images in one component
 export default class ImageUpload extends React.Component<Props, State> {
   readonly state: State = {
     hasImage: false
@@ -94,33 +94,43 @@ export default class ImageUpload extends React.Component<Props, State> {
     return (
       <div className="_legoEditor_imageUploader_wrapper">
         <div className="_legoEditor_imageUploader_root">
-          {currentImage ? (
-            <div className="_legoEditor_imageUploader_crop_container">
-              <ReactCrop
-                src={currentImage.url}
-                onChange={this.handleCrop}
-                onImageLoaded={this.onImageLoaded}
-                crop={crop}
-              />
-            </div>
-          ) : (
-            <div>
+          <div className="_legoEditor_imageUploader_crop_wrapper">
+            {currentImage ? (
+              <div className="_legoEditor_imageUploader_crop_container">
+                <ReactCrop
+                  src={currentImage.url}
+                  onChange={this.handleCrop}
+                  onImageLoaded={this.onImageLoaded}
+                  crop={crop}
+                />
+              </div>
+            ) : (
               <ImageDrop onDrop={this.onDrop} />
-            </div>
-          )}
-          <button
-            className="_legoEditor_imageUploader_applyButton"
-            onClick={this.submitImage}
-          >
-            Apply
-          </button>
+            )}
+          </div>
+          <div className="_legoEditor_imageUploader_buttonContainer">
+            <button
+              className={cx(
+                '_legoEditor_imageUploader_applyButton',
+                '_legoEditor_imageUploader_button'
+              )}
+              onClick={this.submitImage}
+              type="button"
+            >
+              Apply
+            </button>
 
-          <button
-            className="_legoEditor_imageUploader_cancelButton"
-            onClick={this.cancel}
-          >
-            Cancel
-          </button>
+            <button
+              className={cx(
+                '_legoEditor_imageUploader_cancelButton',
+                '_legoEditor_imageUploader_button'
+              )}
+              onClick={this.cancel}
+              type="button"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     );

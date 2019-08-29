@@ -9,7 +9,12 @@ import './App.css';
 const App = () => (
   <div>
     <h1>Lego editor</h1>
-    <Editor placeholder="Testing lego editor" />
+    <Editor
+      placeholder="Testing lego editor"
+      imageUpload={file =>
+        new Promise(resolve => resolve(URL.createObjectURL(file)))
+      }
+    />
   </div>
 );
 

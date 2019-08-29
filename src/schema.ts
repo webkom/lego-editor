@@ -5,7 +5,6 @@ import { SchemaProperties } from 'slate';
 // Schema for the editor value
 // This can handle normalizing and rules for the value
 // If there are any rules for how the value should be, add them here
-// TODO consider normalizing code blocks, (no marks, not inside lists?)
 const schema: SchemaProperties = {
   document: {
     last: { type: 'paragraph' },
@@ -96,6 +95,39 @@ const schema: SchemaProperties = {
           }
         }
       }
+    },
+    ul_list: {
+      nodes: [
+        {
+          match: [
+            { type: 'list_item' },
+            { type: 'ul_list' },
+            { type: 'ol_list' },
+            { type: 'paragraph' },
+            { type: 'h1' },
+            { type: 'h4' },
+            { type: 'code_block' }
+          ]
+        }
+      ]
+    },
+    ol_list: {
+      nodes: [
+        {
+          match: [
+            { type: 'list_item' },
+            { type: 'ul_list' },
+            { type: 'ol_list' },
+            { type: 'paragraph' },
+            { type: 'h1' },
+            { type: 'h4' },
+            { type: 'code_block' }
+          ]
+        }
+      ]
+    },
+    code_block: {
+      marks: []
     }
   },
   inlines: {
