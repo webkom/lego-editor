@@ -73,7 +73,7 @@ export default class ImageUpload extends React.Component<Props, State> {
 
   submitImage = () => {
     //@ts-ignore
-    const { url } = this.state.currentImage;
+    const { url, file } = this.state.currentImage;
     const { crop } = this.state;
     const { uploadFunction } = this.props;
     const image = new Image(this.state.imageWidth, this.state.imageHeight);
@@ -81,7 +81,9 @@ export default class ImageUpload extends React.Component<Props, State> {
 
     crop &&
       uploadFunction &&
-      cropImage(image, crop).then((result: Blob) => uploadFunction(result));
+      cropImage(image, crop, file.name).then((result: Blob) =>
+        uploadFunction(result)
+      );
   };
 
   cancel = () => {
