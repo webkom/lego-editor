@@ -1,6 +1,14 @@
 import { Crop } from 'react-image-crop';
 
-const cropImage = (image: HTMLImageElement, crop: Crop): Promise<Blob> => {
+interface BlobWithName extends Blob {
+  name?: string;
+}
+
+const cropImage = (
+  image: HTMLImageElement,
+  crop: Crop,
+  name: string
+): Promise<BlobWithName> => {
   if (!crop.width || !crop.height) {
     crop.width = image.width;
     crop.height = image.height;
@@ -29,7 +37,13 @@ const cropImage = (image: HTMLImageElement, crop: Crop): Promise<Blob> => {
 
   return new Promise((resolve, reject) => {
     canvas.toBlob(result => {
-      result ? resolve(result) : reject();
+      if (result) {
+        //@ts-ignore
+        result.name = name;
+        resolve(result);
+      } else {
+        reject();
+      }
     }, 'image/jpeg');
   });
 };
