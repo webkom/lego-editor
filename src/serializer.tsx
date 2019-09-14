@@ -48,12 +48,20 @@ const rules: Rule[] = [
             };
           }
           case 'image': {
+            const fileKey = el.getAttribute('data-file-key');
+            const dataFromHtml = el.getAttributeNames().reduce(
+              (data: Record<string, any>, attrName: string) => ({
+                ...data,
+                attrName: el.getAttribute(attrName)
+              }),
+              {}
+            );
             return {
               object: 'block',
               type: type,
               data: {
-                src: el.getAttribute('src'),
-                fileKey: el.getAttribute('data-file-key')
+                ...dataFromHtml,
+                fileKey
               }
             };
           }
