@@ -52,7 +52,7 @@ const rules: Rule[] = [
             const dataFromHtml = el.getAttributeNames().reduce(
               (data: Record<string, any>, attrName: string) => ({
                 ...data,
-                attrName: el.getAttribute(attrName)
+                [attrName]: el.getAttribute(attrName)
               }),
               {}
             );
