@@ -4,7 +4,7 @@ import { Editor } from 'slate';
 import { RenderBlockProps, Plugin } from 'slate-react';
 
 interface Options {
-  uploadFunction: (file: Blob) => Promise<string>;
+  uploadFunction: (file: Blob) => Promise<Record<string, any>>;
 }
 
 export default function images(options: Options): Plugin {
@@ -24,10 +24,13 @@ export default function images(options: Options): Plugin {
           );
         }
         case 'image': {
+          const src = node.data.has('src')
+            ? node.data.get('src')
+            : node.data.get('objectUrl');
           return (
             <ImageBlock
               editor={editor}
-              src={node.data.get('src')}
+              src={src}
               isFocused={isFocused}
               attributes={attributes}
               node={node}
@@ -46,12 +49,17 @@ export default function images(options: Options): Plugin {
       }
     },
     commands: {
-      insertImage(editor: Editor, file: Blob) {
+      insertImage(editor: Editor, file: Blob, data?: Record<string, any>) {
         /*
-         *  Inserts the ImageBlock, and runs the provided callback.
+         *  Inserts the ImageBlock, and runs the provided callback. We create a objectUrl to use if
+         *  the uploadFunction does not immediatly return a src.
          */
-        uploadFunction(file).then((src: string) =>
-          editor.insertBlock({ data: { src }, type: 'image' })
+        const objectUrl = URL.createObjectURL(file);
+        uploadFunction(file).then((returnData: Record<string, any>) =>
+          editor.insertBlock({
+            data: { ...returnData, ...data, objectUrl },
+            type: 'image'
+          })
         );
         return editor;
       }

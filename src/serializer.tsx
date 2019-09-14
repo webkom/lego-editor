@@ -105,14 +105,19 @@ const rules: Rule[] = [
             );
           case 'figure':
             return <figure>{children}</figure>;
-          case 'image':
+          case 'image': {
+            // For compatibility with https://github.com/webkom/lego
+            const data = obj.data.toJS();
+            const { fileKey } = data;
             return (
               <img
                 src={obj.data.get('src')}
-                data-file-key={obj.data.get('fileKey')}
+                data-file-key={fileKey}
+                {...data}
                 alt="Placeholder"
               />
             );
+          }
           case 'image_caption':
             return <figcaption>{children}</figcaption>;
         }

@@ -219,11 +219,11 @@ export default class Toolbar extends React.Component<
     this.setState({ insertingImage: true });
   }
 
-  insertImage(image: Blob): void {
+  insertImage(image: Blob, data?: Record<string, any>): void {
     const { editor } = this.props;
 
     this.setState({ insertingImage: false });
-    editor.command('insertImage', image);
+    editor.command('insertImage', image, data);
   }
 
   onClose(): void {
