@@ -12,7 +12,7 @@ const App = () => (
     <Editor
       placeholder="Testing lego editor"
       imageUpload={file =>
-        new Promise(resolve => resolve(URL.createObjectURL(file)))
+        new Promise(resolve => resolve())
       }
     />
   </div>

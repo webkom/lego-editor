@@ -33,7 +33,7 @@ interface Props {
   onFocus?: () => void;
   autoFocus?: boolean;
   placeholder?: string;
-  imageUpload: (file: Blob) => Promise<string>;
+  imageUpload: (file: Blob) => Promise<Record<string, any>>;
   plugins: Plugin[];
 }
 

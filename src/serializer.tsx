@@ -48,12 +48,20 @@ const rules: Rule[] = [
             };
           }
           case 'image': {
+            const fileKey = el.getAttribute('data-file-key');
+            const dataFromHtml = el.getAttributeNames().reduce(
+              (data: Record<string, any>, attrName: string) => ({
+                ...data,
+                attrName: el.getAttribute(attrName)
+              }),
+              {}
+            );
             return {
               object: 'block',
               type: type,
               data: {
-                src: el.getAttribute('src'),
-                fileKey: el.getAttribute('data-file-key')
+                ...dataFromHtml,
+                fileKey
               }
             };
           }
@@ -105,14 +113,19 @@ const rules: Rule[] = [
             );
           case 'figure':
             return <figure>{children}</figure>;
-          case 'image':
+          case 'image': {
+            // For compatibility with https://github.com/webkom/lego
+            const data = obj.data.toJS();
+            const { fileKey } = data;
             return (
               <img
                 src={obj.data.get('src')}
-                data-file-key={obj.data.get('fileKey')}
+                data-file-key={fileKey}
+                {...data}
                 alt="Placeholder"
               />
             );
+          }
           case 'image_caption':
             return <figcaption>{children}</figcaption>;
         }
