@@ -28,7 +28,7 @@
     "is-url": "^1.2.4",
     "lodash": "^4.17.15",
     "react-dropzone": "^10.1.4",
-    "react-image-crop": "^7.0.1",
+    "react-image-crop": "^8.4.2",
     "slate": "^0.47.4",
     "slate-html-serializer": "^0.8.5",
     "slate-react": "^0.22.4"
