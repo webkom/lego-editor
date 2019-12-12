@@ -29,7 +29,7 @@
     "lodash": "^4.17.15",
     "react-dropzone": "^10.1.4",
     "react-image-crop": "^8.4.2",
-    "slate": "^0.47.4",
+    "slate": "^0.53.0",
     "slate-html-serializer": "^0.8.5",
     "slate-react": "^0.22.4"
   },
