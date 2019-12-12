@@ -5248,9 +5248,9 @@ slate-hotkeys@^0.2.9:
     slate-dev-environment "^0.2.2"
 
 slate-html-serializer@^0.8.5:
-  version "0.8.9"
-  resolved "https://registry.yarnpkg.com/slate-html-serializer/-/slate-html-serializer-0.8.9.tgz#46cc221cfba9acfc6ac86df54ac9281260adf2ce"
-  integrity sha512-cEspjplZNhhPuj6RnlOXCWX8AXnU/1XlypvW5kEnVE1qlGyzGfaBffOjvX/1EA/iVjn/50O0KJw+5nXmDkvalQ==
+  version "0.8.11"
+  resolved "https://registry.yarnpkg.com/slate-html-serializer/-/slate-html-serializer-0.8.11.tgz#f65d71306f70ace534bc32ee8c5e5b8202a7b700"
+  integrity sha512-WHwmjccjpAwxvvNv31kMlIKrmTGOIEs+hs1y/08oDXTpnb5EGcmqHV1WOjBx70C9B33i+MLA/sp4ZXVC/r22+w==
   dependencies:
     type-of "^2.0.1"
 
