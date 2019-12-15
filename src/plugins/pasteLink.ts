@@ -1,52 +1,74 @@
 import isUrl from 'is-url';
-import { Command, Editor, Plugin } from 'slate';
+import { Command, Editor, Range, Element } from 'slate';
+import { LEditor } from '../index';
 
-export default function pasteLink(
-  options: {
-    isActiveQuery?: string;
-    wrapCommand?: string;
-    unwrapCommand?: string;
-  } = {}
-): Plugin {
-  const {
-    isActiveQuery = 'isLinkActive',
-    wrapCommand = 'wrapLink',
-    unwrapCommand = 'unwrapLink'
-  } = options;
-
-  return {
-    onCommand(command: Command, editor: Editor, next: () => any) {
-      const { type, args } = command;
-      const { value } = editor;
-      const { selection } = value;
-      const { isCollapsed, start } = selection;
-      let url;
-
-      if (
-        (type === 'insertText' && isUrl((url = args[0]))) ||
-        (type === 'insertFragment' && isUrl((url = args[0].text)))
-      ) {
-        // If there is already a link active, unwrap it so that we don't end up
-        // with a confusing overlapping inline situation.
-        if (editor.query(isActiveQuery)) {
-          editor.command(unwrapCommand);
-        }
-
-        // If the selection is collapsed, we need to allow the default inserting
-        // to occur instead of just wrapping the existing text in a link.
-        if (isCollapsed) {
-          next();
-          editor
-            .moveAnchorTo(start.offset)
-            .moveFocusTo(start.offset + url.length);
-        }
-
-        // Wrap the selection in a link, and collapse to the end of it.
-        editor.command(wrapCommand, url).moveToEnd();
-        return;
-      }
-
-      next();
+const links = (editor: Editor): Editor => {
+  const { exec, isInline } = editor;
+  // Tell the editor that `link` elements are inline
+  editor.isInline = (element: Element & { type?: string }): boolean => {
+    if (element.type === 'link') {
+      return true;
+    } else {
+      return isInline(element);
     }
   };
-}
+
+  // Add link editing commands
+  editor.exec = (command: Command) => {
+    switch (command.type) {
+      case 'insert_link':
+        Editor.insertNodes(editor, {
+          type: 'link',
+          url: command.url,
+          children: [{ text: command.text || command.url }]
+        });
+        break;
+      case 'wrap_link':
+        // Links should only contain text, so we just use the first text node
+        // in the current selection
+        if (editor.selection !== null) {
+          // Unwrap any existing link elements, if they exist in the selection
+          if (LEditor.isElementActive(editor, 'link')) {
+            Editor.unwrapNodes(editor, {
+              match: { type: 'link', split: true }
+            });
+          }
+          Editor.wrapNodes(
+            editor,
+            { type: 'link', url: command.url, children: [] },
+            { split: true }
+          );
+        }
+        break;
+      case 'unwrap_ink':
+        Editor.unwrapNodes(editor, { match: { type: 'link' } });
+        break;
+
+      // Pasting links should issue link commands
+      case 'insert_text':
+      case 'insert_data':
+        let text;
+        if (command.type === 'insert_data') {
+          text = command.data.getData('text/plain');
+        } else {
+          text = command.text;
+        }
+        if (isUrl(text)) {
+          const { selection } = editor;
+          if (selection && Range.isCollapsed(selection)) {
+            editor.exec({ type: 'insert_link', url: text });
+          } else {
+            editor.exec({ type: 'wrap_link', url: text });
+          }
+        } else {
+          exec(command);
+        }
+        break;
+      default:
+        exec(command);
+    }
+  };
+  return editor;
+};
+
+export default links;
