@@ -1,7 +1,10 @@
-import { Editor, Block, Node } from 'slate';
-import { Plugin } from 'slate-react';
-import { Next } from '../index';
-/*
+import { Editor, Element, Node, Location, NodeEntry, Command } from 'slate';
+import isHotKey from 'is-hotkey';
+import { DEFAULT_BLOCK } from '../index';
+
+const LIST_TYPES = ['ul_list', 'ol_list'];
+
+/**
  *  This plugin defines a set of commands and querys to edit lists
  *  as well as key handlers for running these commands.
  *
@@ -23,243 +26,270 @@ import { Next } from '../index';
  *    getParentList(editor, node) => node
  *      returns the closest list node ancestor of a node
  */
+const editList = (editor: Editor): Editor => {
+  const { exec } = editor;
 
-export default function editList(options = { useKeyHandlers: true }): Plugin {
-  const { useKeyHandlers } = options;
-  return {
-    onKeyDown(e: Event, editor: Editor, next: Next) {
-      const event = e as KeyboardEvent;
-      if (!useKeyHandlers) {
-        return next();
+  editor.exec = command => {
+    if (command.type === 'key_handler' && editor.isList()) {
+      const parentList = Editor.nodes(editor, {
+        match: (node: Node) =>
+          node.type === 'ul_list' || node.type === 'ol_list'
+      });
+      if (!parentList) {
+        return exec(command);
       }
-      switch (event.key) {
-        case 'Enter': {
-          if (!isList(editor)) {
-            return next();
-          }
-          event.preventDefault();
-          handleEnter(editor, event, next);
-          break;
-        }
-
-        case 'Backspace': {
-          if (!isList(editor)) {
-            return next();
-          }
-          handleBackspace(editor, event, next);
-          break;
-        }
-
-        case 'Tab': {
-          if (!isList(editor)) {
-            return next();
-          }
-          event.preventDefault();
-          handleTab(editor, event, next);
-          break;
-        }
-
-        default:
-          return next();
+      const { event } = command;
+      if (isHotKey('Enter')(event)) {
+        handleEnter(editor, command);
+      } else if (isHotKey('Shift+Enter')(event)) {
+        handleShiftEnter(editor, command);
+      } else if (isHotKey('Backspace')(event)) {
+        handleBackspace(editor, command);
+      } else if (isHotKey('Tab')(event)) {
+        handleTab(editor, command);
+      } else if (isHotKey('Shift+Tab')(event)) {
+        handleShiftTab(editor, command);
       }
-    },
-    commands: {
-      increaseListDepth,
-      decreaseListDepth,
-      setListType
-    },
-    queries: {
-      isList,
-      getListDepth,
-      getListItem,
-      getParentList
+    } else if (command.type === 'increase_list_depth') {
+      increaseListDepth(editor);
+    } else if (command.type === 'decrease_list_depth') {
+      decreaseListDepth(editor);
+    } else if (command.type === 'toggle_list') {
+      setListType(editor, command);
+    } else {
+      exec(command);
     }
   };
-}
 
-function handleEnter(editor: Editor, event: KeyboardEvent, next: Next): any {
-  const currentBlock = getCurrentBlock(editor);
-  if (currentBlock === null) {
-    return next();
-  }
+  editor.isList = (): boolean => {
+    const [match] = Editor.nodes(editor, { match: isList });
+    return !!match;
+  };
 
-  const parentList = getParentList(editor, currentBlock.key) as Block;
-  if (parentList === null) {
-    return next();
-  }
+  editor.listDepth = (options: { at?: Location }) => {
+    return getListDepth(editor, options.at);
+  };
 
-  // split the lowest level block on shift+enter
-  if (event.shiftKey) {
-    return editor.splitBlock(1);
-  }
+  return editor;
+};
+
+const isList = (node: Node): boolean => LIST_TYPES.includes(node.type);
+
+const handleEnter = (editor: Editor, command: Command): void => {
   // unwrap lowest level block from list_item and list if empty
-  if (!currentBlock.text) {
-    if (getListDepth(editor, currentBlock.key) == 1) {
-      editor.unwrapBlock('list_item');
-    }
-    editor.unwrapBlock(parentList.type);
-    // split the list_item block
+  const listEntry = getListItem(editor);
+  if (!listEntry || !editor.selection) {
+    return;
+  }
+  const [, listItemPath] = listEntry;
+
+  command.event.preventDefault();
+  if (!Editor.text(editor, listItemPath)) {
+    editor.exec({ type: 'decrease_list_depth' });
+    // If the selection is at the end of the current list item, insert a new
+    // block at the location after the current one
+  } else if (Editor.isEnd(editor, editor.selection.focus, listItemPath)) {
+    const path = listItemPath;
+    path[listItemPath.length - 1] += 1;
+    Editor.insertNodes(
+      editor,
+      { type: 'list_item', children: [{ type: DEFAULT_BLOCK, children: [] }] },
+      { at: path }
+    );
+    Editor.select(editor, path);
   } else {
-    editor.splitBlock(2);
+    Editor.splitNodes(editor, { match: 'text' });
+    Editor.splitNodes(editor, { match: { type: 'list_item' } });
   }
-}
+};
 
-function handleBackspace(
-  editor: Editor,
-  event: KeyboardEvent,
-  next: Next
-): any {
-  const currentBlock = getCurrentBlock(editor);
-  if (currentBlock === null) {
+const handleShiftEnter = (editor: Editor, command: Command): void => {
+  if (!editor.selection) {
     return;
   }
+  command.event.preventDefault();
 
-  const parentList = getParentList(editor, currentBlock.key) as Block;
-  if (parentList === null) {
+  Editor.splitNodes(editor, { match: 'block' });
+};
+
+const handleBackspace = (editor: Editor, command: Command): void => {
+  const listItemEntry = getListItem(editor);
+  if (!listItemEntry) {
     return;
   }
+  const [, listItemPath] = listItemEntry;
 
   // unwrap and remove the current node if its empty
-  if (!currentBlock.text) {
-    event.preventDefault();
-    editor
-      .unwrapBlock('list_item')
-      .unwrapBlock(parentList.type)
-      .removeNodeByKey(getCurrentBlock(editor).key);
-  } else {
-    return next();
+  if (!Editor.text(editor, listItemPath)) {
+    command.event.preventDefault();
+    editor.exec({ type: 'decrease_list_depth' });
   }
-}
+};
 
-function handleTab(editor: Editor, event: KeyboardEvent, next: Next): any {
-  const { document } = editor.value;
-
-  const currentBlock = getCurrentBlock(editor);
-
-  const listItem = getListItem(editor, currentBlock.key);
-  if (listItem === null) {
-    return next();
+const handleTab = (editor: Editor, command: Command): void => {
+  const listItemEntry = getListItem(editor);
+  if (!listItemEntry) {
+    return;
   }
+  const [, listItemPath] = listItemEntry;
+  const prevEntry = Editor.previous(editor, listItemPath);
 
-  // unwrap when holding shift
-  if (event.shiftKey) {
-    decreaseListDepth(editor, currentBlock.key);
-  } else if (!document.getPreviousSibling(listItem.key)) {
+  if (!prevEntry) {
     // if the list is the only one of its level, do nothing
-    return next();
-  } else if (!currentBlock.text) {
+    return;
+  }
+  if (!Editor.text(editor, listItemPath)) {
+    command.event.preventDefault();
     // If the list has no text, increse the depth
-    increaseListDepth(editor, currentBlock.key);
+    increaseListDepth(editor, listItemPath);
   }
-}
+};
 
-function getCurrentBlock(editor: Editor): Node {
-  return editor.value.startBlock;
-}
-
-function getListItem(editor: Editor, key: string): Node | null {
-  return editor.value.document.getClosest(
-    key,
-    a => a.object == 'block' && a.type == 'list_item'
-  ) as Block | null;
-}
-
-function getParentList(editor: Editor, key: string): Node | null {
-  const { document } = editor.value;
-
-  return document.getClosest(
-    key,
-    a => a.object == 'block' && (a.type == 'ul_list' || a.type == 'ol_list')
-  ) as Block | null;
-}
-
-function isList(editor: Editor): boolean {
-  return !!getListItem(editor, getCurrentBlock(editor).key);
-}
-
-function getListDepth(editor: Editor, key: string): number {
-  // Returns the amount of ancestor lists of a node
-  const { document } = editor.value;
-
-  // @ts-ignore document should not be null
-  return document
-    .getAncestors(key)
-    .filter(
-      a =>
-        a != undefined &&
-        a.object == 'block' &&
-        (a.type == 'ol_list' || a.type == 'ul_list')
-    ).size;
-}
-
-function increaseListDepth(editor: Editor, key: string): Editor {
-  /* Increases the depth of the parent list of a node by key:
-   * If the previous (sibling) node is a list (ol or ul), the current
-   * list item is moved into that node. If its a list item, wrap the current
-   * list item in the appropriate list type.
-   */
-
-  const { document } = editor.value;
-
-  const parentList = getParentList(editor, key) as Block;
-  const listItem = getListItem(editor, key);
-  if (listItem === null) {
-    return editor;
+const handleShiftTab = (editor: Editor, command: Command): void => {
+  const listItemEntry = getListItem(editor);
+  if (!listItemEntry) {
+    return;
   }
-  const siblingList = document.getPreviousSibling(listItem.key) as Block;
+  const [, listItemPath] = listItemEntry;
+  command.event.preventDefault();
+  decreaseListDepth(editor, listItemPath);
+};
+
+/**
+ *  Get the first list item node in the location specified, or in the current
+ *  selection if omitted.
+ */
+const getListItem = (editor: Editor, at?: Location): NodeEntry | undefined => {
+  if (!!at || editor.selection !== null) {
+    const [match] = Editor.nodes(editor, {
+      at,
+      match: { type: 'list_item' },
+      reverse: true
+    });
+    return match;
+  }
+};
+
+/**
+ *  Get the first ul or ol node in the location specified, or in the current
+ *  selection if omitted.
+ */
+const getParentList = (
+  editor: Editor,
+  at?: Location
+): NodeEntry | undefined => {
+  if (!!at || editor.selection !== null) {
+    const [match] = Editor.nodes(editor, {
+      match: (node: Node) => node.type === 'ul_list' || node.type === 'ol_list',
+      at,
+      reverse: true
+    });
+    return match;
+  }
+};
+
+//const isList(editor: Editor): boolean {
+//return !!getListItem(editor, getCurrentBlock(editor).key);
+//}
+
+/**
+ *  Get the depth of a list item. (Number of ol or ul items from the root node)
+ *  Defaults to current selection.
+ */
+const getListDepth = (editor: Editor, at?: Location): number => {
+  const listNodes = Editor.nodes(editor, {
+    at,
+    match: isList,
+    reverse: true
+  });
+  return Array.from(listNodes).length;
+};
+
+/**
+ *  Increases the depth of the parent list of a node in a location.
+ *  If the previous (sibling) node is a list (ol or ul), the current
+ *  list item is moved into that node. If it's a list item, wraps the current
+ *  list item in the appropriate list type.
+ */
+const increaseListDepth = (editor: Editor, at?: Location): void => {
+  const listEntry = getListItem(editor, at);
+  const parentEntry = getParentList(editor, at);
+  if (!parentEntry || !listEntry) {
+    return;
+  }
+  const [parentList] = parentEntry;
+  const [, listItemPath] = listEntry;
+  const prevEntry = Editor.previous(editor, listItemPath);
 
   // If the siblinglist exists and is an ul or ol, move the list item into it.
-  if (
-    siblingList &&
-    (siblingList.type == 'ol_list' || siblingList.type == 'ul_list')
-  ) {
-    editor.moveNodeByKey(listItem.key, siblingList.key, siblingList.nodes.size);
+  if (prevEntry) {
+    const [previousNode, previousNodePath] = prevEntry;
+    if (isList(previousNode)) {
+      Editor.moveNodes(editor, { at: listItemPath, to: previousNodePath });
+      return;
+    }
     // Else, wrap the item in a new list
-  } else if (parentList != null) {
-    editor.wrapBlockByKey(listItem.key, parentList.type);
   }
-  return editor;
-}
-
-function decreaseListDepth(editor: Editor, key: string): Editor {
-  /*
-   * Decreases the depth of the current list item in the selection:
-   * If the parent list is the top level list, unwrap the list item.
-   * Always unwraps the list
-   */
-
-  const parentList = getParentList(editor, key) as Block;
-
-  if (parentList === null) {
-    return editor;
+  if (parentList != null) {
+    Editor.wrapNodes(
+      editor,
+      { type: parentList.type, children: [] },
+      { at: listItemPath }
+    );
   }
+};
 
-  // if the list is the top level, unwrap list_item also
-  if (getListDepth(editor, key) == 1) {
-    editor.unwrapBlock('list_item');
+/**
+ *  Decreases the depth of the current list item in the selection:
+ *  If the parent list is the top level list, unwrap the list item.
+ *  Always unwraps the list
+ */
+const decreaseListDepth = (editor: Editor, at?: Location): void => {
+  const listEntry = getListItem(editor, at);
+  const parentEntry = getParentList(editor, at);
+  if (!parentEntry || !listEntry || !editor.selection) {
+    return;
   }
-  return editor.unwrapBlock(parentList.type);
-}
+  const [parentList] = parentEntry;
+  const [, listItemPath] = listEntry;
 
-function setListType(
-  editor: Editor,
-  key: string,
-  type: 'ol_list' | 'ul_list'
-): Editor {
-  /*
-   *  Sets the type of the list closest to node by key.
-   *  If there is no list, wraps the current block in a list of the specified type
-   */
+  const depth = getListDepth(editor, listItemPath);
+  // TODO wait for the new release and add lowest mode
+  Editor.unwrapNodes(editor, {
+    match: { type: parentList.type },
+    at: listItemPath,
+    split: true
+  });
+  if (depth === 1) {
+    Editor.unwrapNodes(editor, { match: { type: 'list_item' } });
+  }
+};
 
-  const parentList = getParentList(editor, key) as Block;
+/**
+ *  Sets the type of the list at the location specified. Defaults to current selection
+ *  If there is no list, wraps the current block in a list of the specified type
+ */
+const setListType = (editor: Editor, command: Command): void => {
+  const { list_type } = command;
+  const parentList = getParentList(editor);
 
   if (parentList) {
-    if (parentList.type != type) {
-      return editor.setNodeByKey(parentList.key, type);
+    const [listNode] = parentList;
+    if (listNode.type != list_type) {
+      Editor.setNodes(editor, { type: list_type }, { match: isList });
     } else {
-      return editor.command('decreaseListDepth', key);
+      return editor.exec({ type: 'decrease_list_depth' });
     }
   } else {
-    return editor.wrapBlock(type).wrapBlock('list_item');
+    Editor.wrapNodes(editor, {
+      type: list_type,
+      children: []
+    });
+    Editor.wrapNodes(editor, {
+      type: 'list_item',
+      children: [{ type: DEFAULT_BLOCK, children: [] }]
+    });
   }
-}
+};
+
+export default editList;
