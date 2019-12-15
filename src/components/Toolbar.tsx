@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Editor, Inline, Block } from 'slate';
+import { Element, Editor } from 'slate';
+import { LEditor, Marks, Elements } from '../index';
 import ImageUpload from './ImageUpload';
 import cx from 'classnames';
 import isUrl from 'is-url';
@@ -33,7 +34,7 @@ class ToolbarButton extends React.Component<ButtonProps, {}> {
 
 interface LinkInputProps {
   active: boolean;
-  activeLink?: Inline;
+  activeLink?: Element;
   toggleLinkInput: () => void;
   updateLink: ({ url }: { url: string }) => void;
 }
@@ -107,45 +108,20 @@ export default class Toolbar extends React.Component<
     insertingImage: false
   };
 
-  checkActiveMark(type: string): boolean {
+  checkActiveMark(type: Marks): boolean {
     const { editor } = this.props;
-    return editor.value.activeMarks.some(
-      mark => mark != undefined && mark.type === type
-    );
+    return LEditor.isMarkActive(editor, type);
   }
 
-  checkActiveBlock(type: string): boolean {
+  checkActiveElement(type: Elements): boolean {
     const { editor } = this.props;
-    const { document } = editor.value;
-
-    if (type == 'ol_list' || type == 'ul_list') {
-      if (!editor.value.startBlock) {
-        return false;
-      }
-      const parentList = document.getClosest(
-        editor.value.startBlock.key,
-        a => a.object == 'block' && (a.type == 'ol_list' || a.type == 'ul_list')
-      ) as Block;
-
-      return parentList && parentList.type === type;
-    }
-
-    return editor.value.blocks.some(
-      block => block != undefined && block.type === type
-    );
-  }
-
-  checkActiveInline(type: string): boolean {
-    const { editor } = this.props;
-    return editor.value.inlines.some(
-      inline => inline != undefined && inline.type === type
-    );
+    return LEditor.isElementActive(editor, type);
   }
 
   setListType(e: React.PointerEvent, type: string): void {
     const { editor } = this.props;
     e.preventDefault();
-    editor.command('setListType', editor.query('getCurrentBlock').key, type);
+    editor.exec({ type: 'toggle_list', list_type: type });
   }
 
   increaseIndent(e: React.PointerEvent): void {
@@ -166,18 +142,18 @@ export default class Toolbar extends React.Component<
     }
   }
 
-  toggleMark(e: React.PointerEvent, type: string): void {
+  toggleMark(e: React.PointerEvent, type: Marks): void {
     e.preventDefault();
     const { editor } = this.props;
 
-    editor.toggleMark(type);
+    editor.exec({ type: 'toggle_mark', mark: type });
   }
 
   toggleBlock(e: React.PointerEvent, type: string): void {
     e.preventDefault();
     const { editor } = this.props;
 
-    editor.command('toggleBlock', type);
+    editor.exec({ type: 'toggle_block', block: type });
   }
 
   toggleLinkInput(): void {
@@ -188,30 +164,30 @@ export default class Toolbar extends React.Component<
     const { editor } = this.props;
     const { selection } = editor.value;
     const { start, isCollapsed } = selection;
+    const { url } = data;
 
-    if (this.checkActiveInline('link')) {
-      // @ts-ignore
-      editor.setNodeByKey(this.getCurrentLink().key, { data, type: 'link' });
+    if (this.checkActiveElement('link')) {
+      Editor.setNodes(editor, { url }, { match: { type: 'link' } });
     } else {
       if (isCollapsed) {
+        // TODO
         editor
           .insertText(data.url)
           .moveAnchorTo(start.offset)
           .moveFocusTo(start.offset + data.url.length);
       }
-      editor.command('wrapLink', data.url);
+      editor.exec({ type: 'wrapLink', url: data.url });
     }
   }
 
-  getCurrentLink(): Inline | undefined {
+  getCurrentLink(): Element | undefined {
     const { editor } = this.props;
 
-    if (!this.checkActiveInline('link')) {
-      return;
-    }
-
-    // @ts-ignore - previous line already checks that inline is not undefined
-    return editor.value.inlines.find(inline => inline.type == 'link');
+    const [match] = Editor.nodes(editor, {
+      match: { type: 'link' },
+      mode: 'all'
+    });
+    return match;
   }
 
   openImageUploader(e: React.PointerEvent): void {
@@ -241,13 +217,13 @@ export default class Toolbar extends React.Component<
     return (
       <div className="_legoEditor_Toolbar_root">
         <ToolbarButton
-          active={this.checkActiveBlock('h1')}
+          active={this.checkActiveElement('h1')}
           handler={e => this.toggleBlock(e, 'h1')}
         >
           H1
         </ToolbarButton>
         <ToolbarButton
-          active={this.checkActiveBlock('h4')}
+          active={this.checkActiveElement('h4')}
           handler={e => this.toggleBlock(e, 'h4')}
         >
           H4
@@ -257,7 +233,7 @@ export default class Toolbar extends React.Component<
           handler={e => this.toggleMark(e, 'bold')}
         >
           <i className="fa fa-bold" />
-        </ToolbarButton>{' '}
+        </ToolbarButton>
         <ToolbarButton
           active={this.checkActiveMark('italic')}
           handler={e => this.toggleMark(e, 'italic')}
@@ -277,19 +253,19 @@ export default class Toolbar extends React.Component<
           <i className="fa fa-code" />
         </ToolbarButton>
         <ToolbarButton
-          active={this.checkActiveBlock('code_block')}
+          active={this.checkActiveElement('code_block')}
           handler={e => this.toggleBlock(e, 'code_block')}
         >
           <i className="fa fa-file-code-o" />
         </ToolbarButton>
         <ToolbarButton
-          active={this.checkActiveBlock('ul_list')}
+          active={this.checkActiveElement('ul_list')}
           handler={e => this.setListType(e, 'ul_list')}
         >
           <i className="fa fa-list-ul" />
         </ToolbarButton>
         <ToolbarButton
-          active={this.checkActiveBlock('ol_list')}
+          active={this.checkActiveElement('ol_list')}
           handler={e => this.setListType(e, 'ol_list')}
         >
           <i className="fa fa-list-ol" />
@@ -301,14 +277,14 @@ export default class Toolbar extends React.Component<
           <i className="fa fa-indent" />
         </ToolbarButton>
         <ToolbarButton
-          active={this.checkActiveInline('link')}
+          active={this.checkActiveElement('link')}
           handler={() => this.toggleLinkInput()}
         >
           <i className="fa fa-link" />
         </ToolbarButton>
         {insertingLink && (
           <LinkInput
-            active={this.checkActiveInline('link')}
+            active={this.checkActiveElement('link')}
             toggleLinkInput={() => this.toggleLinkInput()}
             updateLink={(...args) => this.updateLink(...args)}
             activeLink={this.getCurrentLink()}

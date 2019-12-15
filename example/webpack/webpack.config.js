@@ -7,7 +7,7 @@ module.exports = () => {
     output: {
       path: path.resolve(__dirname, '../build'),
       filename: '[name]-[hash].js',
-      sourceMapFilename: '[file].map',
+      sourceMapFilename: '[file].map'
     },
     entry: path.resolve(__dirname, '../src/index.js'),
     module: {
@@ -15,42 +15,43 @@ module.exports = () => {
         {
           test: /\.js?$/,
           use: 'source-map-loader',
-          enforce: 'pre',
+          enforce: 'pre'
         },
         {
           test: /\.js?$/,
           use: {
-            loader: 'babel-loader',
+            loader: 'babel-loader'
           },
-          exclude: /node_modules/,
+          exclude: /node_modules/
         },
         {
           test: /\.html$/,
           use: [
             {
-              loader: 'html-loader',
-            },
-          ],
+              loader: 'html-loader'
+            }
+          ]
         },
         {
           test: /\.css$/,
-          use: ['style-loader', 'css-loader'],
-        },
-      ],
+          use: ['style-loader', 'css-loader']
+        }
+      ]
     },
     resolve: {
-      extensions: ['*', '.js', '.css'],
+      extensions: ['*', '.js', '.css']
     },
     plugins: [
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, '../src/index.html'),
-        filname: './index.html',
+        filname: './index.html'
       }),
-      new webpack.HotModuleReplacementPlugin(),
+      new webpack.HotModuleReplacementPlugin()
     ],
     devServer: {
       contentBase: path.resolve(__dirname, '../dist'),
-      hot: true,
+      hot: true
     },
+    devtool: 'source-map'
   };
 };
