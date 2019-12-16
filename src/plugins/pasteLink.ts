@@ -1,6 +1,6 @@
 import isUrl from 'is-url';
 import { Command, Editor, Range, Element } from 'slate';
-import { LEditor } from '../index';
+import { LEditor, nodeType } from '../index';
 
 const links = (editor: Editor): Editor => {
   const { exec, isInline } = editor;
@@ -30,7 +30,8 @@ const links = (editor: Editor): Editor => {
           // Unwrap any existing link elements, if they exist in the selection
           if (LEditor.isElementActive(editor, 'link')) {
             Editor.unwrapNodes(editor, {
-              match: { type: 'link', split: true }
+              match: nodeType('link'),
+              split: true
             });
           }
           Editor.wrapNodes(
@@ -41,12 +42,12 @@ const links = (editor: Editor): Editor => {
         }
         break;
       case 'unwrap_ink':
-        Editor.unwrapNodes(editor, { match: { type: 'link' } });
+        Editor.unwrapNodes(editor, { match: nodeType('link') });
         break;
 
       // Pasting links should issue link commands
       case 'insert_text':
-      case 'insert_data':
+      case 'insert_data': {
         let text;
         if (command.type === 'insert_data') {
           text = command.data.getData('text/plain');
@@ -64,6 +65,7 @@ const links = (editor: Editor): Editor => {
           exec(command);
         }
         break;
+      }
       default:
         exec(command);
     }

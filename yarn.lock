@@ -5202,10 +5202,10 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
   integrity sha1-tf3AjxKH6hF4Yo5BXiUTK3NkbG0=
 
-slate-react@^0.54.6:
-  version "0.54.6"
-  resolved "https://registry.yarnpkg.com/slate-react/-/slate-react-0.54.6.tgz#fa1c54c2fcb31183553e9db9f2f825cabf5fb4a4"
-  integrity sha512-LLm3hJA3gyuzYucxdSSa94vvbQ+axfeWiljxpM8fVebWB40Pq50tgjIcn+6nrSh0FiKif3xcwywhqtyt8SjWHQ==
+slate-react@^0.55.0:
+  version "0.55.0"
+  resolved "https://registry.yarnpkg.com/slate-react/-/slate-react-0.55.0.tgz#eeb601a23c47ce71a43741e9d89ad8a791dd193d"
+  integrity sha512-ZHufjfhCZlRY4/2ZZHsh9omuvrB3jPJQ0E6QvRa2M1yvNtZyZ+nZTO4DRt1pWCoXCygJJ2j82g/pjNdlVnpK7g==
   dependencies:
     "@types/debounce" "^1.2.0"
     "@types/debug" "^4.1.5"
@@ -5217,10 +5217,10 @@ slate-react@^0.54.6:
     is-plain-object "^3.0.0"
     scroll-into-view-if-needed "^2.2.20"
 
-slate@^0.54.6:
-  version "0.54.6"
-  resolved "https://registry.yarnpkg.com/slate/-/slate-0.54.6.tgz#1c655f3645c8be6ccda4a8658ed1568a4ffca75b"
-  integrity sha512-5nirCsNcLyMsXPUtUhXNR6ShpUIRUuIVeiwLj/Mz85KlQvYSWKJv5xEG0HdZD1+L6PbxPIKvdPcLNnE9cnYqmw==
+slate@^0.55.0:
+  version "0.55.0"
+  resolved "https://registry.yarnpkg.com/slate/-/slate-0.55.0.tgz#94b5a3864955bce0e05457f80081e9d8ce2c55e0"
+  integrity sha512-9fE4E6ExFeuN4JG0P17Gx5qTMVXpc1e0YfBT3CwkM+BUhwt4KfQ+J3OKR9fXF042Hd9ZEcF7n8GVAnQGE3KqUg==
   dependencies:
     "@types/esrever" "^0.2.0"
     esrever "^0.2.0"

@@ -29,8 +29,8 @@
     "lodash": "^4.17.15",
     "react-dropzone": "^10.1.4",
     "react-image-crop": "^8.4.2",
-    "slate": "^0.54.6",
-    "slate-react": "^0.54.6"
+    "slate": "^0.55.0",
+    "slate-react": "^0.55.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
