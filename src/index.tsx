@@ -6,7 +6,7 @@ import {
   RenderElementProps,
   RenderLeafProps
 } from 'slate-react';
-import { createEditor, Editor, Command, Element, Node } from 'slate';
+import { createEditor, Editor, Command, Element, Node, Range } from 'slate';
 import isHotKey from 'is-hotkey';
 import Toolbar from './components/Toolbar';
 import editList from './plugins/editList';
@@ -15,7 +15,6 @@ import images from './plugins/images';
 import markdownShortcuts from './plugins/markdown';
 //import { html } from './serializer';
 import schema from './schema';
-import _ from 'lodash';
 import { compose } from 'lodash/fp';
 
 interface Props {
@@ -48,25 +47,32 @@ export type Elements =
   | 'code_block'
   | 'link';
 
+/**
+ *  Returns a function to be used for matching against node types
+ */
+export const nodeType = (type: Elements): ((node: Node) => boolean) => {
+  return (node: Node) => node.type === type;
+};
+
 export const LEditor = {
   isMarkActive(editor: Editor, mark: Marks) {
     const marks = Editor.marks(editor);
     return marks ? marks[mark] === true : false;
   },
   isElementActive(editor: Editor, type: Elements) {
-    const [match] = Editor.nodes(editor, { match: { type }, mode: 'all' });
+    const [match] = Editor.nodes(editor, {
+      match: nodeType(type)
+    });
     return !!match;
   },
-  hasType(editor: Editor, type: string) {
+  hasType(editor: Editor, type: Elements) {
     if (!editor.selection) {
       return false;
     }
-    const match = Editor.match(
-      editor,
-      editor.selection,
-      { type },
-      { voids: true }
-    );
+    const match = Editor.above(editor, {
+      match: nodeType(type),
+      voids: true
+    });
     return !!match;
   },
   ...Editor
@@ -75,21 +81,25 @@ export const LEditor = {
 /**
  *  A simple plugin that inserts a 'tab' character on pressing tab.
  */
-/*
-function insertTab(): Plugin {
-  return {
-    onKeyDown(e: Event, editor: Slate.Editor, next: Next): Editor | undefined {
-      const event = e as KeyboardEvent;
-      if (event.key == 'Tab') {
-        event.preventDefault();
-        editor.insertText('\t');
-      } else {
-        return next();
-      }
+const insertTab = (editor: Editor): Editor => {
+  const { exec } = editor;
+
+  editor.exec = (command: Command) => {
+    const { selection } = editor;
+    if (
+      command.type === 'key_handler' &&
+      isHotKey('Tab')(command.event) &&
+      selection &&
+      Range.isCollapsed(selection)
+    ) {
+      command.event.preventDefault();
+      editor.exec({ type: 'insert_text', text: '\t' });
+    } else {
+      exec(command);
     }
   };
-}
- */
+  return editor;
+};
 
 /**
  *  A plugin that enables soft enter if selection has blocks
@@ -153,12 +163,12 @@ const initialValue = { type: 'paragraph', children: [{ text: '' }] };
 const LegoEditor = (props: Props): JSX.Element => {
   const onChange = (value: Node[]): void => {
     console.log(value);
-    setEditorValue(value);
+    setValue(value);
     // Debounce onchange function to improve performance
     //props.onChange && _.debounce(props.onChange, 250)(html.serialize(value));
   };
 
-  const onKeyDown = (event: React.KeyboardEvent): any | void => {
+  const onKeyDown = (event: React.KeyboardEvent): void => {
     //@ts-ignore
     const e = event as KeyboardEvent;
     if (isHotKey('mod+b')(e)) {
@@ -170,9 +180,6 @@ const LegoEditor = (props: Props): JSX.Element => {
     } else if (isHotKey('mod+u')(e)) {
       e.preventDefault();
       editor.exec({ type: 'toggle_mark', mark: 'underline' });
-    } else if (isHotKey('mod+l')(e)) {
-      e.preventDefault();
-      editor.exec({ type: 'toggle_list', list_type: 'ul_list' });
     } else if (isHotKey('mod+z')(e)) {
       e.preventDefault();
       editor.undo();
@@ -289,20 +296,19 @@ const LegoEditor = (props: Props): JSX.Element => {
   const plugins = [
     basePlugin,
     editList,
-    //insertTab(),
+    insertTab,
     softEnter,
-    links
+    links,
     //images({ uploadFunction: props.imageUpload }),
-    //markdownShortcuts,
+    markdownShortcuts
     //...props.plugins
-  ].reverse();
+  ];
 
   const editor = useMemo(
     () => compose(...plugins, withReact, createEditor)(),
     []
   );
-  const [value, setValue] = useState([props.value]);
-  const [editorValue, setEditorValue] = useState([
+  const [value, setValue] = useState([
     props.value ? html.deserialize(props.value) : initialValue
   ]);
 
@@ -314,7 +320,7 @@ const LegoEditor = (props: Props): JSX.Element => {
           : '_legoEditor_root'
       }
     >
-      <Slate editor={editor} value={editorValue} onChange={onChange}>
+      <Slate editor={editor} value={value} onChange={onChange}>
         {!props.disabled && !props.simple && <Toolbar editor={editor} />}
         <Editable
           onKeyDown={onKeyDown}

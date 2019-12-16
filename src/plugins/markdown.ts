@@ -1,21 +1,5 @@
-import { Editor } from 'slate';
-
-/**
- * On key down, check for our specific key shortcuts.
- */
-const MarkdownShortcuts = {
-  onKeyDown: (e: Event, editor: Editor, next: () => void) => {
-    const event = e as KeyboardEvent;
-    switch (event.key) {
-      case ' ':
-        return onSpace(event, editor, next);
-      case 'Backspace':
-        return onBackspace(event, editor, next);
-      default:
-        return next();
-    }
-  }
-};
+import { Editor, Command, Range, Element, Point } from 'slate';
+import { LEditor, DEFAULT_BLOCK } from '../index';
 
 const getType = (chars: string): string | null => {
   switch (chars) {
@@ -39,69 +23,78 @@ const getType = (chars: string): string | null => {
       return null;
   }
 };
-/**
- * On space, if it was after an auto-markdown shortcut, convert the current
- * node into the shortcut's corresponding type.
- */
-
-const onSpace = (
-  event: KeyboardEvent,
-  editor: Editor,
-  next: () => void
-): any => {
-  const { value } = editor;
-  const { selection } = value;
-  if (selection.isExpanded) {
-    return next();
-  }
-
-  const { startBlock } = value;
-  const { start } = selection;
-  const chars = startBlock.text.slice(0, start.offset).replace(/\s*/g, '');
-  const type = getType(chars);
-  if (!type) {
-    return next();
-  }
-  if (type === 'ul_list' && editor.query('isList')) {
-    return next();
-  }
-  event.preventDefault();
-
-  editor.setBlocks(type);
-
-  if (type === 'ul_list') {
-    editor.command('setListType', editor.query('getCurrentBlock').key, type);
-  }
-
-  editor.moveFocusToStartOfNode(startBlock).delete();
-};
 
 /**
- * On backspace, if at the start of a non-paragraph, convert it back into a
- * paragraph node.
+ *  A plugin that uses markdown prefixes to set block type.
  */
+const MarkdownShortcuts = (editor: Editor): Editor => {
+  const { exec } = editor;
 
-const onBackspace = (
-  event: KeyboardEvent,
-  editor: Editor,
-  next: () => void
-): any => {
-  const { value } = editor;
-  const { selection } = value;
-  if (selection.isExpanded) {
-    return next();
-  }
-  if (selection.start.offset !== 0) {
-    return next();
-  }
+  /**
+   * On space, if it was after an auto-markdown shortcut, convert the current
+   * node into the shortcut's corresponding type.
+   */
+  const onSpace = (editor: Editor, command: Command): void => {
+    const { selection } = editor;
+    if (selection && Range.isCollapsed(selection)) {
+      const { anchor } = selection;
+      const element = Editor.above(editor, { match: Element.isElement });
+      const start = Editor.start(editor, element ? element[1] : []);
+      const charsRange = { anchor, focus: start };
+      const chars = Editor.text(editor, charsRange);
 
-  const { startBlock } = value;
-  if (startBlock.type === 'paragraph') {
-    return next();
-  }
+      const type = getType(chars);
+      if (!type || (type === 'ul_list' && editor.isList())) {
+        exec(command);
+        return;
+      }
 
-  event.preventDefault();
-  editor.setBlocks('paragraph');
+      Editor.delete(editor, { at: charsRange });
+
+      if (type === 'ul_list') {
+        editor.exec({ type: 'toggle_list', listType: type });
+      } else {
+        editor.exec({ type: 'toggle_block', block: type });
+      }
+    } else {
+      exec(command);
+    }
+  };
+
+  /**
+   * On backspace, if at the start of a non-default, convert it back into a
+   * default block.
+   */
+  const onBackspace = (editor: Editor, command: Command): void => {
+    const { selection } = editor;
+
+    const element = Editor.above(editor, { match: Element.isElement });
+    const start = Editor.start(editor, element ? element[1] : []);
+
+    if (
+      !selection ||
+      !Range.isCollapsed(selection) ||
+      editor.isList() ||
+      LEditor.isElementActive(editor, DEFAULT_BLOCK) ||
+      !Point.equals(selection.anchor, start)
+    ) {
+      exec(command);
+      return;
+    }
+
+    editor.exec({ type: 'toggle_block', block: DEFAULT_BLOCK });
+  };
+
+  editor.exec = (command: Command) => {
+    if (command.type === 'insert_text' && command.text === ' ') {
+      onSpace(editor, command);
+    } else if (command.type === 'delete_backward') {
+      onBackspace(editor, command);
+    } else {
+      exec(command);
+    }
+  };
+  return editor;
 };
 
 export default MarkdownShortcuts;
