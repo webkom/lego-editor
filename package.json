@@ -30,6 +30,8 @@
     "react-dropzone": "^10.1.4",
     "react-image-crop": "^8.4.2",
     "slate": "^0.55.0",
+    "slate-history": "^0.55.3",
+    "slate-hyperscript": "^0.55.3",
     "slate-react": "^0.55.0"
   },
   "devDependencies": {

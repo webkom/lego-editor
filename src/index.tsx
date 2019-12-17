@@ -7,14 +7,17 @@ import {
   RenderLeafProps
 } from 'slate-react';
 import { createEditor, Editor, Command, Element, Node, Range } from 'slate';
+import { withHistory } from 'slate-history';
 import isHotKey from 'is-hotkey';
 import Toolbar from './components/Toolbar';
+import ImageBlock from './components/ImageBlock';
 import editList from './plugins/editList';
 import links from './plugins/pasteLink';
 import images from './plugins/images';
 import markdownShortcuts from './plugins/markdown';
-//import { html } from './serializer';
+import { serialize, deserializeHtmlString } from './serializer';
 import schema from './schema';
+import { debounce } from 'lodash';
 import { compose } from 'lodash/fp';
 
 interface Props {
@@ -45,7 +48,10 @@ export type Elements =
   | 'ol_list'
   | 'list_item'
   | 'code_block'
-  | 'link';
+  | 'link'
+  | 'figure'
+  | 'image'
+  | 'image_caption';
 
 /**
  *  Returns a function to be used for matching against node types
@@ -119,6 +125,12 @@ const softEnter = (editor: Editor): Editor => {
         event.preventDefault();
         editor.exec({ type: 'insert_text', text: '\n' });
         Editor.move(editor);
+      } else if (
+        isHotKey('Shift+Enter')(event) &&
+        LEditor.isElementActive(editor, 'code_block') &&
+        editor.selection
+      ) {
+        return;
       } else if (isHotKey('Shift+Enter')(event)) {
         event.preventDefault();
         editor.exec({ type: 'insert_text', text: '\n' });
@@ -150,6 +162,15 @@ const basePlugin = (editor: Editor): Editor => {
         type: 'format_text',
         properties: { [command.mark]: true }
       });
+    }
+    if (command.type === 'insert_data') {
+      const text = command.data.getData('text/html');
+      const fragment = deserializeHtmlString(text);
+      if (text) {
+        Editor.insertFragment(editor, fragment);
+      } else {
+        exec(command);
+      }
     } else {
       exec(command);
     }
@@ -158,14 +179,14 @@ const basePlugin = (editor: Editor): Editor => {
   return editor;
 };
 
-const initialValue = { type: 'paragraph', children: [{ text: '' }] };
+const initialValue: Node[] = [{ type: 'paragraph', children: [{ text: '' }] }];
 
 const LegoEditor = (props: Props): JSX.Element => {
   const onChange = (value: Node[]): void => {
     console.log(value);
     setValue(value);
     // Debounce onchange function to improve performance
-    //props.onChange && _.debounce(props.onChange, 250)(html.serialize(value));
+    props.onChange && debounce(props.onChange, 250)(serialize(editor));
   };
 
   const onKeyDown = (event: React.KeyboardEvent): void => {
@@ -180,12 +201,6 @@ const LegoEditor = (props: Props): JSX.Element => {
     } else if (isHotKey('mod+u')(e)) {
       e.preventDefault();
       editor.exec({ type: 'toggle_mark', mark: 'underline' });
-    } else if (isHotKey('mod+z')(e)) {
-      e.preventDefault();
-      editor.undo();
-    } else if (isHotKey('mod+r')(e)) {
-      e.preventDefault();
-      editor.redo();
     } else {
       editor.exec({ type: 'key_handler', event: e });
     }
@@ -254,7 +269,28 @@ const LegoEditor = (props: Props): JSX.Element => {
             <code>{children}</code>
           </pre>
         );
-
+      case 'quote':
+        return <blockquote {...attributes}>{children}</blockquote>;
+      case 'figure':
+        return (
+          <figure className="_legoEditor_figure" {...attributes}>
+            {children}
+          </figure>
+        );
+      case 'image': {
+        const src = element.src || element.objectUrl;
+        return <ImageBlock src={src} {...props} />;
+      }
+      case 'image_caption':
+        return (
+          <figcaption
+            className="_legoEditor_figcaption"
+            {...attributes}
+            placeholder={'Figure caption'}
+          >
+            {children}
+          </figcaption>
+        );
       // Inlines
       case 'link':
         return (
@@ -299,17 +335,18 @@ const LegoEditor = (props: Props): JSX.Element => {
     insertTab,
     softEnter,
     links,
-    //images({ uploadFunction: props.imageUpload }),
+    images({ uploadFunction: props.imageUpload }),
     markdownShortcuts
     //...props.plugins
-  ];
+  ].reverse();
 
   const editor = useMemo(
-    () => compose(...plugins, withReact, createEditor)(),
+    () => compose(...plugins, withHistory, withReact, createEditor)(),
     []
   );
-  const [value, setValue] = useState([
-    props.value ? html.deserialize(props.value) : initialValue
+  //@ts-ignore React types being stupid
+  const [value, setValue] = useState<Node[]>([
+    props.value ? deserializeHtmlString(props.value) : initialValue
   ]);
 
   return (
@@ -334,11 +371,8 @@ const LegoEditor = (props: Props): JSX.Element => {
     </div>
   );
 
-  //<SlateEditor
   //onFocus={this.onFocus.bind(this)}
   //onBlur={this.onBlur.bind(this)}
-  //plugins={this.state.plugins}
-  //schema={schema}
 };
 
 export default LegoEditor;
