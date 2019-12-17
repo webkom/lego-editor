@@ -7,6 +7,8 @@ const getType = (chars: string): string | null => {
     case '-':
     case '+':
       return 'ul_list';
+    case '1.':
+      return 'ol_list';
     case '#':
       return 'h1';
     case '##':
@@ -19,6 +21,8 @@ const getType = (chars: string): string | null => {
       return 'h5';
     case '######':
       return 'h6';
+    case '>':
+      return 'quote';
     default:
       return null;
   }
@@ -51,7 +55,7 @@ const MarkdownShortcuts = (editor: Editor): Editor => {
 
       Editor.delete(editor, { at: charsRange });
 
-      if (type === 'ul_list') {
+      if (type === 'ul_list' || type === 'ol_list') {
         editor.exec({ type: 'toggle_list', listType: type });
       } else {
         editor.exec({ type: 'toggle_block', block: type });

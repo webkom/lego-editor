@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Element, Editor } from 'slate';
-import { LEditor, Marks, Elements } from '../index';
+import { Element, Editor, NodeEntry } from 'slate';
+import { LEditor, Marks, Elements, nodeType } from '../index';
 import ImageUpload from './ImageUpload';
 import cx from 'classnames';
 import isUrl from 'is-url';
@@ -34,7 +34,7 @@ class ToolbarButton extends React.Component<ButtonProps, {}> {
 
 interface LinkInputProps {
   active: boolean;
-  activeLink?: Element;
+  activeLink?: NodeEntry;
   toggleLinkInput: () => void;
   updateLink: ({ url }: { url: string }) => void;
 }
@@ -47,7 +47,7 @@ class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
   private input = React.createRef<HTMLInputElement>();
 
   state = {
-    value: this.props.activeLink ? this.props.activeLink.data.get('url') : ''
+    value: this.props.activeLink ? this.props.activeLink[0].url : ''
   };
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,7 +121,7 @@ export default class Toolbar extends React.Component<
   setListType(e: React.PointerEvent, type: string): void {
     const { editor } = this.props;
     e.preventDefault();
-    editor.exec({ type: 'toggle_list', list_type: type });
+    editor.exec({ type: 'toggle_list', listType: type });
   }
 
   increaseIndent(e: React.PointerEvent): void {
@@ -167,7 +167,7 @@ export default class Toolbar extends React.Component<
     const { url } = data;
 
     if (this.checkActiveElement('link')) {
-      Editor.setNodes(editor, { url }, { match: { type: 'link' } });
+      Editor.setNodes(editor, { url }, { match: nodeType('link') });
     } else {
       if (isCollapsed) {
         // TODO
@@ -180,11 +180,11 @@ export default class Toolbar extends React.Component<
     }
   }
 
-  getCurrentLink(): Element | undefined {
+  getCurrentLink(): NodeEntry | undefined {
     const { editor } = this.props;
 
     const [match] = Editor.nodes(editor, {
-      match: { type: 'link' },
+      match: nodeType('link'),
       mode: 'all'
     });
     return match;
@@ -199,7 +199,8 @@ export default class Toolbar extends React.Component<
     const { editor } = this.props;
 
     this.setState({ insertingImage: false });
-    editor.command('insertImage', image, data);
+    console.log(data);
+    editor.exec({ type: 'insert_image', file: image, ...data });
   }
 
   onClose(): void {
