@@ -123,7 +123,7 @@ export const deserialize = (
 
   const children = Array.from(el.childNodes).map((n: ChildNode) =>
     deserialize(n as HTMLElement)
-  );
+  ) as Node[];
 
   if (el.nodeName === 'BODY') {
     return jsx('fragment', {}, children);
@@ -181,5 +181,5 @@ export const deserializeHtmlString = (html: string): Node[] => {
     'text/html'
   );
 
-  return deserialize(document.body);
+  return deserialize(document.body) as Node[];
 };

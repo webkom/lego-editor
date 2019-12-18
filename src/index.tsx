@@ -6,17 +6,21 @@ import {
   RenderElementProps,
   RenderLeafProps
 } from 'slate-react';
-import { createEditor, Editor, Command, Element, Node, Range } from 'slate';
+import { createEditor, Editor, Element, Node } from 'slate';
 import { withHistory } from 'slate-history';
 import isHotKey from 'is-hotkey';
 import Toolbar from './components/Toolbar';
 import ImageBlock from './components/ImageBlock';
-import editList from './plugins/editList';
-import links from './plugins/pasteLink';
-import images from './plugins/images';
-import markdownShortcuts from './plugins/markdown';
+import {
+  basePlugin,
+  insertTab,
+  softEnter,
+  lists,
+  links,
+  images,
+  markdownShortcuts
+} from './plugins';
 import { serialize, deserializeHtmlString } from './serializer';
-import schema from './schema';
 import { debounce } from 'lodash';
 import { compose } from 'lodash/fp';
 
@@ -84,106 +88,10 @@ export const LEditor = {
   ...Editor
 };
 
-/**
- *  A simple plugin that inserts a 'tab' character on pressing tab.
- */
-const insertTab = (editor: Editor): Editor => {
-  const { exec } = editor;
-
-  editor.exec = (command: Command) => {
-    const { selection } = editor;
-    if (
-      command.type === 'key_handler' &&
-      isHotKey('Tab')(command.event) &&
-      selection &&
-      Range.isCollapsed(selection)
-    ) {
-      command.event.preventDefault();
-      editor.exec({ type: 'insert_text', text: '\t' });
-    } else {
-      exec(command);
-    }
-  };
-  return editor;
-};
-
-/**
- *  A plugin that enables soft enter if selection has blocks
- *  of a type specified. For all other blocks enables soft enter on
- *  Shift+Enter
- */
-const softEnter = (editor: Editor): Editor => {
-  const { exec } = editor;
-  editor.exec = (command: Command) => {
-    if (command.type === 'key_handler') {
-      const { event } = command;
-      if (
-        isHotKey('Enter')(event) &&
-        LEditor.isElementActive(editor, 'code_block') &&
-        editor.selection !== null
-      ) {
-        event.preventDefault();
-        editor.exec({ type: 'insert_text', text: '\n' });
-        Editor.move(editor);
-      } else if (
-        isHotKey('Shift+Enter')(event) &&
-        LEditor.isElementActive(editor, 'code_block') &&
-        editor.selection
-      ) {
-        return;
-      } else if (isHotKey('Shift+Enter')(event)) {
-        event.preventDefault();
-        editor.exec({ type: 'insert_text', text: '\n' });
-      } else {
-        exec(command);
-      }
-    } else {
-      exec(command);
-    }
-  };
-  return editor;
-};
-
-const basePlugin = (editor: Editor): Editor => {
-  const { exec } = editor;
-
-  editor.exec = (command: Command) => {
-    // Toggles the block type of everything except lists
-    if (
-      command.type === 'toggle_block' &&
-      !(command.block === 'ul_list' || command.block === 'ol_list')
-    ) {
-      const isActive = LEditor.isElementActive(editor, command.block);
-      Editor.setNodes(editor, {
-        type: isActive ? DEFAULT_BLOCK : command.block
-      });
-    } else if (command.type === 'toggle_mark') {
-      editor.exec({
-        type: 'format_text',
-        properties: { [command.mark]: true }
-      });
-    }
-    if (command.type === 'insert_data') {
-      const text = command.data.getData('text/html');
-      const fragment = deserializeHtmlString(text);
-      if (text) {
-        Editor.insertFragment(editor, fragment);
-      } else {
-        exec(command);
-      }
-    } else {
-      exec(command);
-    }
-  };
-
-  return editor;
-};
-
 const initialValue: Node[] = [{ type: 'paragraph', children: [{ text: '' }] }];
 
 const LegoEditor = (props: Props): JSX.Element => {
   const onChange = (value: Node[]): void => {
-    console.log(value);
     setValue(value);
     // Debounce onchange function to improve performance
     props.onChange && debounce(props.onChange, 250)(serialize(editor));
@@ -333,7 +241,7 @@ const LegoEditor = (props: Props): JSX.Element => {
     basePlugin,
     insertTab,
     softEnter,
-    editList,
+    lists,
     links,
     images({ uploadFunction: props.imageUpload }),
     markdownShortcuts
@@ -370,9 +278,6 @@ const LegoEditor = (props: Props): JSX.Element => {
       </Slate>
     </div>
   );
-
-  //onFocus={this.onFocus.bind(this)}
-  //onBlur={this.onBlur.bind(this)}
 };
 
 export default LegoEditor;
