@@ -23,24 +23,27 @@ const links = (editor: Editor): Editor => {
           children: [{ text: command.text || command.url }]
         });
         break;
-      case 'wrap_link':
+      case 'wrap_link': {
         // Links should only contain text, so we just use the first text node
         // in the current selection
-        if (editor.selection !== null) {
+        const at = command.at || editor.selection;
+        if (at !== null) {
           // Unwrap any existing link elements, if they exist in the selection
-          if (LEditor.isElementActive(editor, 'link')) {
+          if (LEditor.isElementActive(editor, 'link', { at })) {
             Editor.unwrapNodes(editor, {
               match: nodeType('link'),
-              split: true
+              split: true,
+              at
             });
           }
           Editor.wrapNodes(
             editor,
             { type: 'link', url: command.url, children: [] },
-            { split: true }
+            { split: true, at }
           );
         }
         break;
+      }
       case 'unwrap_ink':
         Editor.unwrapNodes(editor, { match: nodeType('link') });
         break;

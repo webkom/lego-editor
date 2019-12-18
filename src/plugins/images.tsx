@@ -87,7 +87,7 @@ const images = (options: Options): ((editor: Editor) => Editor) => {
         }
 
         if (children[1][0].type !== 'image_caption') {
-          const text = Editor.text(editor, children[1][1]);
+          const text = Editor.string(editor, children[1][1]);
           Editor.removeNodes(editor, { at: children[0][1] });
           Editor.insertNodes(
             editor,

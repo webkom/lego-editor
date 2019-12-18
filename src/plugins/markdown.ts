@@ -45,7 +45,7 @@ const MarkdownShortcuts = (editor: Editor): Editor => {
       const element = Editor.above(editor, { match: Element.isElement });
       const start = Editor.start(editor, element ? element[1] : []);
       const charsRange = { anchor, focus: start };
-      const chars = Editor.text(editor, charsRange);
+      const chars = Editor.string(editor, charsRange);
 
       const type = getType(chars);
       if (!type || (type === 'ul_list' && editor.isList())) {

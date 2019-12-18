@@ -44,7 +44,7 @@ export const serialize = (node: Node): string => {
    *  Text nodes are serialized with the corresponding tags if needed
    */
   if (Text.isText(node)) {
-    let text = node.text;
+    let text = node.string;
     if (node.bold) {
       text = `<strong>${text}</strong>`;
     }

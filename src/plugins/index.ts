@@ -97,10 +97,12 @@ export const basePlugin = (editor: Editor): Editor => {
         type: isActive ? DEFAULT_BLOCK : command.block
       });
     } else if (command.type === 'toggle_mark') {
-      editor.exec({
-        type: 'format_text',
-        properties: { [command.mark]: true }
-      });
+      const isActive = LEditor.isMarkActive(editor, command.mark);
+      if (isActive) {
+        editor.exec({ type: 'remove_mark', key: command.mark });
+      } else {
+        editor.exec({ type: 'add_mark', key: command.mark, value: true });
+      }
     }
     if (command.type === 'insert_data') {
       const text = command.data.getData('text/html');

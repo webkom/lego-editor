@@ -161,7 +161,7 @@ const handleEnter = (editor: Editor, command: Command, exec: Exec): void => {
   const [, listItemPath] = listEntry;
 
   command.event.preventDefault();
-  if (!Editor.text(editor, listItemPath)) {
+  if (!Editor.string(editor, listItemPath)) {
     editor.exec({ type: 'decrease_list_depth' });
     // If the selection is at the end of the current list item, insert a new
     // block at the location after the current one
@@ -193,7 +193,7 @@ const handleBackspace = (
   const [, listItemPath] = listItemEntry;
 
   // unwrap and remove the current node if its empty
-  if (!Editor.text(editor, listItemPath)) {
+  if (!Editor.string(editor, listItemPath)) {
     command.event.preventDefault();
     editor.exec({ type: 'decrease_list_depth' });
   } else {
@@ -215,7 +215,7 @@ const handleTab = (editor: Editor, command: Command, exec: Exec): void => {
     exec(command);
     return;
   }
-  if (!Editor.text(editor, listItemPath)) {
+  if (!Editor.string(editor, listItemPath)) {
     command.event.preventDefault();
     // If the list has no text, increse the depth
     increaseListDepth(editor, listItemPath);

@@ -6,7 +6,7 @@ import {
   RenderElementProps,
   RenderLeafProps
 } from 'slate-react';
-import { createEditor, Editor, Element, Node } from 'slate';
+import { createEditor, Editor, Element, Node, Location } from 'slate';
 import { withHistory } from 'slate-history';
 import isHotKey from 'is-hotkey';
 import Toolbar from './components/Toolbar';
@@ -69,9 +69,10 @@ export const LEditor = {
     const marks = Editor.marks(editor);
     return marks ? marks[mark] === true : false;
   },
-  isElementActive(editor: Editor, type: Elements) {
+  isElementActive(editor: Editor, type: Elements, options?: { at?: Location }) {
     const [match] = Editor.nodes(editor, {
-      match: nodeType(type)
+      match: nodeType(type),
+      at: options?.at
     });
     return !!match;
   },
@@ -98,8 +99,9 @@ const LegoEditor = (props: Props): JSX.Element => {
   };
 
   const onKeyDown = (event: React.KeyboardEvent): void => {
-    //@ts-ignore
-    const e = event as KeyboardEvent;
+    // Apparently there is a type mismatch between React.KeyboardEvent
+    // and KeyboardEvent included in TS libraries
+    const e = (event as unknown) as KeyboardEvent;
     if (isHotKey('mod+b')(e)) {
       e.preventDefault();
       editor.exec({ type: 'toggle_mark', mark: 'bold' });
@@ -237,6 +239,9 @@ const LegoEditor = (props: Props): JSX.Element => {
   //}
   //};
 
+  // Dont remove this or the app won't build!
+  const otherPlugins = props.plugins || [];
+
   const plugins = [
     basePlugin,
     insertTab,
@@ -244,8 +249,8 @@ const LegoEditor = (props: Props): JSX.Element => {
     lists,
     links,
     images({ uploadFunction: props.imageUpload }),
-    markdownShortcuts
-    //...props.plugins
+    markdownShortcuts,
+    ...otherPlugins
   ].reverse();
 
   const editor = useMemo(

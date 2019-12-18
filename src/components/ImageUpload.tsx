@@ -10,7 +10,7 @@ interface Props {
 }
 
 interface Image {
-  file: Blob;
+  file: Blob & { name: string };
   url: string;
 }
 
@@ -49,7 +49,7 @@ export default class ImageUpload extends React.Component<Props, State> {
     hasImage: false
   };
 
-  onDrop = (files: Blob[]) => {
+  onDrop = (files: (Blob & { name: string })[]): void => {
     if (files.length === 1) {
       const file = files[0];
       this.setState({
@@ -58,7 +58,7 @@ export default class ImageUpload extends React.Component<Props, State> {
     }
   };
 
-  onImageLoaded = (image: HTMLImageElement) => {
+  onImageLoaded = (image: HTMLImageElement): boolean => {
     this.setState({
       crop: { x: 0, y: 0, width: image.width, height: image.height },
       imageWidth: image.width,
@@ -67,12 +67,14 @@ export default class ImageUpload extends React.Component<Props, State> {
     return false;
   };
 
-  handleCrop = (crop: Crop) => {
+  handleCrop = (crop: Crop): void => {
     this.setState({ crop });
   };
 
-  submitImage = () => {
-    //@ts-ignore
+  submitImage = (): void => {
+    if (!this.state.currentImage) {
+      return;
+    }
     const { url, file } = this.state.currentImage;
     const { crop } = this.state;
     const { uploadFunction } = this.props;
@@ -86,7 +88,7 @@ export default class ImageUpload extends React.Component<Props, State> {
       );
   };
 
-  cancel = () => {
+  cancel = (): void => {
     this.props.cancel();
   };
 
