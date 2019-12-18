@@ -73,8 +73,8 @@ const editList = (editor: Editor): Editor => {
     }
   };
 
-  editor.isList = (): boolean => {
-    const [match] = Editor.nodes(editor, { match: isList });
+  editor.isList = (options: { at?: Location }): boolean => {
+    const [match] = Editor.nodes(editor, { match: isList, at: options?.at });
     return !!match;
   };
 
@@ -191,18 +191,12 @@ const getParentList = (
   at?: Location
 ): NodeEntry | undefined => {
   if (!!at || editor.selection !== null) {
-    const [match] = Editor.nodes(editor, {
-      match: (node: Node) => node.type === 'ul_list' || node.type === 'ol_list',
-      at,
-      reverse: true
+    return Editor.above(editor, {
+      match: isList,
+      at: at || editor.selection?.anchor
     });
-    return match;
   }
 };
-
-//const isList(editor: Editor): boolean {
-//return !!getListItem(editor, getCurrentBlock(editor).key);
-//}
 
 /**
  *  Get the depth of a list item. (Number of ol or ul items from the root node)
@@ -275,6 +269,8 @@ const decreaseListDepth = (editor: Editor, at?: Location): void => {
   const [parentList] = parentEntry;
   const [, listItemPath] = listEntry;
 
+  const listItemPathRef = Editor.pathRef(editor, listItemPath);
+
   const depth = getListDepth(editor, listItemPath);
   Editor.unwrapNodes(editor, {
     match: nodeType(parentList.type),
@@ -282,7 +278,18 @@ const decreaseListDepth = (editor: Editor, at?: Location): void => {
     split: true
   });
   if (depth === 1) {
-    Editor.unwrapNodes(editor, { match: nodeType('list_item') });
+    const listItemPath = listItemPathRef.unref();
+    if (listItemPath) {
+      const [blockEntry] = Editor.nodes(editor, {
+        at: listItemPath,
+        match: (n: Node) => Editor.isBlock(editor, n),
+        mode: 'lowest'
+      });
+      Editor.unwrapNodes(editor, {
+        match: nodeType('list_item'),
+        at: blockEntry[1]
+      });
+    }
   }
 };
 
@@ -292,24 +299,94 @@ const decreaseListDepth = (editor: Editor, at?: Location): void => {
  */
 const setListType = (editor: Editor, command: Command): void => {
   const { listType } = command;
-  const parentList = getParentList(editor);
+  let parentList = getParentList(editor);
+
+  // If there is no parentList, we check for a list in the current selection
+  if (!parentList) {
+    [parentList] = Editor.nodes(editor, {
+      match: isList,
+      mode: 'highest'
+    });
+  }
 
   if (parentList) {
     const [listNode] = parentList;
+    // If the list is not the right type, we just change it
     if (listNode.type != listType) {
-      Editor.setNodes(editor, { type: listType }, { match: isList });
+      Editor.setNodes(
+        editor,
+        { type: listType },
+        { match: isList, mode: 'lowest' }
+      );
     } else {
-      return editor.exec({ type: 'decrease_list_depth' });
+      // We go through all the selected blocks that are not list blocks
+      const selectedBlocks = Editor.nodes(editor, {
+        match: (n: Node) =>
+          Editor.isBlock(editor, n) && n.type !== 'list_item' && !isList(n)
+      });
+      const pathRefs = Array.from(selectedBlocks, ([, path]) =>
+        Editor.pathRef(editor, path)
+      );
+
+      let change = false;
+
+      for (const pathRef of pathRefs) {
+        const path = pathRef.unref();
+        if (path) {
+          // If the parent element is not a list, we wrap it in a list
+          const parent = Editor.parent(editor, path);
+          if (parent && parent[0].type !== 'list_item') {
+            change = true;
+            Editor.wrapNodes(
+              editor,
+              { type: 'list_item', children: [] },
+              { at: path }
+            );
+            Editor.wrapNodes(
+              editor,
+              { type: listType, children: [] },
+              { at: path }
+            );
+            // And then we merge the list elements
+            Editor.mergeNodes(editor, { at: path });
+          }
+        }
+      }
+
+      // If there was not applied any changes (no new list items)
+      // We toggle the listType off
+      if (!change) {
+        const selectedListItems = Editor.nodes(editor, {
+          match: nodeType('list_item')
+        });
+
+        const pathRefs = Array.from(selectedListItems, ([, path]) =>
+          Editor.pathRef(editor, path)
+        );
+        for (const pathRef of pathRefs) {
+          const path = pathRef.unref();
+          if (path) {
+            decreaseListDepth(editor, path);
+          }
+        }
+      }
     }
   } else {
-    const selectedNodes = Editor.nodes(editor, { match: Element.isElement });
+    // There is no list in the selection and we can wrap all blocks in a list
+    const selectedNodes = Editor.nodes(editor, {
+      match: (n: Node) => Element.isElement(n)
+    });
     for (const [, nodePath] of selectedNodes) {
-      Editor.pathRef(editor, nodePath);
+      if (!editor.isList({ at: nodePath })) {
+        Editor.pathRef(editor, nodePath);
+      }
     }
+    // Wrap app nodes in a single list
     Editor.wrapNodes(editor, {
       type: listType,
       children: []
     });
+    // Wrap all the selected blocks in its own list_item
     for (const pathRef of Editor.pathRefs(editor)) {
       const path = pathRef.unref();
       if (path) {

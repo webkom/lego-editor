@@ -331,9 +331,9 @@ const LegoEditor = (props: Props): JSX.Element => {
 
   const plugins = [
     basePlugin,
-    editList,
     insertTab,
     softEnter,
+    editList,
     links,
     images({ uploadFunction: props.imageUpload }),
     markdownShortcuts
@@ -344,10 +344,10 @@ const LegoEditor = (props: Props): JSX.Element => {
     () => compose(...plugins, withHistory, withReact, createEditor)(),
     []
   );
-  //@ts-ignore React types being stupid
-  const [value, setValue] = useState<Node[]>([
+
+  const [value, setValue] = useState(
     props.value ? deserializeHtmlString(props.value) : initialValue
-  ]);
+  );
 
   return (
     <div
