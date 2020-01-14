@@ -33,21 +33,12 @@
   overflow: scroll;
 }
 
-_.legoEditor_root blockquote {
+._legoEditor_root blockquote {
   background: #f9f9f9;
+  color: #565d64;
   border-left: 10px solid #ccc;
   margin: 1.5em 10px;
   padding: 0.5em 10px;
-  quotes: '\201C''\201D''\2018''\2019';
-}
-
-_.legoEditor_root blockquote:before {
-  color: #ccc;
-  content: open-quote;
-  font-size: 4em;
-  line-height: 0.1em;
-  margin-left: 0.25em;
-  vertical-align: -0.4em;
 }
 
 ._legoEditor_ul_list {

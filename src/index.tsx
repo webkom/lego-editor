@@ -29,8 +29,8 @@ interface Props {
   disabled?: boolean;
   simple?: boolean;
   onChange?: (arg0: string) => void;
-  onBlur?: () => void;
-  onFocus?: () => void;
+  onBlur?: (arg0: React.SyntheticEvent) => void;
+  onFocus?: (arg0: React.SyntheticEvent) => void;
   autoFocus?: boolean;
   placeholder?: string;
   imageUpload: (file: Blob) => Promise<Record<string, any>>;
@@ -55,7 +55,8 @@ export type Elements =
   | 'link'
   | 'figure'
   | 'image'
-  | 'image_caption';
+  | 'image_caption'
+  | 'quote';
 
 /**
  *  Returns a function to be used for matching against node types
@@ -213,31 +214,11 @@ const LegoEditor = (props: Props): JSX.Element => {
     }
   };
 
-  // Calling onBlur and onFocus methods passed down (optional)
-  // via props to make the editor work with redux-form, (or any other handlers)
-  // These methods need to by async because slates event handlers need to be called
-  // before redux-forms handlers.
-  //const onFocus = (
-  //event: Event,
-  //editor: Slate.Editor,
-  //next: Next
-  //): Promise<any> => {
-  //await next();
-  //if (this.props.onFocus) {
-  //await this.props.onFocus();
-  //}
-  //};
+  const onFocus = (event: React.SyntheticEvent): void =>
+    props.onBlur && props.onBlur(event);
 
-  //const onBlur = (
-  //event: Event,
-  //editor: Slate.Editor,
-  //next: Next
-  //): Promise<any> => {
-  //await next();
-  //if (this.props.onBlur) {
-  //await this.props.onBlur();
-  //}
-  //};
+  const onBlur = (event: React.SyntheticEvent): void =>
+    props.onFocus && props.onFocus(event);
 
   // Dont remove this or the app won't build!
   const otherPlugins = props.plugins || [];
@@ -271,7 +252,7 @@ const LegoEditor = (props: Props): JSX.Element => {
       }
     >
       <Slate editor={editor} value={value} onChange={onChange}>
-        {!props.disabled && !props.simple && <Toolbar editor={editor} />}
+        {!props.disabled && !props.simple && <Toolbar />}
         <Editable
           onKeyDown={onKeyDown}
           renderElement={useCallback(renderElement, [])}
@@ -279,6 +260,8 @@ const LegoEditor = (props: Props): JSX.Element => {
           placeholder={props.placeholder}
           readOnly={props.disabled}
           autoFocus={props.autoFocus}
+          onBlur={onBlur}
+          onFocus={onFocus}
         />
       </Slate>
     </div>

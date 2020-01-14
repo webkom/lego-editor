@@ -33,7 +33,7 @@ const images = (options: Options): ((editor: Editor) => Editor) => {
               },
               {
                 type: 'image_caption',
-                children: [{ text: '' }]
+                children: [{ text: 'Caption', italic: true }]
               }
             ]
           })

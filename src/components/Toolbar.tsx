@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Element, Editor, NodeEntry, Range, Node } from 'slate';
+import { useSlate } from 'slate-react';
 import { LEditor, Marks, Elements, nodeType } from '../index';
 import ImageUpload from './ImageUpload';
 import cx from 'classnames';
@@ -91,15 +92,11 @@ class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
   }
 }
 
-interface ToolbarProps {
-  editor: Editor;
-}
-
-const Toolbar = (props: ToolbarProps): JSX.Element => {
+const Toolbar = (): JSX.Element => {
   const [insertingLink, setInsertingLink] = useState(false);
   const [insertingImage, setInsertingImage] = useState(false);
 
-  const { editor } = props;
+  const editor = useSlate();
 
   const [lastSelection, setLastSelection] = useState(editor.selection);
 

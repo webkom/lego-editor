@@ -77,7 +77,8 @@ const TEXT_BLOCKS: Elements[] = [
   'h4',
   'h5',
   'paragraph',
-  'code_block'
+  'code_block',
+  'quote'
 ];
 
 /**
@@ -128,6 +129,31 @@ export const basePlugin = (editor: Editor): Editor => {
         }
       }
     }
+
+    /*
+     *  The last element in the document should always be a text node.
+     *  This is because it simplifies the logic when the last node is a
+     *  special node like a figure or video. This way we can simply
+     *  deny splitting these nodes, and the user would still be able to
+     *  edit the document.
+     */
+    if (path.length === 1 && path[0] === Editor.last(editor, [])[1][0]) {
+      if (Element.isElement(node) && !TEXT_BLOCKS.includes(node.type)) {
+        // If the last node is not a text node we insert a default block
+        // at the top level next path.
+        Editor.insertNodes(
+          editor,
+          { type: DEFAULT_BLOCK, children: [] },
+          { at: [Editor.last(editor, [])[1][0] + 1] }
+        );
+        return;
+      }
+    }
+
+    /*
+     *  If the last node is an empty text node and the
+     *
+     */
 
     normalizeNode(entry);
   };
