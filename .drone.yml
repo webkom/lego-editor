@@ -1,17 +1,24 @@
-pipeline:
-  setup:
+---
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: setup
     image: node:10
     when:
       event: push
     commands:
       - yarn --frozen-lockfile --ignore-scripts
-  lint:
+
+  - name: lint
     image: node:10
     when:
       event: push
     commands:
       - yarn lint
-  build:
+
+  - name: build
     image: node:10
     when:
       event: push
