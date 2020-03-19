@@ -50,8 +50,20 @@ class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
   };
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState({ value: e.currentTarget.value });
+    const prependProtocol = (url: string): string => {
+      if (!/^(?:f|ht)tps?:\/\//.test(url)) {
+        url = 'http://' + url;
+      }
+      return url;
+    };
+    this.setState({ value: prependProtocol(e.currentTarget.value) });
   };
+
+  componentDidMount(): void {
+    // Why is this in a setTimeout?
+    // - Because why not? (I couldn't make it work without)
+    setTimeout(() => this.input.current?.focus(), 10);
+  }
 
   onKeyPress = (e: React.KeyboardEvent): void => {
     if (e.key == 'Enter') {
@@ -60,9 +72,9 @@ class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
   };
 
   submit = (
-    e: React.FocusEvent | React.KeyboardEvent | React.MouseEvent
+    e?: React.FocusEvent | React.KeyboardEvent | React.MouseEvent
   ): void => {
-    e.preventDefault();
+    e?.preventDefault();
     const { value } = this.state;
     this.props.toggleLinkInput();
     if (value == '') {
@@ -82,7 +94,7 @@ class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
           onChange={this.onChange}
           onKeyDown={this.onKeyPress}
           value={this.state.value}
-          autoFocus
+          onBlur={() => validUrl && this.submit}
         />
         <button disabled={!validUrl} onClick={this.submit}>
           Lagre

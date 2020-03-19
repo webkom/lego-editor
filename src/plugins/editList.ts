@@ -5,7 +5,8 @@ import {
   Node,
   Location,
   NodeEntry,
-  Command
+  Command,
+  Range
 } from 'slate';
 import isHotKey from 'is-hotkey';
 import { DEFAULT_BLOCK, nodeType } from '../index';
@@ -34,7 +35,6 @@ type Exec = (command: Command) => void;
  */
 const editList = (editor: Editor): Editor => {
   const { exec, normalizeNode } = editor;
-
   editor.exec = command => {
     if (command.type === 'key_handler' && !editor.isList()) {
       const { event } = command;
@@ -286,6 +286,22 @@ const getListDepth = (editor: Editor, at?: Location): number => {
  *  list item in the appropriate list type.
  */
 const increaseListDepth = (editor: Editor, at?: Location): void => {
+  // If the provided location is a range, we perform the operation on
+  // every list item in the range
+  if (Range.isRange(at || editor.selection)) {
+    const listItemEntries = Editor.nodes(editor, {
+      at: at,
+      match: nodeType('list_item')
+    });
+    const pathRefs = Array.from(listItemEntries, ([, path]) =>
+      Editor.pathRef(editor, path)
+    );
+    for (const pathRef of pathRefs) {
+      const path = pathRef.unref();
+      path && increaseListDepth(editor, path);
+    }
+    return;
+  }
   Editor.withoutNormalizing(editor, () => {
     const listEntry = getListItem(editor, at);
     const parentEntry = getParentList(editor, at);
@@ -331,6 +347,22 @@ const increaseListDepth = (editor: Editor, at?: Location): void => {
  *  Always unwraps the list
  */
 const decreaseListDepth = (editor: Editor, at?: Location): void => {
+  // If the provided location is a range, we perform the operation on
+  // every list item in the range
+  if (Range.isRange(at || editor.selection)) {
+    const listItemEntries = Editor.nodes(editor, {
+      at: at,
+      match: nodeType('list_item')
+    });
+    const pathRefs = Array.from(listItemEntries, ([, path]) =>
+      Editor.pathRef(editor, path)
+    );
+    for (const pathRef of pathRefs) {
+      const path = pathRef.unref();
+      path && decreaseListDepth(editor, path);
+    }
+    return;
+  }
   Editor.withoutNormalizing(editor, () => {
     const listEntry = getListItem(editor, at);
     const parentEntry = getParentList(editor, at);
