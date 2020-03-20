@@ -41,7 +41,7 @@ The `<Editor />` component accepts the prop `plugins`, which takes an array of p
 To test out the editor using the development application:
 
 ```sh
-$ yarn example
+$ yarn dev
 ```
 
 ## Development

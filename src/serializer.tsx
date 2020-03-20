@@ -1,4 +1,5 @@
 import { Node, Text, Element } from 'slate';
+import escape from 'escape-html';
 import { jsx } from 'slate-hyperscript';
 
 interface TAGS {
@@ -44,7 +45,7 @@ export const serialize = (node: Node): string => {
    *  Text nodes are serialized with the corresponding tags if needed
    */
   if (Text.isText(node)) {
-    let text = node.string;
+    let text = escape(node.text);
     if (node.bold) {
       text = `<strong>${text}</strong>`;
     }
@@ -106,6 +107,19 @@ export const serialize = (node: Node): string => {
 };
 
 /**
+ * Normalize mark nodes.
+ * We may see mark elements that contain other elements.
+ * f.ex. <em><a>example.com</a></em>
+ * In order to conform to slates structure, we need to create the
+ * slate node such that we have: <a><em>example.com</em></a>
+ */
+const normalizeMark = (node: Node, mark: string): void => {
+  for (const child of node.children) {
+    Text.isText(child) ? (child[mark] = true) : normalizeMark(child, mark);
+  }
+};
+
+/**
  *  Deserialize a html tree to a slate fragment.
  */
 export const deserialize = (
@@ -121,9 +135,13 @@ export const deserialize = (
     return '\n';
   }
 
-  const children = Array.from(el.childNodes).map((n: ChildNode) =>
+  let children = Array.from(el.childNodes).map((n: ChildNode) =>
     deserialize(n as HTMLElement)
   ) as Node[];
+
+  if (children.length === 0) {
+    children = [jsx('text', {}, '')];
+  }
 
   if (el.nodeName === 'BODY') {
     return jsx('fragment', {}, children);
@@ -163,9 +181,21 @@ export const deserialize = (
 
   const markType = MARK_TAGS[el.nodeName.toLowerCase()];
   if (markType) {
-    return children.map((child: Node) =>
-      jsx('text', { [markType]: true }, child)
-    );
+    return children.map((child: Node) => {
+      // If the child node is not a text node, we need
+      // to apply the formatting to all text nodes in that node.
+      if (child.type && child.type !== 'text') {
+        normalizeMark(child, markType);
+        return child;
+      }
+      return jsx(
+        'text',
+        {
+          [markType]: true
+        },
+        child
+      );
+    });
   }
   // If a tag is not recognized and cannot be serialized, traverse the children until
   // we reach a serializeable tag or text.

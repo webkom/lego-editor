@@ -10,8 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint 'src/**/*.{js,ts,tsx}' && prettier 'src/**' --list-different",
     "prettier": "prettier 'src/**' --write",
-    "example:build": "webpack --mode development",
-    "example": "webpack-dev-server --config ./example/webpack/webpack.config.js --open --mode development"
+    "dev:build": "webpack --mode development",
+    "dev": "webpack-dev-server --config ./example/webpack/webpack.config.js --open --mode development"
   },
   "repository": {
     "type": "git",
@@ -25,10 +25,12 @@
   "homepage": "https://github.com/webkom/lego-editor#readme",
   "dependencies": {
     "classnames": "^2.2.6",
+    "escape-html": "^1.0.3",
     "is-url": "^1.2.4",
     "lodash": "^4.17.15",
     "react-dropzone": "^10.1.4",
     "react-image-crop": "^8.4.2",
+    "react-modal": "^3.11.2",
     "slate": "^0.56.0",
     "slate-history": "^0.56.0",
     "slate-hyperscript": "^0.56.0",
@@ -43,11 +45,13 @@
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0",
     "@types/classnames": "^2.2.8",
+    "@types/escape-html": "^0.0.20",
     "@types/is-hotkey": "^0.1.1",
     "@types/is-url": "^1.2.28",
     "@types/lodash": "^4.14.137",
     "@types/react": "^16.8.14",
     "@types/react-image-crop": "^6.0.2",
+    "@types/react-modal": "^3.10.5",
     "@typescript-eslint/eslint-plugin": "^2.12.0",
     "@typescript-eslint/parser": "^2.12.0",
     "babel-loader": "^8.0.6",
