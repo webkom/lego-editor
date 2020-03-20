@@ -22,7 +22,9 @@ const cropImage = (
 
   // canvas.getContext(<identifier>) returns null if
   // identifier is not supported, which '2d' is
-  // @ts-ignore
+  if (!ctx) {
+    return new Promise(resolve => resolve());
+  }
   ctx.drawImage(
     image,
     crop.x * scaleX,
@@ -36,9 +38,8 @@ const cropImage = (
   );
 
   return new Promise((resolve, reject) => {
-    canvas.toBlob(result => {
+    canvas.toBlob((result: BlobWithName | null) => {
       if (result) {
-        //@ts-ignore
         result.name = name;
         resolve(result);
       } else {

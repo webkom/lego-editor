@@ -1,246 +1,145 @@
-import * as React from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import {
-  Editor as SlateEditor,
-  RenderMarkProps,
-  RenderBlockProps,
-  RenderInlineProps,
-  RenderAttributes,
-  Plugin
+  Slate,
+  Editable,
+  withReact,
+  RenderElementProps,
+  RenderLeafProps
 } from 'slate-react';
-import * as Slate from 'slate';
+import { createEditor, Editor, Element, Node, Location } from 'slate';
+import { withHistory } from 'slate-history';
 import isHotKey from 'is-hotkey';
 import Toolbar from './components/Toolbar';
+import ImageBlock from './components/ImageBlock';
 import {
-  BoldMark,
-  ItalicMark,
-  UnderlineMark,
-  CodeMark
-} from './components/marks';
-import editList from './plugins/editList';
-import pasteLink from './plugins/pasteLink';
-import images from './plugins/images';
-import markdownShortcuts from './plugins/markdown';
-import { html } from './serializer';
-import schema from './schema';
-import _ from 'lodash';
+  basePlugin,
+  insertTab,
+  softEnter,
+  lists,
+  links,
+  images,
+  markdownShortcuts
+} from './plugins';
+import { serialize, deserializeHtmlString } from './serializer';
+import { debounce } from 'lodash';
+import { compose } from 'lodash/fp';
 
 interface Props {
   value: string;
   disabled?: boolean;
   simple?: boolean;
   onChange?: (arg0: string) => void;
-  onBlur?: () => void;
-  onFocus?: () => void;
+  onBlur?: (arg0: React.SyntheticEvent) => void;
+  onFocus?: (arg0: React.SyntheticEvent) => void;
   autoFocus?: boolean;
   placeholder?: string;
   imageUpload: (file: Blob) => Promise<Record<string, any>>;
-  plugins: Plugin[];
+  plugins: ((editor: Editor) => Editor)[];
 }
 
-interface State {
-  value: string;
-  editorValue: Slate.Value | null;
-}
-
-const DEFAULT_BLOCK = 'paragraph';
+export const DEFAULT_BLOCK = 'paragraph';
 export type Next = () => any;
 
-function insertTab(): Plugin {
-  /*
-   *  A simple plugin that inserts a 'tab' character on pressing tab.
-   */
-  return {
-    onKeyDown(e: Event, editor: Slate.Editor, next: Next): Editor | undefined {
-      const event = e as KeyboardEvent;
-      if (event.key == 'Tab') {
-        event.preventDefault();
-        editor.insertText('\t');
-      } else {
-        return next();
-      }
-    }
-  };
-}
+export type Marks = 'bold' | 'italic' | 'code' | 'underline';
+export type Elements =
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'h5'
+  | 'paragraph'
+  | 'ul_list'
+  | 'ol_list'
+  | 'list_item'
+  | 'code_block'
+  | 'link'
+  | 'figure'
+  | 'image'
+  | 'image_caption'
+  | 'quote';
 
-function softEnter(types: string[]): Plugin {
-  /*
-   *  softEnter(Array<string>) => onKeyDown()
-   *  A plugin that enables soft enter if selection has blocks
-   *  of a type specified. Takes an array of block types as its only argument.
-   */
-  return {
-    onKeyDown(e: Event, editor: Slate.Editor, next: () => void): void {
-      const event = e as KeyboardEvent;
-      if (
-        !editor.value.blocks.some(
-          block => block !== undefined && types.includes(block.type)
-        )
-      ) {
-        return next();
-      }
-      if (event.key == 'Enter') {
-        // if user is holding shift, default behaviour, (new block)
-        if (event.shiftKey) {
-          return next();
-        }
-        event.preventDefault();
-        editor.insertText('\n');
-      } else {
-        return next();
-      }
-    }
-  };
-}
+/**
+ *  Returns a function to be used for matching against node types
+ */
+export const nodeType = (type: Elements): ((node: Node) => boolean) => {
+  return (node: Node) => node.type === type;
+};
 
-const linkCommands = (): Plugin => ({
-  /*
-   *  A plugin that adds basic commands and queries for links
-   */
-  commands: {
-    // wrap current selection in a link
-    wrapLink: (editor: Slate.Editor, url: string) =>
-      editor.wrapInline({ data: { url: url, text: url }, type: 'link' }),
-    unwrapLink: (editor: Slate.Editor) => editor.unwrapInline('link')
+export const LEditor = {
+  isMarkActive(editor: Editor, mark: Marks) {
+    const marks = Editor.marks(editor);
+    return marks ? marks[mark] === true : false;
   },
-  queries: {
-    // returns true if there is a link in the current selection
-    isLinkActive: (editor: Slate.Editor): boolean =>
-      editor.value.inlines.some(
-        inline => inline != undefined && inline.type == 'link'
-      )
-  }
-});
-
-const basePlugin = (): Plugin => ({
-  commands: {
-    // Toggles the block type of everything except lists
-    toggleBlock: (editor: Slate.Editor, type: string) => {
-      if (type !== 'ul_list' && type !== 'ol_list') {
-        const isActive = editor.query('hasBlock', type);
-        return isActive
-          ? editor.setBlocks(DEFAULT_BLOCK)
-          : editor.setBlocks(type);
-      }
-      return editor;
-    }
+  isElementActive(editor: Editor, type: Elements, options?: { at?: Location }) {
+    const [match] = Editor.nodes(editor, {
+      match: nodeType(type),
+      at: options?.at
+    });
+    return !!match;
   },
-  queries: {
-    // returns true if there exists a block of type 'type' in the current selection
-    hasBlock: (editor: Slate.Editor, type: string): boolean => {
-      const { value } = editor;
-      return value.blocks.some(
-        (node: Slate.Block | undefined) =>
-          node !== undefined && node.type == type
-      );
-    },
-    getCurrentBlock: (editor: Slate.Editor): Slate.Node =>
-      editor.value.startBlock
-  }
-});
+  hasType(editor: Editor, type: Elements) {
+    if (!editor.selection) {
+      return false;
+    }
+    const match = Editor.above(editor, {
+      match: nodeType(type),
+      voids: true
+    });
+    return !!match;
+  },
+  ...Editor
+};
 
-export default class Editor extends React.Component<Props, State> {
-  state = {
-    editorValue: this.props.value
-      ? html.deserialize(this.props.value)
-      : Slate.Value.fromJSON({
-          document: {
-            nodes: [
-              {
-                object: 'block',
-                type: 'paragraph',
-                nodes: [
-                  {
-                    object: 'text',
-                    text: ''
-                  }
-                ]
-              }
-            ]
-          }
-        }),
-    value: this.props.value,
-    plugins: [
-      basePlugin(),
-      editList(),
-      insertTab(),
-      softEnter(['code_block']),
-      linkCommands(),
-      pasteLink(),
-      images({ uploadFunction: this.props.imageUpload }),
-      markdownShortcuts,
-      ...this.props.plugins
-    ]
-  };
+const initialValue: Node[] = [{ type: 'paragraph', children: [{ text: '' }] }];
 
-  onChange = ({ value: value }: { value: Slate.Value }): void => {
-    this.setState({ editorValue: value });
+const LegoEditor = (props: Props): JSX.Element => {
+  const onChange = (value: Node[]): void => {
+    setValue(value);
     // Debounce onchange function to improve performance
-    this.props.onChange &&
-      _.debounce(this.props.onChange, 250)(html.serialize(value));
+    props.onChange && debounce(props.onChange, 250)(serialize(editor));
   };
 
-  onKeyDown = (
-    event: Event,
-    editor: Slate.Editor,
-    next: Next
-  ): Slate.Editor | void => {
-    const e = event as KeyboardEvent;
-
+  const onKeyDown = (event: React.KeyboardEvent): void => {
+    // Apparently there is a type mismatch between React.KeyboardEvent
+    // and KeyboardEvent included in TS libraries
+    const e = (event as unknown) as KeyboardEvent;
     if (isHotKey('mod+b')(e)) {
       e.preventDefault();
-      editor.toggleMark('bold');
+      editor.exec({ type: 'toggle_mark', mark: 'bold' });
     } else if (isHotKey('mod+i')(e)) {
       e.preventDefault();
-      editor.toggleMark('italic');
+      editor.exec({ type: 'toggle_mark', mark: 'italic' });
     } else if (isHotKey('mod+u')(e)) {
       e.preventDefault();
-      editor.toggleMark('underline');
-    } else if (isHotKey('mod+l')(e)) {
-      e.preventDefault();
-      editor.command(
-        'setListType',
-        editor.query('getCurrentBlock').key,
-        'ul_list'
-      );
-    } else if (isHotKey('mod+z')(e)) {
-      e.preventDefault();
-      editor.undo();
-    } else if (isHotKey('mod+r')(e)) {
-      e.preventDefault();
-      editor.redo();
+      editor.exec({ type: 'toggle_mark', mark: 'underline' });
     } else {
-      return next();
+      editor.exec({ type: 'key_handler', event: e });
     }
   };
 
-  // Components to be rendered for mark nodes
-  private renderMark = (
-    props: RenderMarkProps,
-    editor: Slate.Editor,
-    next: Next
-  ) => {
-    switch (props.mark.type) {
-      case 'bold':
-        return <BoldMark {...props} />;
-      case 'italic':
-        return <ItalicMark {...props} />;
-      case 'underline':
-        return <UnderlineMark {...props} />;
-      case 'code':
-        return <CodeMark {...props} />;
-      default:
-        return next();
+  // Components to be rendered for leaf nodes
+  const renderLeaf = (props: RenderLeafProps): JSX.Element => {
+    const { leaf } = props;
+    let { children } = props;
+    if (leaf.bold) {
+      children = <strong>{children}</strong>;
     }
+    if (leaf.italic) {
+      children = <em property="italic">{children}</em>;
+    }
+    if (leaf.underline) {
+      children = <u>{children}</u>;
+    }
+    if (leaf.code) {
+      children = <code>{children}</code>;
+    }
+    return <span {...props.attributes}>{children}</span>;
   };
 
   // Components te be rendered for nodes
-  private renderBlock = (
-    props: RenderBlockProps,
-    editor: Slate.Editor,
-    next: Next
-  ) => {
-    const { attributes, node, children } = props;
-    switch (node.type) {
+  const renderElement = (props: RenderElementProps): JSX.Element => {
+    const { attributes, children, element } = props;
+    switch (element.type) {
       case 'paragraph':
         return (
           <p className={'_legoEditor_paragraph'} {...attributes}>
@@ -281,99 +180,92 @@ export default class Editor extends React.Component<Props, State> {
             <code>{children}</code>
           </pre>
         );
-      default:
-        return next();
-    }
-  };
-
-  private renderInline = (
-    props: RenderInlineProps,
-    editor: Slate.Editor,
-    next: Next
-  ) => {
-    const { attributes, node, children } = props;
-    switch (node.type) {
+      case 'quote':
+        return <blockquote {...attributes}>{children}</blockquote>;
+      case 'figure':
+        return (
+          <figure className="_legoEditor_figure" {...attributes}>
+            {children}
+          </figure>
+        );
+      case 'image': {
+        const src = element.src || element.objectUrl;
+        return <ImageBlock src={src} {...props} />;
+      }
+      case 'image_caption':
+        return (
+          <figcaption
+            className="_legoEditor_figcaption"
+            {...attributes}
+            placeholder={'Figure caption'}
+          >
+            {children}
+          </figcaption>
+        );
+      // Inlines
       case 'link':
         return (
-          <a {...attributes} href={node.data.get('url')}>
+          <a {...attributes} href={element.url}>
             {children}
           </a>
         );
       default:
-        return next();
+        return <p {...attributes}>{children}</p>;
     }
   };
 
-  // Render function for how the editor
-  // practical for passing props and the 'editor' prop to other components
-  private renderEditor = (
-    props: RenderAttributes,
-    editor: Slate.Editor,
-    next: Next
-  ) => {
-    const children = next();
-    return (
-      <>
-        {!this.props.disabled && !this.props.simple && (
-          <Toolbar editor={editor} />
-        )}
-        {children}
-      </>
-    );
-  };
+  const onFocus = (event: React.SyntheticEvent): void =>
+    props.onBlur && props.onBlur(event);
 
-  // Calling onBlur and onFocus methods passed down (optional)
-  // via props to make the editor work with redux-form, (or any other handlers)
-  // These methods need to by async because slates event handlers need to be called
-  // before redux-forms handlers.
-  private async onFocus(
-    event: Event,
-    editor: Slate.Editor,
-    next: Next
-  ): Promise<any> {
-    await next();
-    if (this.props.onFocus) {
-      await this.props.onFocus();
-    }
-  }
+  const onBlur = (event: React.SyntheticEvent): void =>
+    props.onFocus && props.onFocus(event);
 
-  private async onBlur(
-    event: Event,
-    editor: Slate.Editor,
-    next: Next
-  ): Promise<any> {
-    await next();
-    if (this.props.onBlur) {
-      await this.props.onBlur();
-    }
-  }
+  // Dont remove this or the app won't build!
+  const otherPlugins = props.plugins || [];
 
-  render(): any {
-    return (
-      <div
-        className={
-          this.props.disabled || this.props.simple
-            ? '_legoEditor_disabled'
-            : '_legoEditor_root'
-        }
-      >
-        <SlateEditor
-          onFocus={this.onFocus.bind(this)}
-          onBlur={this.onBlur.bind(this)}
-          autoFocus={this.props.autoFocus}
-          renderEditor={this.renderEditor}
-          value={this.state.editorValue}
-          plugins={this.state.plugins}
-          onChange={this.onChange}
-          onKeyDown={this.onKeyDown}
-          schema={schema}
-          renderMark={this.renderMark}
-          renderBlock={this.renderBlock}
-          renderInline={this.renderInline}
-          readOnly={this.props.disabled}
-          placeholder={this.props.placeholder}
+  const plugins = [
+    basePlugin,
+    insertTab,
+    softEnter,
+    lists,
+    links,
+    images({ uploadFunction: props.imageUpload }),
+    markdownShortcuts,
+    ...otherPlugins
+  ].reverse();
+
+  const editor = useMemo(
+    () => compose(...plugins, withHistory, withReact, createEditor)(),
+    []
+  );
+
+  const [value, setValue] = useState(
+    props.value ? deserializeHtmlString(props.value) : initialValue
+  );
+
+  return (
+    <div
+      className={
+        props.disabled || props.simple
+          ? '_legoEditor_disabled'
+          : '_legoEditor_root'
+      }
+    >
+      <Slate editor={editor} value={value} onChange={onChange}>
+        {!props.disabled && !props.simple && <Toolbar />}
+        <Editable
+          onKeyDown={onKeyDown}
+          renderElement={useCallback(renderElement, [])}
+          renderLeaf={useCallback(renderLeaf, [])}
+          placeholder={props.placeholder}
+          readOnly={props.disabled}
+          autoFocus={props.autoFocus}
+          onBlur={onBlur}
+          onFocus={onFocus}
         />
-      </div>
-    );
-  }
-}
+      </Slate>
+    </div>
+  );
+};
+
+export default LegoEditor;

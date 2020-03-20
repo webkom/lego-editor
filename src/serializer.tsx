@@ -1,11 +1,12 @@
-import * as React from 'react';
-import Html, { Rule } from 'slate-html-serializer';
+import { Node, Text, Element } from 'slate';
+import escape from 'escape-html';
+import { jsx } from 'slate-hyperscript';
 
 interface TAGS {
   [key: string]: string;
 }
 
-const BLOCK_TAGS: TAGS = {
+const ELEMENT_TAGS: TAGS = {
   p: 'paragraph',
   h1: 'h1',
   h2: 'h2',
@@ -18,187 +19,197 @@ const BLOCK_TAGS: TAGS = {
   pre: 'code_block',
   figure: 'figure',
   img: 'image',
-  figcaption: 'image_caption'
-};
-
-const INLINE_TAGS: TAGS = {
-  a: 'link'
+  figcaption: 'image_caption',
+  a: 'link',
+  blockquote: 'quote'
 };
 
 const MARK_TAGS: TAGS = {
   em: 'italic',
+  i: 'italic',
   strong: 'bold',
   u: 'underline',
   code: 'code'
 };
 
-const rules: Rule[] = [
-  // Blocks
-  {
-    deserialize(el, next) {
-      const type = BLOCK_TAGS[el.tagName.toLowerCase()];
-      if (type) {
-        switch (type) {
-          case 'figure': {
-            return {
-              object: 'block',
-              type: type,
-              data: {},
-              nodes: next(el.childNodes)
-            };
-          }
-          case 'image': {
-            const fileKey = el.getAttribute('data-file-key');
-            const dataFromHtml = el.getAttributeNames().reduce(
-              (data: Record<string, any>, attrName: string) => ({
-                ...data,
-                [attrName]: el.getAttribute(attrName)
-              }),
-              {}
-            );
-            return {
-              object: 'block',
-              type: type,
-              data: {
-                ...dataFromHtml,
-                fileKey
-              }
-            };
-          }
-          case 'image_caption': {
-            return {
-              object: 'block',
-              type: type,
-              data: {},
-              nodes: next(el.childNodes)
-            };
-          }
-          default:
-            return {
-              object: 'block',
-              type: type,
-              data: {
-                className: el.getAttribute('class')
-              },
-              nodes: next(el.childNodes)
-            };
-        }
-      }
-    },
-    serialize(obj, children) {
-      if (obj.object == 'block') {
-        switch (obj.type) {
-          case 'paragraph':
-            return <p>{children}</p>;
-          case 'h1':
-            return <h1>{children}</h1>;
-          case 'h2':
-            return <h2>{children}</h2>;
-          case 'h3':
-            return <h3>{children}</h3>;
-          case 'h4':
-            return <h4>{children}</h4>;
-          case 'ul_list':
-            return <ul>{children}</ul>;
+const serializeData = (object: Record<string, any>): string =>
+  Object.keys(object)
+    .map(key => `${key}="${object[key]}"`)
+    .join(' ');
 
-          case 'ol_list':
-            return <ol>{children}</ol>;
-          case 'list_item':
-            return <li>{children}</li>;
-          case 'code_block':
-            return (
-              <pre>
-                <code>{children}</code>
-              </pre>
-            );
-          case 'figure':
-            return <figure>{children}</figure>;
-          case 'image': {
-            // For compatibility with https://github.com/webkom/lego
-            const data = obj.data.toJS();
-            const { fileKey } = data;
-            return (
-              <img
-                src={obj.data.get('src')}
-                data-file-key={fileKey}
-                {...data}
-                alt="Placeholder"
-              />
-            );
-          }
-          case 'image_caption':
-            return <figcaption>{children}</figcaption>;
-        }
-      }
+/**
+ *  Serialize a slate fragment to html
+ */
+export const serialize = (node: Node): string => {
+  /**
+   *  Text nodes are serialized with the corresponding tags if needed
+   */
+  if (Text.isText(node)) {
+    let text = escape(node.text);
+    if (node.bold) {
+      text = `<strong>${text}</strong>`;
     }
-  },
-  // Inlines
-  {
-    deserialize(el, next) {
-      const type = INLINE_TAGS[el.tagName.toLowerCase()];
-      if (type) {
-        if (type == 'link') {
-          return {
-            object: 'inline',
-            type: type,
-            data: {
-              url: el.getAttribute('href')
-            },
-            nodes: next(el.childNodes)
-          };
-        }
-      }
-    },
-    serialize(obj, children) {
-      if (obj.object == 'inline') {
-        switch (obj.type) {
-          case 'link':
-            return (
-              <a target="blank" href={obj.data.get('url')}>
-                {children}
-              </a>
-            );
-        }
-      }
+    if (node.italic) {
+      text = `<em property="italic">${text}</em>`;
     }
-  },
-  // Marks
-  {
-    deserialize(el, next) {
-      const type = MARK_TAGS[el.tagName.toLowerCase()];
-      if (type) {
-        return {
-          object: 'mark',
-          type: type,
-          nodes: next(el.childNodes)
-        };
+    if (node.underline) {
+      text = `<u>${text}</u>`;
+    }
+    if (node.code) {
+      text = `<code>${text}</code>`;
+    }
+    return text;
+  }
+
+  const children = node.children.map((n: Node) => serialize(n)).join('');
+
+  switch (node.type) {
+    case 'paragraph':
+      return `<p>${children}</p>`;
+    case 'h1':
+      return `<h1>${children}</h1>`;
+    case 'h2':
+      return `<h2>${children}</h2>`;
+    case 'h3':
+      return `<h3>${children}</h3>`;
+    case 'h4':
+      return `<h4>${children}</h4>`;
+    case 'ul_list':
+      return `<ul>${children}</ul>`;
+
+    case 'ol_list':
+      return `<ol>${children}</ol>`;
+    case 'list_item':
+      return `<li>${children}</li>`;
+    case 'code_block':
+      return `<pre>
+          <code>${children}</code>
+        </pre>`;
+    case 'figure':
+      return `<figure>${children}</figure>`;
+    case 'image': {
+      // For compatibility with https://github.com/webkom/lego
+      const { fileKey, src } = node;
+      return `<img
+          src=${src}
+          data-file-key=${fileKey}
+          ${serializeData({ ...node })}
+          alt="Placeholder"
+        />`;
+    }
+    case 'image_caption':
+      return `<figcaption>${children}</figcaption>`;
+    case 'link':
+      return `<a target="blank" href=${node.url}>${children}</a>`;
+    default:
+      return children;
+  }
+};
+
+/**
+ * Normalize mark nodes.
+ * We may see mark elements that contain other elements.
+ * f.ex. <em><a>example.com</a></em>
+ * In order to conform to slates structure, we need to create the
+ * slate node such that we have: <a><em>example.com</em></a>
+ */
+const normalizeMark = (node: Node, mark: string): void => {
+  for (const child of node.children) {
+    Text.isText(child) ? (child[mark] = true) : normalizeMark(child, mark);
+  }
+};
+
+/**
+ *  Deserialize a html tree to a slate fragment.
+ */
+export const deserialize = (
+  el: HTMLElement
+): Node[] | Element | Text | string | null => {
+  // See https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
+  // for what the different nodeTypes are.
+  if (el.nodeType === 3) {
+    return el.textContent;
+  } else if (el.nodeType !== 1) {
+    return null;
+  } else if (el.nodeName === 'BR') {
+    return '\n';
+  }
+
+  let children = Array.from(el.childNodes).map((n: ChildNode) =>
+    deserialize(n as HTMLElement)
+  ) as Node[];
+
+  if (children.length === 0) {
+    children = [jsx('text', {}, '')];
+  }
+
+  if (el.nodeName === 'BODY') {
+    return jsx('fragment', {}, children);
+  }
+
+  const elementType = ELEMENT_TAGS[el.nodeName.toLowerCase()];
+  if (elementType) {
+    switch (elementType) {
+      case 'figure': {
+        return jsx('element', { type: 'figure' }, children);
       }
-    },
-    serialize(obj, children) {
-      if (obj.object == 'mark') {
-        switch (obj.type) {
-          case 'italic':
-            return <em>{children}</em>;
-          case 'bold':
-            return <strong>{children}</strong>;
-          case 'underline':
-            return <u>{children}</u>;
-          case 'code':
-            return (
-              <code
-                style={{
-                  backgroundColor: '#efefef',
-                  padding: '2px 3px',
-                  borderRadius: '2px'
-                }}
-              >
-                {children}
-              </code>
-            );
-        }
+      case 'image': {
+        const fileKey = el.getAttribute('data-file-key');
+        const dataFromHtml = el.getAttributeNames().reduce(
+          (data: Record<string, any>, attrName: string) => ({
+            ...data,
+            [attrName]: el.getAttribute(attrName)
+          }),
+          {}
+        );
+        return jsx(
+          'element',
+          { type: 'image', fileKey, ...dataFromHtml },
+          children
+        );
       }
+      case 'link':
+        return jsx(
+          'element',
+          { type: 'link', url: el.getAttribute('href') },
+          children
+        );
+      default:
+        return jsx('element', { type: elementType }, children);
     }
   }
-];
 
-export const html = new Html({ rules });
+  const markType = MARK_TAGS[el.nodeName.toLowerCase()];
+  if (markType) {
+    return children.map((child: Node) => {
+      // If the child node is not a text node, we need
+      // to apply the formatting to all text nodes in that node.
+      if (child.type && child.type !== 'text') {
+        normalizeMark(child, markType);
+        return child;
+      }
+      return jsx(
+        'text',
+        {
+          [markType]: true
+        },
+        child
+      );
+    });
+  }
+  // If a tag is not recognized and cannot be serialized, traverse the children until
+  // we reach a serializeable tag or text.
+  if (children) {
+    return children;
+  }
+  return el.textContent;
+};
+
+export const deserializeHtmlString = (html: string): Node[] => {
+  const document: HTMLDocument = new DOMParser().parseFromString(
+    html,
+    'text/html'
+  );
+
+  return deserialize(document.body) as Node[];
+};

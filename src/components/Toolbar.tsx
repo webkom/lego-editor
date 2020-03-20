@@ -1,39 +1,39 @@
-import * as React from 'react';
-import { Editor, Inline, Block } from 'slate';
+import React, { useState } from 'react';
+import { Element, Editor, NodeEntry, Range, Node } from 'slate';
+import { useSlate } from 'slate-react';
+import { LEditor, Marks, Elements, nodeType } from '../index';
 import ImageUpload from './ImageUpload';
 import cx from 'classnames';
 import isUrl from 'is-url';
 
-interface ButtonProps {
+interface ButtonProps
+  extends React.ComponentPropsWithoutRef<React.FunctionComponent> {
   handler: (e: React.PointerEvent) => void;
   active?: boolean;
 }
 
-class ToolbarButton extends React.Component<ButtonProps, {}> {
-  handleClick(e: React.PointerEvent): void {
-    this.props.handler(e);
-  }
+const ToolbarButton = (props: ButtonProps): JSX.Element => {
+  const handleClick = (e: React.PointerEvent): void => {
+    props.handler(e);
+  };
 
-  render(): React.ReactNode {
-    const { children, active } = this.props;
+  const { children, active } = props;
 
-    const className = active ? '_legoEditor_Toolbar_active' : '';
-
-    return (
-      <button
-        className={cx('_legoEditor_Toolbar_button', className)}
-        onPointerDown={e => this.handleClick(e)}
-        type="button"
-      >
-        {children}
-      </button>
-    );
-  }
-}
+  const className = active ? '_legoEditor_Toolbar_active' : '';
+  return (
+    <button
+      className={cx('_legoEditor_Toolbar_button', className)}
+      onPointerDown={e => handleClick(e)}
+      type="button"
+    >
+      {children}
+    </button>
+  );
+};
 
 interface LinkInputProps {
   active: boolean;
-  activeLink?: Inline;
+  activeLink?: NodeEntry;
   toggleLinkInput: () => void;
   updateLink: ({ url }: { url: string }) => void;
 }
@@ -46,21 +46,35 @@ class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
   private input = React.createRef<HTMLInputElement>();
 
   state = {
-    value: this.props.activeLink ? this.props.activeLink.data.get('url') : ''
+    value: this.props.activeLink ? this.props.activeLink[0].url : ''
   };
 
-  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ value: e.currentTarget.value });
+  onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const prependProtocol = (url: string): string => {
+      if (!/^(?:f|ht)tps?:\/\//.test(url)) {
+        url = 'http://' + url;
+      }
+      return url;
+    };
+    this.setState({ value: prependProtocol(e.currentTarget.value) });
   };
 
-  onKeyPress = (e: React.KeyboardEvent) => {
+  componentDidMount(): void {
+    // Why is this in a setTimeout?
+    // - Because why not? (I couldn't make it work without)
+    setTimeout(() => this.input.current?.focus(), 10);
+  }
+
+  onKeyPress = (e: React.KeyboardEvent): void => {
     if (e.key == 'Enter') {
       this.submit(e);
     }
   };
 
-  submit = (e: React.FocusEvent | React.KeyboardEvent | React.MouseEvent) => {
-    e.preventDefault();
+  submit = (
+    e?: React.FocusEvent | React.KeyboardEvent | React.MouseEvent
+  ): void => {
+    e?.preventDefault();
     const { value } = this.state;
     this.props.toggleLinkInput();
     if (value == '') {
@@ -80,6 +94,7 @@ class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
           onChange={this.onChange}
           onKeyDown={this.onKeyPress}
           value={this.state.value}
+          onBlur={() => validUrl && this.submit}
         />
         <button disabled={!validUrl} onClick={this.submit}>
           Lagre
@@ -89,244 +104,193 @@ class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
   }
 }
 
-interface ToolbarProps {
-  editor: Editor;
-}
+const Toolbar = (): JSX.Element => {
+  const [insertingLink, setInsertingLink] = useState(false);
+  const [insertingImage, setInsertingImage] = useState(false);
 
-interface ToolbarState {
-  insertingLink: boolean;
-  insertingImage: boolean;
-}
+  const editor = useSlate();
 
-export default class Toolbar extends React.Component<
-  ToolbarProps,
-  ToolbarState
-> {
-  state = {
-    insertingLink: false,
-    insertingImage: false
+  const [lastSelection, setLastSelection] = useState(editor.selection);
+
+  const checkActiveMark = (type: Marks): boolean =>
+    LEditor.isMarkActive(editor, type);
+
+  const checkActiveElement = (type: Elements): boolean =>
+    LEditor.isElementActive(editor, type);
+
+  const checkActiveList = (type: 'ol_list' | 'ul_list'): boolean => {
+    const [list] = Editor.nodes(editor, {
+      match: (n: Node) => n.type === 'ol_list' || n.type === 'ul_list',
+      mode: 'lowest'
+    });
+    return list && list[0].type === type;
   };
 
-  checkActiveMark(type: string): boolean {
-    const { editor } = this.props;
-    return editor.value.activeMarks.some(
-      mark => mark != undefined && mark.type === type
-    );
-  }
-
-  checkActiveBlock(type: string): boolean {
-    const { editor } = this.props;
-    const { document } = editor.value;
-
-    if (type == 'ol_list' || type == 'ul_list') {
-      if (!editor.value.startBlock) {
-        return false;
-      }
-      const parentList = document.getClosest(
-        editor.value.startBlock.key,
-        a => a.object == 'block' && (a.type == 'ol_list' || a.type == 'ul_list')
-      ) as Block;
-
-      return parentList && parentList.type === type;
-    }
-
-    return editor.value.blocks.some(
-      block => block != undefined && block.type === type
-    );
-  }
-
-  checkActiveInline(type: string): boolean {
-    const { editor } = this.props;
-    return editor.value.inlines.some(
-      inline => inline != undefined && inline.type === type
-    );
-  }
-
-  setListType(e: React.PointerEvent, type: string): void {
-    const { editor } = this.props;
+  const setListType = (e: React.PointerEvent, type: string): void => {
     e.preventDefault();
-    editor.command('setListType', editor.query('getCurrentBlock').key, type);
-  }
+    editor.exec({ type: 'toggle_list', listType: type });
+  };
 
-  increaseIndent(e: React.PointerEvent): void {
-    const { editor } = this.props;
+  const increaseIndent = (e: React.PointerEvent): void => {
     e.preventDefault();
-    if (editor.query('isList')) {
-      editor.command('increaseListDepth', editor.query('getCurrentBlock').key);
+    if (editor.isList()) {
+      editor.exec({ type: 'increase_list_depth' });
     } else {
-      editor.insertText('\t');
+      editor.exec({ type: 'insert_text', text: '\n' });
     }
-  }
+  };
 
-  decreaseIndent(e: React.PointerEvent): void {
-    const { editor } = this.props;
+  const decreaseIndent = (e: React.PointerEvent): void => {
     e.preventDefault();
-    if (editor.query('isList')) {
-      editor.command('decreaseListDepth', editor.query('getCurrentBlock').key);
+    if (editor.isList()) {
+      editor.exec({ type: 'decrease_list_depth' });
     }
-  }
+  };
 
-  toggleMark(e: React.PointerEvent, type: string): void {
+  const toggleMark = (e: React.PointerEvent, type: Marks): void => {
     e.preventDefault();
-    const { editor } = this.props;
+    editor.exec({ type: 'toggle_mark', mark: type });
+  };
 
-    editor.toggleMark(type);
-  }
-
-  toggleBlock(e: React.PointerEvent, type: string): void {
+  const toggleBlock = (e: React.PointerEvent, type: string): void => {
     e.preventDefault();
-    const { editor } = this.props;
+    editor.exec({ type: 'toggle_block', block: type });
+  };
 
-    editor.command('toggleBlock', type);
-  }
+  const toggleLinkInput = (): void => {
+    setLastSelection(editor.selection);
+    setInsertingLink(!insertingLink);
+  };
 
-  toggleLinkInput(): void {
-    this.setState({ insertingLink: !this.state.insertingLink });
-  }
+  const updateLink = (data: { url: string }): void => {
+    const { url } = data;
 
-  updateLink(data: { url: string }): void {
-    const { editor } = this.props;
-    const { selection } = editor.value;
-    const { start, isCollapsed } = selection;
+    const isCollapsed = lastSelection && Range.isCollapsed(lastSelection);
 
-    if (this.checkActiveInline('link')) {
-      // @ts-ignore
-      editor.setNodeByKey(this.getCurrentLink().key, { data, type: 'link' });
+    if (checkActiveElement('link')) {
+      Editor.setNodes(editor, { url }, { match: nodeType('link') });
     } else {
       if (isCollapsed) {
-        editor
-          .insertText(data.url)
-          .moveAnchorTo(start.offset)
-          .moveFocusTo(start.offset + data.url.length);
+        Editor.insertNodes(editor, {
+          type: 'link',
+          url,
+          children: [{ text: url }],
+          at: lastSelection
+        });
+      } else {
+        editor.exec({ type: 'wrap_link', url: data.url, at: lastSelection });
       }
-      editor.command('wrapLink', data.url);
     }
-  }
+  };
 
-  getCurrentLink(): Inline | undefined {
-    const { editor } = this.props;
+  const getCurrentLink = (): NodeEntry | undefined => {
+    const [match] = Editor.nodes(editor, {
+      match: nodeType('link'),
+      mode: 'all'
+    });
+    return match;
+  };
 
-    if (!this.checkActiveInline('link')) {
-      return;
-    }
-
-    // @ts-ignore - previous line already checks that inline is not undefined
-    return editor.value.inlines.find(inline => inline.type == 'link');
-  }
-
-  openImageUploader(e: React.PointerEvent): void {
+  const openImageUploader = (e: React.PointerEvent): void => {
     e.preventDefault();
-    this.setState({ insertingImage: true });
-  }
+    setInsertingImage(true);
+  };
 
-  insertImage(image: Blob, data?: Record<string, any>): void {
-    const { editor } = this.props;
+  const insertImage = (image: Blob, data?: Record<string, any>): void => {
+    setInsertingImage(false);
+    editor.exec({ type: 'insert_image', file: image, ...data });
+  };
 
-    this.setState({ insertingImage: false });
-    editor.command('insertImage', image, data);
-  }
+  return (
+    <div className="_legoEditor_Toolbar_root">
+      <ToolbarButton
+        active={checkActiveElement('h1')}
+        handler={e => toggleBlock(e, 'h1')}
+      >
+        H1
+      </ToolbarButton>
+      <ToolbarButton
+        active={checkActiveElement('h4')}
+        handler={e => toggleBlock(e, 'h4')}
+      >
+        H4
+      </ToolbarButton>
+      <ToolbarButton
+        active={checkActiveMark('bold')}
+        handler={e => toggleMark(e, 'bold')}
+      >
+        <i className="fa fa-bold" />
+      </ToolbarButton>
+      <ToolbarButton
+        active={checkActiveMark('italic')}
+        handler={e => toggleMark(e, 'italic')}
+      >
+        <i className="fa fa-italic" />
+      </ToolbarButton>
+      <ToolbarButton
+        active={checkActiveMark('underline')}
+        handler={e => toggleMark(e, 'underline')}
+      >
+        <i className="fa fa-underline" />
+      </ToolbarButton>
+      <ToolbarButton
+        active={checkActiveMark('code')}
+        handler={e => toggleMark(e, 'code')}
+      >
+        <i className="fa fa-code" />
+      </ToolbarButton>
+      <ToolbarButton
+        active={checkActiveElement('code_block')}
+        handler={e => toggleBlock(e, 'code_block')}
+      >
+        <i className="fa fa-file-code-o" />
+      </ToolbarButton>
+      <ToolbarButton
+        active={checkActiveList('ul_list')}
+        handler={e => setListType(e, 'ul_list')}
+      >
+        <i className="fa fa-list-ul" />
+      </ToolbarButton>
+      <ToolbarButton
+        active={checkActiveList('ol_list')}
+        handler={e => setListType(e, 'ol_list')}
+      >
+        <i className="fa fa-list-ol" />
+      </ToolbarButton>
+      <ToolbarButton handler={e => decreaseIndent(e)}>
+        <i className="fa fa-outdent" />
+      </ToolbarButton>
+      <ToolbarButton handler={e => increaseIndent(e)}>
+        <i className="fa fa-indent" />
+      </ToolbarButton>
+      <ToolbarButton
+        active={checkActiveElement('link')}
+        handler={() => toggleLinkInput()}
+      >
+        <i className="fa fa-link" />
+      </ToolbarButton>
+      {insertingLink && (
+        <LinkInput
+          active={checkActiveElement('link')}
+          toggleLinkInput={() => toggleLinkInput()}
+          updateLink={(...args) => updateLink(...args)}
+          activeLink={getCurrentLink()}
+        />
+      )}
+      <ToolbarButton
+        handler={e => openImageUploader(e)}
+        active={insertingImage}
+      >
+        <i className="fa fa-image" />
+      </ToolbarButton>
+      {insertingImage && (
+        <ImageUpload
+          uploadFunction={img => insertImage(img)}
+          cancel={() => setInsertingImage(false)}
+        />
+      )}
+    </div>
+  );
+};
 
-  onClose(): void {
-    this.setState({ insertingImage: false });
-  }
-
-  onSubmit(image: Blob): void {
-    const { editor } = this.props;
-    editor.command('insertImage', image);
-  }
-
-  render(): React.ReactNode {
-    const { insertingLink, insertingImage } = this.state;
-
-    return (
-      <div className="_legoEditor_Toolbar_root">
-        <ToolbarButton
-          active={this.checkActiveBlock('h1')}
-          handler={e => this.toggleBlock(e, 'h1')}
-        >
-          H1
-        </ToolbarButton>
-        <ToolbarButton
-          active={this.checkActiveBlock('h4')}
-          handler={e => this.toggleBlock(e, 'h4')}
-        >
-          H4
-        </ToolbarButton>
-        <ToolbarButton
-          active={this.checkActiveMark('bold')}
-          handler={e => this.toggleMark(e, 'bold')}
-        >
-          <i className="fa fa-bold" />
-        </ToolbarButton>{' '}
-        <ToolbarButton
-          active={this.checkActiveMark('italic')}
-          handler={e => this.toggleMark(e, 'italic')}
-        >
-          <i className="fa fa-italic" />
-        </ToolbarButton>
-        <ToolbarButton
-          active={this.checkActiveMark('underline')}
-          handler={e => this.toggleMark(e, 'underline')}
-        >
-          <i className="fa fa-underline" />
-        </ToolbarButton>
-        <ToolbarButton
-          active={this.checkActiveMark('code')}
-          handler={e => this.toggleMark(e, 'code')}
-        >
-          <i className="fa fa-code" />
-        </ToolbarButton>
-        <ToolbarButton
-          active={this.checkActiveBlock('code_block')}
-          handler={e => this.toggleBlock(e, 'code_block')}
-        >
-          <i className="fa fa-file-code-o" />
-        </ToolbarButton>
-        <ToolbarButton
-          active={this.checkActiveBlock('ul_list')}
-          handler={e => this.setListType(e, 'ul_list')}
-        >
-          <i className="fa fa-list-ul" />
-        </ToolbarButton>
-        <ToolbarButton
-          active={this.checkActiveBlock('ol_list')}
-          handler={e => this.setListType(e, 'ol_list')}
-        >
-          <i className="fa fa-list-ol" />
-        </ToolbarButton>
-        <ToolbarButton handler={e => this.decreaseIndent(e)}>
-          <i className="fa fa-outdent" />
-        </ToolbarButton>
-        <ToolbarButton handler={e => this.increaseIndent(e)}>
-          <i className="fa fa-indent" />
-        </ToolbarButton>
-        <ToolbarButton
-          active={this.checkActiveInline('link')}
-          handler={() => this.toggleLinkInput()}
-        >
-          <i className="fa fa-link" />
-        </ToolbarButton>
-        {insertingLink && (
-          <LinkInput
-            active={this.checkActiveInline('link')}
-            toggleLinkInput={() => this.toggleLinkInput()}
-            updateLink={(...args) => this.updateLink(...args)}
-            activeLink={this.getCurrentLink()}
-          />
-        )}
-        <ToolbarButton
-          handler={e => this.openImageUploader(e)}
-          active={insertingImage}
-        >
-          <i className="fa fa-image" />
-        </ToolbarButton>
-        {insertingImage && (
-          <ImageUpload
-            uploadFunction={img => this.insertImage(img)}
-            cancel={() => this.setState({ insertingImage: false })}
-          />
-        )}
-      </div>
-    );
-  }
-}
+export default Toolbar;

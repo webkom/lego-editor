@@ -1,25 +1,24 @@
 import * as React from 'react';
-import { Editor, Node } from 'slate';
-import { RenderAttributes } from 'slate-react';
+import { RenderElementProps, useFocused } from 'slate-react';
 
-interface Props {
-  editor: Editor;
+interface Props extends RenderElementProps {
   src: string;
-  isFocused: boolean;
-  attributes: RenderAttributes;
-  node: Node;
 }
 
-export default class ImageBlock extends React.Component<Props> {
-  render(): React.ReactNode {
-    const { src, attributes, isFocused } = this.props;
-    return (
+const ImageBlock = (props: Props): JSX.Element => {
+  const { src, children } = props;
+
+  const isFocused = useFocused();
+  return (
+    <div>
       <img
         src={src}
         alt="Failed to load image..."
         className={isFocused ? '_legoEditor_imgSelected' : '_legoEditor_img'}
-        {...attributes}
       />
-    );
-  }
-}
+      {children}
+    </div>
+  );
+};
+
+export default ImageBlock;
