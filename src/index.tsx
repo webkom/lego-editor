@@ -92,11 +92,114 @@ export const LEditor = {
 
 const initialValue: Node[] = [{ type: 'paragraph', children: [{ text: '' }] }];
 
+// Components to be rendered for leaf nodes
+const renderLeaf = (props: RenderLeafProps): JSX.Element => {
+  const { leaf } = props;
+  let { children } = props;
+  if (leaf.bold) {
+    children = <strong>{children}</strong>;
+  }
+  if (leaf.italic) {
+    children = <em property="italic">{children}</em>;
+  }
+  if (leaf.underline) {
+    children = <u>{children}</u>;
+  }
+  if (leaf.code) {
+    children = <code>{children}</code>;
+  }
+  return <span {...props.attributes}>{children}</span>;
+};
+
+// Components te be rendered for nodes
+const renderElement = (props: RenderElementProps): JSX.Element => {
+  const { attributes, children, element } = props;
+  switch (element.type) {
+    case 'paragraph':
+      return (
+        <p className={'_legoEditor_paragraph'} {...attributes}>
+          {children}
+        </p>
+      );
+    case 'h1':
+      return <h1 {...attributes}>{children}</h1>;
+    case 'h2':
+      return <h2 {...attributes}>{children}</h2>;
+    case 'h3':
+      return <h3 {...attributes}>{children}</h3>;
+    case 'h4':
+      return <h4 {...attributes}>{children}</h4>;
+    case 'h5':
+      return <h5 {...attributes}>{children}</h5>;
+    case 'ul_list':
+      return (
+        <ul className={'_legoEditor_ul_list'} {...attributes}>
+          {children}
+        </ul>
+      );
+    case 'ol_list':
+      return (
+        <ol className={'_legoEditor_ol_list'} {...attributes}>
+          {children}
+        </ol>
+      );
+    case 'list_item':
+      return (
+        <li className={'_legoEditor_li'} {...attributes}>
+          {children}
+        </li>
+      );
+    case 'code_block':
+      return (
+        <pre {...attributes}>
+          <code>{children}</code>
+        </pre>
+      );
+    case 'quote':
+      return <blockquote {...attributes}>{children}</blockquote>;
+    case 'figure':
+      return (
+        <figure className="_legoEditor_figure" {...attributes}>
+          {children}
+        </figure>
+      );
+    case 'image': {
+      const src = element.src || element.objectUrl;
+      return <ImageBlock src={src} {...props} />;
+    }
+    case 'image_caption':
+      return (
+        <figcaption
+          className="_legoEditor_figcaption"
+          {...attributes}
+          placeholder={'Figure caption'}
+        >
+          {children}
+        </figcaption>
+      );
+    // Inlines
+    case 'link':
+      return (
+        <a {...attributes} href={element.url}>
+          {children}
+        </a>
+      );
+    default:
+      return <p {...attributes}>{children}</p>;
+  }
+};
+
 const LegoEditor = (props: Props): JSX.Element => {
+  // Debounce onchange function to improve performance with expensive handlers
+  // like redux-form
+  const debouncedOnChange = useMemo(
+    () => props.onChange && debounce(props.onChange, 250),
+    [props.onChange]
+  );
+
   const onChange = (value: Node[]): void => {
     setValue(value);
-    // Debounce onchange function to improve performance
-    props.onChange && debounce(props.onChange, 250)(serialize(editor));
+    debouncedOnChange && debouncedOnChange(serialize(editor));
   };
 
   const onKeyDown = (event: React.KeyboardEvent): void => {
@@ -117,108 +220,11 @@ const LegoEditor = (props: Props): JSX.Element => {
     }
   };
 
-  // Components to be rendered for leaf nodes
-  const renderLeaf = (props: RenderLeafProps): JSX.Element => {
-    const { leaf } = props;
-    let { children } = props;
-    if (leaf.bold) {
-      children = <strong>{children}</strong>;
-    }
-    if (leaf.italic) {
-      children = <em property="italic">{children}</em>;
-    }
-    if (leaf.underline) {
-      children = <u>{children}</u>;
-    }
-    if (leaf.code) {
-      children = <code>{children}</code>;
-    }
-    return <span {...props.attributes}>{children}</span>;
-  };
-
-  // Components te be rendered for nodes
-  const renderElement = (props: RenderElementProps): JSX.Element => {
-    const { attributes, children, element } = props;
-    switch (element.type) {
-      case 'paragraph':
-        return (
-          <p className={'_legoEditor_paragraph'} {...attributes}>
-            {children}
-          </p>
-        );
-      case 'h1':
-        return <h1 {...attributes}>{children}</h1>;
-      case 'h2':
-        return <h2 {...attributes}>{children}</h2>;
-      case 'h3':
-        return <h3 {...attributes}>{children}</h3>;
-      case 'h4':
-        return <h4 {...attributes}>{children}</h4>;
-      case 'h5':
-        return <h5 {...attributes}>{children}</h5>;
-      case 'ul_list':
-        return (
-          <ul className={'_legoEditor_ul_list'} {...attributes}>
-            {children}
-          </ul>
-        );
-      case 'ol_list':
-        return (
-          <ol className={'_legoEditor_ol_list'} {...attributes}>
-            {children}
-          </ol>
-        );
-      case 'list_item':
-        return (
-          <li className={'_legoEditor_li'} {...attributes}>
-            {children}
-          </li>
-        );
-      case 'code_block':
-        return (
-          <pre {...attributes}>
-            <code>{children}</code>
-          </pre>
-        );
-      case 'quote':
-        return <blockquote {...attributes}>{children}</blockquote>;
-      case 'figure':
-        return (
-          <figure className="_legoEditor_figure" {...attributes}>
-            {children}
-          </figure>
-        );
-      case 'image': {
-        const src = element.src || element.objectUrl;
-        return <ImageBlock src={src} {...props} />;
-      }
-      case 'image_caption':
-        return (
-          <figcaption
-            className="_legoEditor_figcaption"
-            {...attributes}
-            placeholder={'Figure caption'}
-          >
-            {children}
-          </figcaption>
-        );
-      // Inlines
-      case 'link':
-        return (
-          <a {...attributes} href={element.url}>
-            {children}
-          </a>
-        );
-      default:
-        return <p {...attributes}>{children}</p>;
-    }
-  };
-
   const onFocus = (event: React.SyntheticEvent): void =>
-    props.onBlur && props.onBlur(event);
+    props.onFocus && props.onFocus(event);
 
   const onBlur = (event: React.SyntheticEvent): void =>
-    props.onFocus && props.onFocus(event);
+    props.onBlur && props.onBlur(event);
 
   // Dont remove this or the app won't build!
   const otherPlugins = props.plugins || [];
