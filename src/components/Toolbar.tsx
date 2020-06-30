@@ -10,6 +10,7 @@ interface ButtonProps
   extends React.ComponentPropsWithoutRef<React.FunctionComponent> {
   handler: (e: React.PointerEvent) => void;
   active?: boolean;
+  children: any; // FIXME eslint being weird. This should not be needed
 }
 
 const ToolbarButton = (props: ButtonProps): JSX.Element => {

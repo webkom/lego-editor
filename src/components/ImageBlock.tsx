@@ -3,6 +3,7 @@ import { RenderElementProps, useFocused } from 'slate-react';
 
 interface Props extends RenderElementProps {
   src: string;
+  children: any;
 }
 
 const ImageBlock = (props: Props): JSX.Element => {
