@@ -27,8 +27,8 @@ const cropImage = (
   }
   ctx.drawImage(
     image,
-    crop.x * scaleX,
-    crop.y * scaleY,
+    (crop.x || 0) * scaleX,
+    (crop.y || 0) * scaleY,
     crop.width * scaleX,
     crop.height * scaleY,
     0,
