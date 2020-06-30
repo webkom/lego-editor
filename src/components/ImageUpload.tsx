@@ -97,7 +97,11 @@ export default class ImageUpload extends React.Component<Props, State> {
     const { currentImage, crop } = this.state;
 
     return (
-      <Modal isOpen={true} className="_legoEditor_imageUploader_modal">
+      <Modal
+        ariaHideApp={false}
+        isOpen={true}
+        className="_legoEditor_imageUploader_modal"
+      >
         <div className="_legoEditor_imageUploader_wrapper">
           <div className="_legoEditor_imageUploader_root">
             <div className="_legoEditor_imageUploader_crop_wrapper">
