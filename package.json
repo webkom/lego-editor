@@ -33,7 +33,7 @@
     "react-modal": "^3.11.2",
     "slate": "^0.56.0",
     "slate-history": "^0.56.0",
-    "slate-hyperscript": "^0.56.0",
+    "slate-hyperscript": "^0.58.4",
     "slate-react": "^0.56.0"
   },
   "peerDependencies": {
