@@ -32,7 +32,7 @@ const MARK_TAGS: TAGS = {
   code: 'code'
 };
 
-const serializeData = (object: Record<string, any>): string =>
+const serializeData = (object: Record<string, unknown>): string =>
   Object.keys(object)
     .map(key => `${key}="${object[key]}"`)
     .join(' ');
@@ -157,7 +157,7 @@ export const deserialize = (
       case 'image': {
         const fileKey = el.getAttribute('data-file-key');
         const dataFromHtml = el.getAttributeNames().reduce(
-          (data: Record<string, any>, attrName: string) => ({
+          (data: Record<string, unknown>, attrName: string) => ({
             ...data,
             [attrName]: el.getAttribute(attrName)
           }),

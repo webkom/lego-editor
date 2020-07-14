@@ -4,7 +4,7 @@ import cx from 'classnames';
 
 interface Props extends RenderElementProps {
   src: string;
-  children: any;
+  children: unknown;
   uploading?: boolean;
 }
 

@@ -10,7 +10,6 @@ interface ButtonProps
   extends React.ComponentPropsWithoutRef<React.FunctionComponent> {
   handler: (e: React.PointerEvent) => void;
   active?: boolean;
-  children: any; // FIXME eslint being weird. This should not be needed
 }
 
 const ToolbarButton = (props: ButtonProps): JSX.Element => {
@@ -18,6 +17,8 @@ const ToolbarButton = (props: ButtonProps): JSX.Element => {
     props.handler(e);
   };
 
+  // https://github.com/yannickcr/eslint-plugin-react/issues/2654
+  // eslint-disable-next-line react/prop-types
   const { children, active } = props;
 
   const className = active ? '_legoEditor_Toolbar_active' : '';
@@ -198,7 +199,7 @@ const Toolbar = (): JSX.Element => {
     setInsertingImage(true);
   };
 
-  const insertImage = (image: Blob, data?: Record<string, any>): void => {
+  const insertImage = (image: Blob, data?: Record<string, unknown>): void => {
     editor.exec({
       type: 'insert_image',
       file: image,

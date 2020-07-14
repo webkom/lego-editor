@@ -2,7 +2,7 @@ import { Editor, Command, Element, NodeEntry, Node, Location } from 'slate';
 import { DEFAULT_BLOCK, nodeType } from '../index';
 
 interface Options {
-  uploadFunction: (file: Blob) => Promise<Record<string, any>>;
+  uploadFunction: (file: Blob) => Promise<Record<string, unknown>>;
 }
 
 /**
@@ -14,7 +14,7 @@ const images = (options: Options): ((editor: Editor) => Editor) => {
     const { exec, isVoid, normalizeNode } = editor;
 
     editor.exec = (
-      command: Command & { src?: string; file?: any; at?: Location }
+      command: Command & { src?: string; file?: unknown; at?: Location }
     ) => {
       if (command.type === 'insert_image') {
         const { file, src, at } = command;
@@ -22,29 +22,30 @@ const images = (options: Options): ((editor: Editor) => Editor) => {
           return;
         }
         const objectUrl = URL.createObjectURL(file);
-        uploadFunction(file).then((returnData: Record<string, any>) =>
-          Editor.insertNodes(
-            editor,
-            {
-              type: 'figure',
-              children: [
-                {
-                  type: 'image',
-                  objectUrl,
-                  src: src || returnData?.src,
-                  children: [{ text: '' }],
-                  ...returnData
-                },
-                {
-                  type: 'image_caption',
-                  children: [{ text: 'Caption', italic: true }]
-                }
-              ]
-            },
-            {
-              at: at
-            }
-          )
+        uploadFunction(file as Blob).then(
+          (returnData: Record<string, unknown>) =>
+            Editor.insertNodes(
+              editor,
+              {
+                type: 'figure',
+                children: [
+                  {
+                    type: 'image',
+                    objectUrl,
+                    src: src || returnData?.src,
+                    children: [{ text: '' }],
+                    ...returnData
+                  },
+                  {
+                    type: 'image_caption',
+                    children: [{ text: 'Caption', italic: true }]
+                  }
+                ]
+              },
+              {
+                at: at
+              }
+            )
         );
       } else {
         exec(command);
