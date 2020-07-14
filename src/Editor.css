@@ -105,6 +105,8 @@
 }
 
 ._legoEditor_img {
+  min-width: 50px;
+  min-height: 50px;
   border: none;
 }
 

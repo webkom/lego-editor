@@ -38,18 +38,19 @@ The `<Editor />` component accepts the prop `plugins`, which takes an array of p
 
 ## Props
 
-| name          | Type                                  | Default | Description                                                                                                        |
-| ------------- | ------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------ |
-| `value`       | `string`                              |         | The editors value/default value                                                                                    |
-| `disabled`    | `Boolean`                             | `False` | Disables the ability to edit the content                                                                           |
-| `simple`      | `Boolean`                             | `False` | Removes the toolbar.                                                                                               |
-| `onChange`    | `string => void`                      |         | Handler called when the editor value changes. Takes the serialized value                                           |
-| `onBlur`      | `event => void`                       |         | Handler called on blur                                                                                             |
-| `onFocus`     | `event => void`                       |         | Handler called on focus                                                                                            |
-| `autoFocus`   | `Boolean`                             | `False` | Enables autoFocus                                                                                                  |
-| `placeholder` | `string`                              |         | A placeholder shown when the editor is empty                                                                       |
-| `imageUpload` | `Blob => Promise<Record<string,any>>` |         | A function for uploading images. Should contain `src` in the promise object.                                       |
-| `plugins`     | `(Editor => Editor)[]`                |         | An array of plugins to load. The first plugin will be applied first (the last one will override any other plugins) |
+| name          | Type                                  | Default | Description                                                                                                                                                                     |
+| ------------- | ------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`       | `string`                              |         | The editors value/default value                                                                                                                                                 |
+| `disabled`    | `Boolean`                             | `False` | Disables the ability to edit the content                                                                                                                                        |
+| `simple`      | `Boolean`                             | `False` | Removes the toolbar.                                                                                                                                                            |
+| `onChange`    | `string => void`                      |         | Handler called when the editor value changes. Takes the serialized value                                                                                                        |
+| `onBlur`      | `event => void`                       |         | Handler called on blur                                                                                                                                                          |
+| `onFocus`     | `event => void`                       |         | Handler called on focus                                                                                                                                                         |
+| `autoFocus`   | `Boolean`                             | `False` | Enables autoFocus                                                                                                                                                               |
+| `placeholder` | `string`                              |         | A placeholder shown when the editor is empty                                                                                                                                    |
+| `imageUpload` | `Blob => Promise<Record<string,any>>` |         | A function for uploading images. Should contain `src` in the promise object.                                                                                                    |
+| `plugins`     | `(Editor => Editor)[]`                |         | An array of plugins to load. The first plugin will be applied first (the last one will override any other plugins)                                                              |
+| `domParser`   | `string => HTMLDocument`              |         | Custom function that the deserializer will use to parse the input value to a HTML document. Can be useful for environments where the browser API is not available, like Node.js |
 
 > See type definitions for more detailed types
 

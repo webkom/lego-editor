@@ -135,7 +135,8 @@ export const deserialize = (
     return '\n';
   }
 
-  let children = Array.from(el.childNodes).map((n: ChildNode) =>
+  // This is flatmapped to make sure we have a situation where a child is an array.
+  let children = Array.from(el.childNodes).flatMap((n: ChildNode) =>
     deserialize(n as HTMLElement)
   ) as Node[];
 
@@ -205,11 +206,26 @@ export const deserialize = (
   return el.textContent;
 };
 
-export const deserializeHtmlString = (html: string): Node[] => {
-  const document: HTMLDocument = new DOMParser().parseFromString(
-    html,
-    'text/html'
-  );
+interface DeserializerOptions {
+  domParser?: (value: string) => HTMLDocument;
+}
+
+/**
+ * Deserialize a string of html to a html document in order to convert to the slate object model.
+ *
+ * Specify a `domParser` in `options` in order to use another parser than the one included in common
+ * browsers. (Required when running in node.js).
+ */
+export const deserializeHtmlString = (
+  html: string,
+  options?: DeserializerOptions
+): Node[] => {
+  let document: HTMLDocument;
+  if (options?.domParser) {
+    document = options.domParser(html);
+  } else {
+    document = new DOMParser().parseFromString(html, 'text/html');
+  }
 
   return deserialize(document.body) as Node[];
 };
