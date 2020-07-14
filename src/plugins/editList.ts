@@ -6,7 +6,7 @@ import {
   Location,
   NodeEntry,
   Command,
-  Range
+  Range,
 } from 'slate';
 import isHotKey from 'is-hotkey';
 import { DEFAULT_BLOCK, nodeType } from '../index';
@@ -35,7 +35,7 @@ type Exec = (command: Command) => void;
  */
 const editList = (editor: Editor): Editor => {
   const { exec, normalizeNode } = editor;
-  editor.exec = command => {
+  editor.exec = (command) => {
     if (command.type === 'key_handler' && !editor.isList()) {
       const { event } = command;
       if (isHotKey('mod+l')(event)) {
@@ -47,7 +47,7 @@ const editList = (editor: Editor): Editor => {
     } else if (command.type === 'key_handler' && editor.isList()) {
       const parentList = Editor.nodes(editor, {
         match: (node: Node) =>
-          node.type === 'ul_list' || node.type === 'ol_list'
+          node.type === 'ul_list' || node.type === 'ol_list',
       });
       if (!parentList) {
         return exec(command);
@@ -244,7 +244,7 @@ const getListItem = (editor: Editor, at?: Location): NodeEntry | undefined => {
     const [match] = Editor.nodes(editor, {
       at,
       match: nodeType('list_item'),
-      reverse: true
+      reverse: true,
     });
     return match;
   }
@@ -261,7 +261,7 @@ const getParentList = (
   if (!!at || editor.selection !== null) {
     return Editor.above(editor, {
       match: isList,
-      at: at || editor.selection?.anchor
+      at: at || editor.selection?.anchor,
     });
   }
 };
@@ -274,7 +274,7 @@ const getListDepth = (editor: Editor, at?: Location): number => {
   const listNodes = Editor.nodes(editor, {
     at,
     match: isList,
-    reverse: true
+    reverse: true,
   });
   return Array.from(listNodes).length;
 };
@@ -291,7 +291,7 @@ const increaseListDepth = (editor: Editor, at?: Location): void => {
   if (Range.isRange(at || editor.selection)) {
     const listItemEntries = Editor.nodes(editor, {
       at: at,
-      match: nodeType('list_item')
+      match: nodeType('list_item'),
     });
     const pathRefs = Array.from(listItemEntries, ([, path]) =>
       Editor.pathRef(editor, path)
@@ -352,7 +352,7 @@ const decreaseListDepth = (editor: Editor, at?: Location): void => {
   if (Range.isRange(at || editor.selection)) {
     const listItemEntries = Editor.nodes(editor, {
       at: at,
-      match: nodeType('list_item')
+      match: nodeType('list_item'),
     });
     const pathRefs = Array.from(listItemEntries, ([, path]) =>
       Editor.pathRef(editor, path)
@@ -378,7 +378,7 @@ const decreaseListDepth = (editor: Editor, at?: Location): void => {
     Editor.unwrapNodes(editor, {
       match: nodeType(parentList.type),
       at: listItemPath,
-      split: true
+      split: true,
     });
     if (depth === 1) {
       const listItemPath = listItemPathRef.unref();
@@ -386,11 +386,11 @@ const decreaseListDepth = (editor: Editor, at?: Location): void => {
         const [blockEntry] = Editor.nodes(editor, {
           at: listItemPath,
           match: (n: Node) => Editor.isBlock(editor, n),
-          mode: 'lowest'
+          mode: 'lowest',
         });
         Editor.unwrapNodes(editor, {
           match: nodeType('list_item'),
-          at: blockEntry[1]
+          at: blockEntry[1],
         });
       }
     }
@@ -410,7 +410,7 @@ const setListType = (editor: Editor, command: Command): void => {
     if (!parentList) {
       [parentList] = Editor.nodes(editor, {
         match: isList,
-        mode: 'highest'
+        mode: 'highest',
       });
     }
 
@@ -427,7 +427,7 @@ const setListType = (editor: Editor, command: Command): void => {
         // We go through all the selected blocks that are not list blocks
         const selectedBlocks = Editor.nodes(editor, {
           match: (n: Node) =>
-            Editor.isBlock(editor, n) && n.type !== 'list_item' && !isList(n)
+            Editor.isBlock(editor, n) && n.type !== 'list_item' && !isList(n),
         });
         const pathRefs = Array.from(selectedBlocks, ([, path]) =>
           Editor.pathRef(editor, path)
@@ -462,7 +462,7 @@ const setListType = (editor: Editor, command: Command): void => {
         // We toggle the listType off
         if (!change) {
           const selectedListItems = Editor.nodes(editor, {
-            match: nodeType('list_item')
+            match: nodeType('list_item'),
           });
 
           const pathRefs = Array.from(selectedListItems, ([, path]) =>
@@ -479,7 +479,7 @@ const setListType = (editor: Editor, command: Command): void => {
     } else {
       // There is no list in the selection and we can wrap all blocks in a list
       const selectedNodes = Editor.nodes(editor, {
-        match: (n: Node) => Element.isElement(n)
+        match: (n: Node) => Element.isElement(n),
       });
       for (const [, nodePath] of selectedNodes) {
         if (!editor.isList({ at: nodePath })) {
@@ -489,7 +489,7 @@ const setListType = (editor: Editor, command: Command): void => {
       // Wrap app nodes in a single list
       Editor.wrapNodes(editor, {
         type: listType,
-        children: []
+        children: [],
       });
       // Wrap all the selected blocks in its own list_item
       for (const pathRef of Editor.pathRefs(editor)) {
@@ -499,7 +499,7 @@ const setListType = (editor: Editor, command: Command): void => {
             editor,
             {
               type: 'list_item',
-              children: []
+              children: [],
             },
             { at: path }
           );

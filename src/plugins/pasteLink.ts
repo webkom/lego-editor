@@ -20,7 +20,7 @@ const links = (editor: Editor): Editor => {
         Editor.insertNodes(editor, {
           type: 'link',
           url: command.url,
-          children: [{ text: command.text || command.url }]
+          children: [{ text: command.text || command.url }],
         });
         break;
       case 'wrap_link': {
@@ -33,7 +33,7 @@ const links = (editor: Editor): Editor => {
             Editor.unwrapNodes(editor, {
               match: nodeType('link'),
               split: true,
-              at
+              at,
             });
           }
           Editor.wrapNodes(

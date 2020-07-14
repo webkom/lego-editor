@@ -4,7 +4,7 @@ import {
   Editable,
   withReact,
   RenderElementProps,
-  RenderLeafProps
+  RenderLeafProps,
 } from 'slate-react';
 import { createEditor, Editor, Node, Location } from 'slate';
 import { withHistory } from 'slate-history';
@@ -18,7 +18,7 @@ import {
   lists,
   links,
   images,
-  markdownShortcuts
+  markdownShortcuts,
 } from './plugins';
 import { serialize, deserializeHtmlString } from './serializer';
 import { debounce } from 'lodash';
@@ -74,7 +74,7 @@ export const LEditor = {
   isElementActive(editor: Editor, type: Elements, options?: { at?: Location }) {
     const [match] = Editor.nodes(editor, {
       match: nodeType(type),
-      at: options?.at
+      at: options?.at,
     });
     return !!match;
   },
@@ -84,11 +84,11 @@ export const LEditor = {
     }
     const match = Editor.above(editor, {
       match: nodeType(type),
-      voids: true
+      voids: true,
     });
     return !!match;
   },
-  ...Editor
+  ...Editor,
 };
 
 const initialValue: Node[] = [{ type: 'paragraph', children: [{ text: '' }] }];
@@ -239,7 +239,7 @@ const LegoEditor = (props: Props): JSX.Element => {
     links,
     images({ uploadFunction: props.imageUpload }),
     markdownShortcuts,
-    ...otherPlugins
+    ...otherPlugins,
   ].reverse();
 
   const editor = useMemo(
@@ -250,7 +250,7 @@ const LegoEditor = (props: Props): JSX.Element => {
   const [value, setValue] = useState(
     props.value
       ? deserializeHtmlString(props.value, {
-          domParser: props.domParser
+          domParser: props.domParser,
         })
       : initialValue
   );

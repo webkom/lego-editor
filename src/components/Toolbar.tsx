@@ -25,7 +25,7 @@ const ToolbarButton = (props: ButtonProps): JSX.Element => {
   return (
     <button
       className={cx('_legoEditor_Toolbar_button', className)}
-      onPointerDown={e => handleClick(e)}
+      onPointerDown={(e) => handleClick(e)}
       type="button"
     >
       {children}
@@ -48,7 +48,7 @@ class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
   private input = React.createRef<HTMLInputElement>();
 
   state = {
-    value: this.props.activeLink ? this.props.activeLink[0].url : ''
+    value: this.props.activeLink ? this.props.activeLink[0].url : '',
   };
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -123,7 +123,7 @@ const Toolbar = (): JSX.Element => {
   const checkActiveList = (type: 'ol_list' | 'ul_list'): boolean => {
     const [list] = Editor.nodes(editor, {
       match: (n: Node) => n.type === 'ol_list' || n.type === 'ul_list',
-      mode: 'lowest'
+      mode: 'lowest',
     });
     return list && list[0].type === type;
   };
@@ -177,7 +177,7 @@ const Toolbar = (): JSX.Element => {
           type: 'link',
           url,
           children: [{ text: url }],
-          at: lastSelection
+          at: lastSelection,
         });
       } else {
         editor.exec({ type: 'wrap_link', url: data.url, at: lastSelection });
@@ -188,7 +188,7 @@ const Toolbar = (): JSX.Element => {
   const getCurrentLink = (): NodeEntry | undefined => {
     const [match] = Editor.nodes(editor, {
       match: nodeType('link'),
-      mode: 'all'
+      mode: 'all',
     });
     return match;
   };
@@ -204,7 +204,7 @@ const Toolbar = (): JSX.Element => {
       type: 'insert_image',
       file: image,
       at: lastSelection,
-      ...data
+      ...data,
     });
     setInsertingImage(false);
   };
@@ -213,62 +213,62 @@ const Toolbar = (): JSX.Element => {
     <div className="_legoEditor_Toolbar_root">
       <ToolbarButton
         active={checkActiveElement('h1')}
-        handler={e => toggleBlock(e, 'h1')}
+        handler={(e) => toggleBlock(e, 'h1')}
       >
         H1
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveElement('h3')}
-        handler={e => toggleBlock(e, 'h3')}
+        handler={(e) => toggleBlock(e, 'h3')}
       >
         H3
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('bold')}
-        handler={e => toggleMark(e, 'bold')}
+        handler={(e) => toggleMark(e, 'bold')}
       >
         <i className="fa fa-bold" />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('italic')}
-        handler={e => toggleMark(e, 'italic')}
+        handler={(e) => toggleMark(e, 'italic')}
       >
         <i className="fa fa-italic" />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('underline')}
-        handler={e => toggleMark(e, 'underline')}
+        handler={(e) => toggleMark(e, 'underline')}
       >
         <i className="fa fa-underline" />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('code')}
-        handler={e => toggleMark(e, 'code')}
+        handler={(e) => toggleMark(e, 'code')}
       >
         <i className="fa fa-code" />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveElement('code_block')}
-        handler={e => toggleBlock(e, 'code_block')}
+        handler={(e) => toggleBlock(e, 'code_block')}
       >
         <i className="fa fa-file-code-o" />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveList('ul_list')}
-        handler={e => setListType(e, 'ul_list')}
+        handler={(e) => setListType(e, 'ul_list')}
       >
         <i className="fa fa-list-ul" />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveList('ol_list')}
-        handler={e => setListType(e, 'ol_list')}
+        handler={(e) => setListType(e, 'ol_list')}
       >
         <i className="fa fa-list-ol" />
       </ToolbarButton>
-      <ToolbarButton handler={e => decreaseIndent(e)}>
+      <ToolbarButton handler={(e) => decreaseIndent(e)}>
         <i className="fa fa-outdent" />
       </ToolbarButton>
-      <ToolbarButton handler={e => increaseIndent(e)}>
+      <ToolbarButton handler={(e) => increaseIndent(e)}>
         <i className="fa fa-indent" />
       </ToolbarButton>
       <ToolbarButton
@@ -286,14 +286,14 @@ const Toolbar = (): JSX.Element => {
         />
       )}
       <ToolbarButton
-        handler={e => openImageUploader(e)}
+        handler={(e) => openImageUploader(e)}
         active={insertingImage}
       >
         <i className="fa fa-image" />
       </ToolbarButton>
       {insertingImage && (
         <ImageUpload
-          uploadFunction={img => insertImage(img)}
+          uploadFunction={(img) => insertImage(img)}
           cancel={() => setInsertingImage(false)}
         />
       )}

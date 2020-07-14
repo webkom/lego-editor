@@ -47,14 +47,14 @@ const ImageDrop: React.StatelessComponent<ImageDropProps> = (
 
 export default class ImageUpload extends React.Component<Props, State> {
   readonly state: State = {
-    hasImage: false
+    hasImage: false,
   };
 
   onDrop = (files: (Blob & { name: string })[]): void => {
     if (files.length === 1) {
       const file = files[0];
       this.setState({
-        currentImage: { file: file, url: URL.createObjectURL(file) }
+        currentImage: { file: file, url: URL.createObjectURL(file) },
       });
     }
   };
@@ -63,7 +63,7 @@ export default class ImageUpload extends React.Component<Props, State> {
     this.setState({
       crop: { x: 0, y: 0, width: image.width, height: image.height },
       imageWidth: image.width,
-      imageHeight: image.height
+      imageHeight: image.height,
     });
     return false;
   };

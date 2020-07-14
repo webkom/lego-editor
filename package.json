@@ -62,7 +62,7 @@
     "eslint-plugin-react": "^7.12.4",
     "html-loader": "^1.1.0",
     "html-webpack-plugin": "^4.3.0",
-    "prettier": "^1.19.1",
+    "prettier": "^2.0.5",
     "react": "^16.13.1",
     "react-dom": "^16.8.6",
     "source-map-loader": "^1.0.1",
