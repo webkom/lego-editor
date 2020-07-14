@@ -21,7 +21,7 @@ const ELEMENT_TAGS: TAGS = {
   img: 'image',
   figcaption: 'image_caption',
   a: 'link',
-  blockquote: 'quote'
+  blockquote: 'quote',
 };
 
 const MARK_TAGS: TAGS = {
@@ -29,12 +29,12 @@ const MARK_TAGS: TAGS = {
   i: 'italic',
   strong: 'bold',
   u: 'underline',
-  code: 'code'
+  code: 'code',
 };
 
 const serializeData = (object: Record<string, unknown>): string =>
   Object.keys(object)
-    .map(key => `${key}="${object[key]}"`)
+    .map((key) => `${key}="${object[key]}"`)
     .join(' ');
 
 /**
@@ -159,7 +159,7 @@ export const deserialize = (
         const dataFromHtml = el.getAttributeNames().reduce(
           (data: Record<string, unknown>, attrName: string) => ({
             ...data,
-            [attrName]: el.getAttribute(attrName)
+            [attrName]: el.getAttribute(attrName),
           }),
           {}
         );
@@ -192,7 +192,7 @@ export const deserialize = (
       return jsx(
         'text',
         {
-          [markType]: true
+          [markType]: true,
         },
         child
       );

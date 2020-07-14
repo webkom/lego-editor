@@ -78,7 +78,7 @@ const TEXT_BLOCKS: Elements[] = [
   'h5',
   'paragraph',
   'code_block',
-  'quote'
+  'quote',
 ];
 
 /**
@@ -95,7 +95,7 @@ export const basePlugin = (editor: Editor): Editor => {
     ) {
       const isActive = LEditor.isElementActive(editor, command.block);
       Editor.setNodes(editor, {
-        type: isActive ? DEFAULT_BLOCK : command.block
+        type: isActive ? DEFAULT_BLOCK : command.block,
       });
     } else if (command.type === 'toggle_mark') {
       const isActive = LEditor.isMarkActive(editor, command.mark);

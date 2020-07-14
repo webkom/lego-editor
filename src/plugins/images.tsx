@@ -34,16 +34,16 @@ const images = (options: Options): ((editor: Editor) => Editor) => {
                     objectUrl,
                     src: src || returnData?.src,
                     children: [{ text: '' }],
-                    ...returnData
+                    ...returnData,
                   },
                   {
                     type: 'image_caption',
-                    children: [{ text: 'Caption', italic: true }]
-                  }
-                ]
+                    children: [{ text: 'Caption', italic: true }],
+                  },
+                ],
               },
               {
-                at: at
+                at: at,
               }
             )
         );

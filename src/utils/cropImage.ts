@@ -23,7 +23,7 @@ const cropImage = (
   // canvas.getContext(<identifier>) returns null if
   // identifier is not supported, which '2d' is
   if (!ctx) {
-    return new Promise(resolve => resolve());
+    return new Promise((resolve) => resolve());
   }
   ctx.fillStyle = '#FFFFFF';
   ctx.drawImage(
