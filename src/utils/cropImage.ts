@@ -25,6 +25,7 @@ const cropImage = (
   if (!ctx) {
     return new Promise(resolve => resolve());
   }
+  ctx.fillStyle = '#FFFFFF';
   ctx.drawImage(
     image,
     (crop.x || 0) * scaleX,
@@ -45,7 +46,7 @@ const cropImage = (
       } else {
         reject();
       }
-    }, 'image/jpeg');
+    }, 'image/png');
   });
 };
 

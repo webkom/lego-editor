@@ -6,7 +6,7 @@ import {
   RenderElementProps,
   RenderLeafProps
 } from 'slate-react';
-import { createEditor, Editor, Element, Node, Location } from 'slate';
+import { createEditor, Editor, Node, Location } from 'slate';
 import { withHistory } from 'slate-history';
 import isHotKey from 'is-hotkey';
 import Toolbar from './components/Toolbar';
@@ -35,6 +35,7 @@ interface Props {
   placeholder?: string;
   imageUpload: (file: Blob) => Promise<Record<string, any>>;
   plugins: ((editor: Editor) => Editor)[];
+  domParser: (value: string) => HTMLDocument;
 }
 
 export const DEFAULT_BLOCK = 'paragraph';
@@ -169,18 +170,19 @@ const renderElement = (props: RenderElementProps): JSX.Element => {
     }
     case 'image_caption':
       return (
-        <figcaption
-          className="_legoEditor_figcaption"
-          {...attributes}
-          placeholder={'Figure caption'}
-        >
+        <figcaption className="_legoEditor_figcaption" {...attributes}>
           {children}
         </figcaption>
       );
     // Inlines
     case 'link':
       return (
-        <a {...attributes} href={element.url}>
+        <a
+          {...attributes}
+          href={element.url}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
           {children}
         </a>
       );
@@ -246,7 +248,11 @@ const LegoEditor = (props: Props): JSX.Element => {
   );
 
   const [value, setValue] = useState(
-    props.value ? deserializeHtmlString(props.value) : initialValue
+    props.value
+      ? deserializeHtmlString(props.value, {
+          domParser: props.domParser
+        })
+      : initialValue
   );
 
   return (

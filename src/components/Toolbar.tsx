@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Element, Editor, NodeEntry, Range, Node } from 'slate';
+import { Editor, NodeEntry, Range, Node } from 'slate';
 import { useSlate } from 'slate-react';
 import { LEditor, Marks, Elements, nodeType } from '../index';
 import ImageUpload from './ImageUpload';
@@ -194,12 +194,18 @@ const Toolbar = (): JSX.Element => {
 
   const openImageUploader = (e: React.PointerEvent): void => {
     e.preventDefault();
+    setLastSelection(editor.selection);
     setInsertingImage(true);
   };
 
   const insertImage = (image: Blob, data?: Record<string, any>): void => {
+    editor.exec({
+      type: 'insert_image',
+      file: image,
+      at: lastSelection,
+      ...data
+    });
     setInsertingImage(false);
-    editor.exec({ type: 'insert_image', file: image, ...data });
   };
 
   return (
@@ -211,10 +217,10 @@ const Toolbar = (): JSX.Element => {
         H1
       </ToolbarButton>
       <ToolbarButton
-        active={checkActiveElement('h4')}
-        handler={e => toggleBlock(e, 'h4')}
+        active={checkActiveElement('h3')}
+        handler={e => toggleBlock(e, 'h3')}
       >
-        H4
+        H3
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('bold')}
