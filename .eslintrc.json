@@ -43,9 +43,14 @@
         "allowExpressions": true
       }
     ],
-    "@typescript-eslint/no-explicit-any": ["warning", "false"],
+    "@typescript-eslint/no-explicit-any": [
+      "warn",
+      {
+        "fixToUnknown": true
+      }
+    ],
     "@typescript-eslint/explicit-member-accessibility": [
-      "warning",
+      "warn",
       {
         "accessibility": "no-public"
       }

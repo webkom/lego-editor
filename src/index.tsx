@@ -33,13 +33,13 @@ interface Props {
   onFocus?: (arg0: React.SyntheticEvent) => void;
   autoFocus?: boolean;
   placeholder?: string;
-  imageUpload: (file: Blob) => Promise<Record<string, any>>;
+  imageUpload: (file: Blob) => Promise<Record<string, unknown>>;
   plugins: ((editor: Editor) => Editor)[];
   domParser: (value: string) => HTMLDocument;
 }
 
 export const DEFAULT_BLOCK = 'paragraph';
-export type Next = () => any;
+export type Next = () => unknown;
 
 export type Marks = 'bold' | 'italic' | 'code' | 'underline';
 export type Elements =
