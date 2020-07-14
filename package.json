@@ -65,7 +65,7 @@
     "prettier": "^1.19.1",
     "react": "^16.13.1",
     "react-dom": "^16.8.6",
-    "source-map-loader": "^0.2.4",
+    "source-map-loader": "^1.0.1",
     "style-loader": "^1.0.1",
     "typescript": "^3.4.4",
     "webpack": "^4.43.0",
