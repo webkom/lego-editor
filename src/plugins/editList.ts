@@ -113,13 +113,6 @@ const editList = (editor: Editor): Editor => {
 
     // ul_list and ol_list rules
     if (Element.isElement(node) && isList(node)) {
-      // Two adjacent list of the same type should merge into one
-      const nextItem = Editor.next(editor, { at: path });
-      if (nextItem && nextItem[0].type === node.type) {
-        Editor.mergeNodes(editor, { at: path, match: nodeType(node.type) });
-        return;
-      }
-
       // A list should always contain list_item is list children
       const children = Array.from(Node.children(editor, path));
       if (!children) {
@@ -190,10 +183,10 @@ const handleBackspace = (
     exec(command);
     return;
   }
-  const [, listItemPath] = listItemEntry;
+  const [listItem, listItemPath] = listItemEntry;
 
-  // unwrap and remove the current node if its empty
-  if (!Editor.string(editor, listItemPath)) {
+  // unwrap and remove the current node if its empty and only has one child
+  if (!Editor.string(editor, listItemPath) && listItem.children.length == 1) {
     command.event.preventDefault();
     editor.exec({ type: 'decrease_list_depth' });
   } else {
@@ -217,7 +210,7 @@ const handleTab = (editor: Editor, command: Command, exec: Exec): void => {
   }
   if (!Editor.string(editor, listItemPath)) {
     command.event.preventDefault();
-    // If the list has no text, increse the depth
+    // If the list has no text, increase the depth
     increaseListDepth(editor, listItemPath);
   } else {
     exec(command);
@@ -239,12 +232,17 @@ const handleShiftTab = (editor: Editor, command: Command, exec: Exec): void => {
  *  Get the first list item node in the location specified, or in the current
  *  selection if omitted.
  */
-const getListItem = (editor: Editor, at?: Location): NodeEntry | undefined => {
+const getListItem = (
+  editor: Editor,
+  at?: Location,
+  mode?: 'highest' | 'lowest' | 'all'
+): NodeEntry | undefined => {
   if (!!at || editor.selection !== null) {
     const [match] = Editor.nodes(editor, {
       at,
       match: nodeType('list_item'),
       reverse: true,
+      mode,
     });
     return match;
   }
@@ -349,6 +347,7 @@ const increaseListDepth = (editor: Editor, at?: Location): void => {
 const decreaseListDepth = (editor: Editor, at?: Location): void => {
   // If the provided location is a range, we perform the operation on
   // every list item in the range
+  console.log(Array.from(Editor.nodes(editor, { at: [0], mode: 'highest' })));
   if (Range.isRange(at || editor.selection)) {
     const listItemEntries = Editor.nodes(editor, {
       at: at,
@@ -363,38 +362,37 @@ const decreaseListDepth = (editor: Editor, at?: Location): void => {
     }
     return;
   }
-  Editor.withoutNormalizing(editor, () => {
-    const listEntry = getListItem(editor, at);
-    const parentEntry = getParentList(editor, at);
-    if (!parentEntry || !listEntry || !editor.selection) {
-      return;
-    }
-    const [parentList] = parentEntry;
-    const [, listItemPath] = listEntry;
+  const listEntry = getListItem(editor, at);
+  const parentEntry = getParentList(editor, at);
+  if (!parentEntry || !listEntry || !editor.selection) {
+    return;
+  }
+  const [parentList] = parentEntry;
+  const [, listItemPath] = listEntry;
 
-    const listItemPathRef = Editor.pathRef(editor, listItemPath);
+  const listItemPathRef = Editor.pathRef(editor, listItemPath);
 
-    const depth = getListDepth(editor, listItemPath);
-    Editor.unwrapNodes(editor, {
-      match: nodeType(parentList.type),
-      at: listItemPath,
-      split: true,
-    });
-    if (depth === 1) {
-      const listItemPath = listItemPathRef.unref();
-      if (listItemPath) {
-        const [blockEntry] = Editor.nodes(editor, {
-          at: listItemPath,
-          match: (n: Node) => Editor.isBlock(editor, n),
-          mode: 'lowest',
-        });
-        Editor.unwrapNodes(editor, {
-          match: nodeType('list_item'),
-          at: blockEntry[1],
-        });
-      }
-    }
+  const depth = getListDepth(editor, listItemPath);
+  Editor.unwrapNodes(editor, {
+    match: nodeType(parentList.type),
+    at: listItemPath,
+    split: true,
   });
+  if (depth === 1) {
+    const listItemPath = listItemPathRef.unref();
+    if (listItemPath) {
+      const [blockEntry] = Editor.nodes(editor, {
+        at: listItemPath,
+        match: (n: Node) => Editor.isBlock(editor, n),
+        mode: 'lowest',
+      });
+      Editor.unwrapNodes(editor, {
+        match: (n: Node) =>
+          LIST_TYPES.includes(n.type) || n.type === 'list_item',
+        at: blockEntry[1],
+      });
+    }
+  }
 };
 
 /**

@@ -11,7 +11,7 @@
     "lint": "eslint 'src/**/*.{js,ts,tsx}' && prettier 'src/**' --list-different",
     "prettier": "prettier 'src/**' --write",
     "dev:build": "webpack --mode development",
-    "dev": "webpack-dev-server --config ./example/webpack/webpack.config.js --open --mode development"
+    "dev": "webpack-dev-server --config ./example/webpack/webpack.config.js --mode development"
   },
   "repository": {
     "type": "git",
