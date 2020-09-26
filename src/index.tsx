@@ -23,6 +23,7 @@ import {
 import { serialize, deserializeHtmlString } from './serializer';
 import { debounce } from 'lodash';
 import { compose } from 'lodash/fp';
+import cx from 'classnames';
 
 interface Props {
   value: string;
@@ -259,7 +260,7 @@ const LegoEditor = (props: Props): JSX.Element => {
     <div
       className={
         props.disabled || props.simple
-          ? '_legoEditor_disabled'
+          ? cx('_legoEditor_root', '_legoEditor_disabled')
           : '_legoEditor_root'
       }
     >
