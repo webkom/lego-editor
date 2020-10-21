@@ -187,6 +187,7 @@
 ._legoEditor_modal_button::before,
 ._legoEditor_modal_button::after {
   border: 2px solid transparent;
+  border-radius: 4px;
   width: 0;
   height: 0;
 }
@@ -238,7 +239,7 @@
 ._legoEditor_modal_button:disabled {
   border: none;
   cursor: inherit;
-  color: inherit;
+  color: rgba(0, 0, 0, 0.3);
 }
 
 ._legoEditor_modal_button:disabled::before,
