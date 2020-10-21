@@ -3,8 +3,8 @@ import { Editor, NodeEntry, Range, Node } from 'slate';
 import { useSlate } from 'slate-react';
 import { LEditor, Marks, Elements, nodeType } from '../index';
 import ImageUpload from './ImageUpload';
+import LinkInput from './LinkInput';
 import cx from 'classnames';
-import isUrl from 'is-url';
 
 interface ButtonProps
   extends React.ComponentPropsWithoutRef<React.FunctionComponent> {
@@ -17,8 +17,6 @@ const ToolbarButton = (props: ButtonProps): JSX.Element => {
     props.handler(e);
   };
 
-  // https://github.com/yannickcr/eslint-plugin-react/issues/2654
-  // eslint-disable-next-line react/prop-types
   const { children, active } = props;
 
   const className = active ? '_legoEditor_Toolbar_active' : '';
@@ -32,79 +30,6 @@ const ToolbarButton = (props: ButtonProps): JSX.Element => {
     </button>
   );
 };
-
-interface LinkInputProps {
-  active: boolean;
-  activeLink?: NodeEntry;
-  toggleLinkInput: () => void;
-  updateLink: ({ url }: { url: string }) => void;
-}
-
-interface LinkInputState {
-  value: string;
-}
-
-class LinkInput extends React.Component<LinkInputProps, LinkInputState> {
-  private input = React.createRef<HTMLInputElement>();
-
-  state = {
-    value: this.props.activeLink ? this.props.activeLink[0].url : '',
-  };
-
-  onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const prependProtocol = (url: string): string => {
-      if (!/^(?:f|ht)tps?:\/\//.test(url)) {
-        url = 'http://' + url;
-      }
-      return url;
-    };
-    this.setState({ value: prependProtocol(e.currentTarget.value) });
-  };
-
-  componentDidMount(): void {
-    // Why is this in a setTimeout?
-    // - Because why not? (I couldn't make it work without)
-    setTimeout(() => this.input.current?.focus(), 10);
-  }
-
-  onKeyPress = (e: React.KeyboardEvent): void => {
-    if (e.key == 'Enter') {
-      this.submit(e);
-    }
-  };
-
-  submit = (
-    e?: React.FocusEvent | React.KeyboardEvent | React.MouseEvent
-  ): void => {
-    e?.preventDefault();
-    const { value } = this.state;
-    this.props.toggleLinkInput();
-    if (value == '') {
-      return;
-    }
-    this.props.updateLink({ url: value });
-  };
-
-  render(): React.ReactNode {
-    const validUrl = isUrl(this.state.value);
-    return (
-      <div className={'_legoEditor_Toolbar_linkInput'}>
-        <input
-          type="link"
-          placeholder="Link"
-          ref={this.input}
-          onChange={this.onChange}
-          onKeyDown={this.onKeyPress}
-          value={this.state.value}
-          onBlur={() => validUrl && this.submit}
-        />
-        <button disabled={!validUrl} onClick={this.submit}>
-          Lagre
-        </button>
-      </div>
-    );
-  }
-}
 
 const Toolbar = (): JSX.Element => {
   const [insertingLink, setInsertingLink] = useState(false);
@@ -164,20 +89,24 @@ const Toolbar = (): JSX.Element => {
     setInsertingLink(!insertingLink);
   };
 
-  const updateLink = (data: { url: string }): void => {
-    const { url } = data;
+  const updateLink = (data: { url: string; text?: string }): void => {
+    const { url, text } = data;
 
     const isCollapsed = lastSelection && Range.isCollapsed(lastSelection);
 
     if (checkActiveElement('link')) {
-      Editor.setNodes(editor, { url }, { match: nodeType('link') });
+      Editor.setNodes(
+        editor,
+        { url, text: text || url },
+        { match: nodeType('link') }
+      );
     } else {
       if (isCollapsed) {
         Editor.insertNodes(editor, {
           type: 'link',
           url,
-          children: [{ text: url }],
-          at: lastSelection,
+          children: [{ text: text || url }],
+          at: lastSelection || undefined,
         });
       } else {
         editor.exec({ type: 'wrap_link', url: data.url, at: lastSelection });
@@ -189,6 +118,7 @@ const Toolbar = (): JSX.Element => {
     const [match] = Editor.nodes(editor, {
       match: nodeType('link'),
       mode: 'all',
+      at: lastSelection?.anchor,
     });
     return match;
   };

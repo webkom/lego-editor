@@ -1,0 +1,24 @@
+._legoEditor_linkInput_wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0 50px;
+}
+
+._legoEditor_linkInput_label {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: right;
+  margin: 10px;
+}
+
+._legoEditor_linkInput_label input {
+  flex: 0 1 auto;
+}
+
+._legoEditor_linkInput_label span {
+  flex: 0 1 auto;
+  min-width: 200px;
+  text-align: start;
+}

@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { useDropzone } from 'react-dropzone';
 import ReactCrop, { Crop } from 'react-image-crop';
-import Modal from 'react-modal';
 import cropImage from '../utils/cropImage';
-import cx from 'classnames';
+import Modal from './Modal';
 
 interface Props {
   uploadFunction?: (image: Blob) => void;
@@ -97,51 +96,20 @@ export default class ImageUpload extends React.Component<Props, State> {
     const { currentImage, crop } = this.state;
 
     return (
-      <Modal
-        ariaHideApp={false}
-        isOpen={true}
-        className="_legoEditor_imageUploader_modal"
-      >
-        <div className="_legoEditor_imageUploader_wrapper">
-          <div className="_legoEditor_imageUploader_root">
-            <div className="_legoEditor_imageUploader_crop_wrapper">
-              {currentImage ? (
-                <div className="_legoEditor_imageUploader_crop_container">
-                  <ReactCrop
-                    src={currentImage.url}
-                    onChange={this.handleCrop}
-                    onImageLoaded={this.onImageLoaded}
-                    crop={crop}
-                  />
-                </div>
-              ) : (
-                <ImageDrop onDrop={this.onDrop} />
-              )}
+      <Modal onCancel={this.cancel} onSubmit={this.submitImage}>
+        <div className="_legoEditor_imageUploader_crop_wrapper">
+          {currentImage ? (
+            <div className="_legoEditor_imageUploader_crop_container">
+              <ReactCrop
+                src={currentImage.url}
+                onChange={this.handleCrop}
+                onImageLoaded={this.onImageLoaded}
+                crop={crop}
+              />
             </div>
-            <div className="_legoEditor_imageUploader_buttonContainer">
-              <button
-                className={cx(
-                  '_legoEditor_imageUploader_applyButton',
-                  '_legoEditor_imageUploader_button'
-                )}
-                onClick={this.submitImage}
-                type="button"
-              >
-                Apply
-              </button>
-
-              <button
-                className={cx(
-                  '_legoEditor_imageUploader_cancelButton',
-                  '_legoEditor_imageUploader_button'
-                )}
-                onClick={this.cancel}
-                type="button"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+          ) : (
+            <ImageDrop onDrop={this.onDrop} />
+          )}
         </div>
       </Modal>
     );
