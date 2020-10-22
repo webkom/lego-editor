@@ -8,7 +8,7 @@
     "jsx": "react",
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "downlevelIteration": true,
@@ -21,7 +21,6 @@
     "noImplicitReturns": false,
 
     "esModuleInterop": true,
-    "inlineSourceMap": true,
     "inlineSources": true
   }
 }
