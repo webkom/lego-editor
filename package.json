@@ -8,8 +8,8 @@
     "prepublish": "yarn build",
     "build": "yarn tsc && rsync -a --include '*/' --include '*.css' --exclude '*' ./src/ ./dist",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint 'src/**/*.{js,ts,tsx}' && prettier 'src/**' --list-different",
-    "prettier": "prettier 'src/**' --write",
+    "lint": "eslint '{src,example}/**/*.{js,ts,tsx}' && prettier '{src,example}/**' --list-different",
+    "prettier": "prettier '{src,example}/**' --write",
     "dev:build": "webpack --mode development",
     "dev": "webpack-dev-server --config ./example/webpack/webpack.config.js --mode development"
   },

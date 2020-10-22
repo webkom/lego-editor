@@ -12,7 +12,12 @@ const App = () => (
     <Editor
       placeholder="Testing lego editor"
       imageUpload={(file) =>
-        new Promise((resolve) => setTimeout(resolve, 1000))
+        new Promise((resolve) =>
+          setTimeout(() => {
+            console.log(file);
+            return resolve;
+          }, 1000)
+        )
       }
       onChange={(str) => {
         console.log(str);

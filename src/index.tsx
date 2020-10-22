@@ -26,7 +26,7 @@ import { compose } from 'lodash/fp';
 import cx from 'classnames';
 
 interface Props {
-  value: string;
+  value?: string;
   disabled?: boolean;
   simple?: boolean;
   onChange?: (arg0: string) => void;
@@ -35,8 +35,8 @@ interface Props {
   autoFocus?: boolean;
   placeholder?: string;
   imageUpload: (file: Blob) => Promise<Record<string, unknown>>;
-  plugins: ((editor: Editor) => Editor)[];
-  domParser: (value: string) => HTMLDocument;
+  plugins?: ((editor: Editor) => Editor)[];
+  domParser?: (value: string) => HTMLDocument;
 }
 
 export const DEFAULT_BLOCK = 'paragraph';

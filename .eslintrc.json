@@ -24,6 +24,20 @@
       "jsx": true
     }
   },
+  "overrides": [
+    {
+      "files": ["**/*.js"],
+      "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:prettier/recommended"
+      ],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/explicit-function-return-type": "off"
+      }
+    }
+  ],
   "rules": {
     "curly": ["error", "all"],
     "camelcase": [
