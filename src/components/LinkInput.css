@@ -1,0 +1,35 @@
+._legoEditor_linkInput_wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0 50px;
+}
+
+._legoEditor_linkInput_label {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: right;
+  margin: 10px 0;
+}
+
+._legoEditor_linkInput_label input {
+  flex: 1 1 auto;
+}
+
+._legoEditor_linkInput_label span {
+  flex: 0 1 auto;
+  min-width: 200px;
+  text-align: start;
+}
+
+@media only screen and (max-device-width: 736px) {
+  ._legoEditor_linkInput_label {
+    flex-direction: column;
+    align-items: initial;
+  }
+  ._legoEditor_linkInput_label span {
+    text-align: start;
+    min-width: 100px;
+  }
+}

@@ -18,6 +18,7 @@
   cursor: text;
 }
 
+._legoEditor_disabled code,
 ._legoEditor_root code {
   background-color: #efefef;
   padding: 2px 3px;
@@ -25,6 +26,7 @@
   font-family: sans-serif;
 }
 
+._legoEditor_disabled pre,
 ._legoEditor_root pre {
   background-color: #efefef;
   border-radius: 2px;
@@ -33,6 +35,7 @@
   overflow: scroll;
 }
 
+._legoEditor_disabled blockquote,
 ._legoEditor_root blockquote {
   background: #f9f9f9;
   color: #565d64;
@@ -113,4 +116,134 @@
 ._legoEditor_imgSelected {
   border: 2px solid #ccc;
   box-shadow: 0 0 8px #ccc;
+}
+
+._legoEditor_modal {
+  background: none;
+  border: none;
+}
+
+._legoEditor_modal_wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  min-width: 100%;
+  min-height: 100%;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+._legoEditor_modal_root {
+  opacity: 1;
+  background-color: #fff;
+  width: 60%;
+  z-index: 15;
+  top: 10%;
+  left: 20%;
+  margin: 0 30px;
+  padding: 15px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+._legoEditor_modal_buttonContainer {
+  display: flex;
+  justify-content: space-evenly;
+  margin: 30px;
+  flex: 0 1 auto;
+}
+
+._legoEditor_modal_button {
+  border-radius: 4px;
+  background-color: #fff;
+  padding: 9px 18px;
+  cursor: pointer;
+  font-family: inherit;
+  background: none;
+  border: 0;
+  box-sizing: border-box;
+  box-shadow: inset 0 0 0 1px #c7c7c7;
+  position: relative;
+  vertical-align: middle;
+}
+
+._legoEditor_modal_button::before,
+._legoEditor_modal_button::after {
+  box-sizing: inherit;
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+._legoEditor_modal_button:hover {
+  transition: color 0.2s;
+}
+
+._legoEditor_modal_button::before,
+._legoEditor_modal_button::after {
+  border: 2px solid transparent;
+  border-radius: 4px;
+  width: 0;
+  height: 0;
+}
+
+._legoEditor_modal_button::before,
+._legoEditor_modal_button::after {
+  top: 0;
+  left: 0;
+}
+
+._legoEditor_modal_applyButton:hover {
+  color: #0a6640;
+}
+
+._legoEditor_modal_cancelButton:hover {
+  color: #c0392b;
+}
+
+._legoEditor_modal_button:hover::before,
+._legoEditor_modal_button:hover::after {
+  width: 100%;
+  height: 100%;
+}
+
+._legoEditor_modal_applyButton:hover::before {
+  border-top-color: #0a6640;
+  border-right-color: #0a6640;
+  transition: height 0.2s ease-out 0.2s, width 0.2s ease-out;
+}
+
+._legoEditor_modal_cancelButton:hover::before {
+  border-top-color: #c0392b;
+  border-right-color: #c0392b;
+  transition: width 0.2s ease-out, height 0.2s ease-out 0.2s;
+}
+
+._legoEditor_modal_applyButton:hover::after {
+  border-bottom-color: #0a6640;
+  border-left-color: #0a6640;
+  transition: height 0.2s ease-out, width 0.2s ease-out 0.2s;
+}
+
+._legoEditor_modal_cancelButton:hover::after {
+  border-bottom-color: #c0392b;
+  border-left-color: #c0392b;
+  transition: height 0.2s ease-out, width 0.2s ease-out 0.2s;
+}
+
+._legoEditor_modal_button:disabled {
+  border: none;
+  cursor: inherit;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+._legoEditor_modal_button:disabled::before,
+._legoEditor_modal_button:disabled::after {
+  width: none;
+  border: none;
 }
