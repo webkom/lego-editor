@@ -1,13 +1,15 @@
+@import '../variables.css';
+
 ._legoEditor_imageUploader_dropZone {
   width: 80%;
   height: 100%;
-  border: 2px dashed rgba(0, 0, 0, 0.2);
+  border: 2px dashed rgba(var(--rgb-min), var(--rgb-min), var(--rgb-min), 0.2);
   border-radius: 4px;
   margin: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #909090;
+  color: var(--color-mono-gray-1);
   flex: 1 1 auto;
 }
 
@@ -26,8 +28,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: url(
-  data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJ0lEQVQoU2PcvXv3fwY0cPbsWXQhBsahoLCjowPDM8bGxpieGQIKAezGK+59+t2AAAAAAElFTkSuQmCC
-  )
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJ0lEQVQoU2PcvXv3fwY0cPbsWXQhBsahoLCjowPDM8bGxpieGQIKAezGK+59+t2AAAAAAElFTkSuQmCC)
     repeat;
 }

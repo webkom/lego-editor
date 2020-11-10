@@ -36,6 +36,7 @@ interface Props {
   imageUpload: (file: Blob) => Promise<Record<string, unknown>>;
   plugins?: ((editor: Editor) => Editor)[];
   domParser?: (value: string) => HTMLDocument;
+  theme?: string;
 }
 
 export const DEFAULT_BLOCK = 'paragraph';
@@ -255,8 +256,10 @@ const LegoEditor = (props: Props): JSX.Element => {
       : initialValue
   );
 
+  console.log(props.theme);
   return (
     <div
+      data-theme={props.theme}
       className={
         props.disabled || props.simple
           ? '_legoEditor_disabled'

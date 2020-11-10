@@ -1,12 +1,16 @@
+@import './variables.css';
+
 ._legoEditor_root {
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-dark-mono-gray-3);
   border-radius: 3px;
   padding: 10px;
+  background-color: var(--color-white);
+  color: var(--color-black);
 }
 
 ._legoEditor_root:focus-within {
-  box-shadow: 0 0 5px #ccc;
-  border-color: #aaa;
+  box-shadow: 0 0 5px var(--color-dark-mono-gray-3);
+  border-color: var(--color-mono-gray-1);
   outline: none;
 }
 
@@ -20,7 +24,7 @@
 
 ._legoEditor_disabled code,
 ._legoEditor_root code {
-  background-color: #efefef;
+  background-color: var(--color-almost-white-2);
   padding: 2px 3px;
   border-radius: 2px;
   font-family: sans-serif;
@@ -28,7 +32,7 @@
 
 ._legoEditor_disabled pre,
 ._legoEditor_root pre {
-  background-color: #efefef;
+  background-color: var(--color-almost-white-2);
   border-radius: 2px;
   padding: 15px;
   margin: 10px 0;
@@ -37,9 +41,9 @@
 
 ._legoEditor_disabled blockquote,
 ._legoEditor_root blockquote {
-  background: #f9f9f9;
-  color: #565d64;
-  border-left: 10px solid #ccc;
+  background: var(-color-almost-white-1);
+  color: var(--text-color-block-quote);
+  border-left: 10px solid var(--color-dark-mono-gray-3);
   margin: 1.5em 10px;
   padding: 0.5em 10px;
 }
@@ -114,13 +118,17 @@
 }
 
 ._legoEditor_imgSelected {
-  border: 2px solid #ccc;
-  box-shadow: 0 0 8px #ccc;
+  border: 2px solid var(--color-dark-mono-gray-3);
+  box-shadow: 0 0 8px var(--color-dark-mono-gray-3);
 }
 
 ._legoEditor_modal {
   background: none;
   border: none;
+}
+
+._legoEditor_modal_modal {
+  background-color: red;
 }
 
 ._legoEditor_modal_wrapper {
@@ -133,12 +141,12 @@
   min-height: 100%;
   left: 0;
   top: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(var(--rgb-max), var(--rgb-max), var(--rgb-max), 0.5);
 }
 
 ._legoEditor_modal_root {
   opacity: 1;
-  background-color: #fff;
+  background-color: var(--color-white);
   width: 60%;
   z-index: 15;
   top: 10%;
@@ -159,16 +167,17 @@
 
 ._legoEditor_modal_button {
   border-radius: 4px;
-  background-color: #fff;
+  background-color: var(--color-white);
   padding: 9px 18px;
   cursor: pointer;
   font-family: inherit;
   background: none;
   border: 0;
   box-sizing: border-box;
-  box-shadow: inset 0 0 0 1px #c7c7c7;
+  box-shadow: inset 0 0 0 1px var(--color-box-shadow);
   position: relative;
   vertical-align: middle;
+  color: var(--color-black);
 }
 
 ._legoEditor_modal_button::before,
@@ -199,11 +208,11 @@
 }
 
 ._legoEditor_modal_applyButton:hover {
-  color: #0a6640;
+  color: var(--color-green-1);
 }
 
 ._legoEditor_modal_cancelButton:hover {
-  color: #c0392b;
+  color: var(--lego-red-color);
 }
 
 ._legoEditor_modal_button:hover::before,
@@ -213,33 +222,33 @@
 }
 
 ._legoEditor_modal_applyButton:hover::before {
-  border-top-color: #0a6640;
-  border-right-color: #0a6640;
+  border-top-color: var(--color-green-1);
+  border-right-color: var(--color-green-1);
   transition: height 0.2s ease-out 0.2s, width 0.2s ease-out;
 }
 
 ._legoEditor_modal_cancelButton:hover::before {
-  border-top-color: #c0392b;
-  border-right-color: #c0392b;
+  border-top-color: var(--lego-red-color);
+  border-right-color: var(--lego-red-color);
   transition: width 0.2s ease-out, height 0.2s ease-out 0.2s;
 }
 
 ._legoEditor_modal_applyButton:hover::after {
-  border-bottom-color: #0a6640;
-  border-left-color: #0a6640;
+  border-bottom-color: var(--color-green-1);
+  border-left-color: var(--color-green-1);
   transition: height 0.2s ease-out, width 0.2s ease-out 0.2s;
 }
 
 ._legoEditor_modal_cancelButton:hover::after {
-  border-bottom-color: #c0392b;
-  border-left-color: #c0392b;
+  border-bottom-color: var(--lego-red-color);
+  border-left-color: var(--lego-red-color);
   transition: height 0.2s ease-out, width 0.2s ease-out 0.2s;
 }
 
 ._legoEditor_modal_button:disabled {
   border: none;
   cursor: inherit;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(var(--rgb-min), var(--rgb-min), var(--rgb-min), 0.3);
 }
 
 ._legoEditor_modal_button:disabled::before,

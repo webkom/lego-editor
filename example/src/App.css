@@ -1,3 +1,7 @@
+@import '../../src/variables.css';
+
 body {
   font-family: raleway;
+  background: var(--color-background);
+  color: var(--color-black);
 }
