@@ -24,7 +24,7 @@
 
 ._legoEditor_disabled code,
 ._legoEditor_root code {
-  background-color: var(--color-almost-white-2);
+  background-color: var(--color-gray-light);
   padding: 2px 3px;
   border-radius: 2px;
   font-family: sans-serif;
