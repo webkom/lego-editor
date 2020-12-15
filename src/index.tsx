@@ -256,7 +256,6 @@ const LegoEditor = (props: Props): JSX.Element => {
       : initialValue
   );
 
-  console.log(props.theme);
   return (
     <div
       data-theme={props.theme}
