@@ -36,7 +36,7 @@ interface Props {
   imageUpload: (file: Blob) => Promise<Record<string, unknown>>;
   plugins?: ((editor: Editor) => Editor)[];
   domParser?: (value: string) => HTMLDocument;
-  theme?: string;
+  darkMode?: boolean;
 }
 
 export const DEFAULT_BLOCK = 'paragraph';
@@ -258,7 +258,7 @@ const LegoEditor = (props: Props): JSX.Element => {
 
   return (
     <div
-      data-theme={props.theme}
+      data-theme={props.darkMode ? 'dark' : 'light'}
       className={
         props.disabled || props.simple
           ? '_legoEditor_disabled'

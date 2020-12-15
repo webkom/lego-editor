@@ -11,7 +11,7 @@ const App = () => (
   <div>
     <h1>Lego editor</h1>
     <Editor
-      theme="light" // set do dark to enable dark-mode
+      darkMode // set to true to enable dark mode
       placeholder="Testing lego editor"
       imageUpload={(file) =>
         new Promise((resolve) =>
