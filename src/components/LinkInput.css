@@ -1,4 +1,4 @@
-@import '../../src/variables.css';
+@import '../variables.css';
 
 ._legoEditor_linkInput_wrapper {
   display: flex;
