@@ -17,7 +17,6 @@
 
 ._legoEditor_linkInput_label input {
   flex: 1 1 auto;
-  background-color: var(--color-white);
   color: var(--color-black);
 }
 ._legoEditor_linkInput_label span {
