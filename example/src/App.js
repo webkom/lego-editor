@@ -7,25 +7,36 @@ import '../../src/components/LinkInput.css';
 import 'react-image-crop/dist/ReactCrop.css';
 import './App.css';
 
-const App = () => (
-  <div>
-    <h1>Lego editor</h1>
-    <Editor
-      darkMode // set to true to enable dark mode
-      placeholder="Testing lego editor"
-      imageUpload={(file) =>
-        new Promise((resolve) =>
-          setTimeout(() => {
-            console.log(file);
-            return resolve;
-          }, 1000)
-        )
-      }
-      onChange={(str) => {
-        console.log(str);
-      }}
-    />
-  </div>
-);
+const App = () => {
+  const [darkMode, setDarkmode] = React.useState(false);
+
+  return (
+    <div>
+      <h1>Lego editor</h1>
+      <label>
+        Darkmode:
+        <input
+          type="checkbox"
+          onChange={(e) => setDarkmode(e.target.checked)}
+        />
+      </label>
+      <Editor
+        darkMode={darkMode}
+        placeholder="Testing lego editor"
+        imageUpload={(file) =>
+          new Promise((resolve) =>
+            setTimeout(() => {
+              console.log(file);
+              return resolve;
+            }, 1000)
+          )
+        }
+        onChange={(str) => {
+          console.log(str);
+        }}
+      />
+    </div>
+  );
+};
 
 export default App;
