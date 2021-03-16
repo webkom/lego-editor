@@ -26,7 +26,6 @@
   "dependencies": {
     "classnames": "^2.2.6",
     "escape-html": "^1.0.3",
-    "is-url": "^1.2.4",
     "lodash": "^4.17.15",
     "react-dropzone": "^11.0.1",
     "react-image-crop": "^8.4.2",

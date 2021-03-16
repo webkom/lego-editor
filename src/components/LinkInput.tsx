@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Node, NodeEntry } from 'slate';
-import isUrl from 'is-url';
+import isUrl, { prependHttps } from '../utils/isUrl';
 import Modal from './Modal';
 
 interface LinkInputProps {
@@ -44,16 +44,10 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const prependProtocol = (url: string): string => {
-      if (!/^(?:f|ht)tps?:\/\//.test(url)) {
-        url = 'https://' + url;
-      }
-      return url;
-    };
-    if (e.target.value.length <= url.length) {
-      setUrl(e.target.value);
+    if (e.target.value.length >= url.length) {
+      setUrl(prependHttps(e.target.value));
     } else {
-      setUrl(prependProtocol(e.currentTarget.value));
+      setUrl(e.target.value);
     }
   };
 
