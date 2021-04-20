@@ -1,4 +1,4 @@
-import isUrl from 'is-url';
+import isUrl from '../utils/isUrl';
 import { Command, Editor, Range, Element } from 'slate';
 import { LEditor, nodeType } from '../index';
 

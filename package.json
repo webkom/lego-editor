@@ -46,7 +46,6 @@
     "@types/classnames": "^2.2.8",
     "@types/escape-html": "^1.0.0",
     "@types/is-hotkey": "^0.1.1",
-    "@types/is-url": "^1.2.28",
     "@types/lodash": "^4.14.137",
     "@types/react": "^17.0.3",
     "@types/react-image-crop": "^8.1.2",
