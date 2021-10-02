@@ -8,7 +8,7 @@ const onlyHostnameRe = new RegExp('^' + hostnameRe.source);
 const isUrl = (url: string): boolean => urlRe.test(url) || mailRe.test(url);
 
 export const prependHttps = (hostname: string): string => {
-  if (onlyHostnameRe.test(hostname)) {
+  if (onlyHostnameRe.test(hostname) && !mailRe.test(hostname)) {
     return 'https://' + hostname;
   }
   return hostname;
