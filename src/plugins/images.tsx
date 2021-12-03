@@ -14,7 +14,7 @@ const images = (options: Options): ((editor: Editor) => Editor) => {
     const { exec, isVoid, normalizeNode } = editor;
 
     editor.exec = (
-      command: Command & { src?: string; file?: unknown; at?: Location }
+      command: Command & { src?: string; file?: Blob; at?: Location }
     ) => {
       if (command.type === 'insert_image') {
         const { file, src, at } = command;
