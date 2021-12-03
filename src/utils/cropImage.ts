@@ -8,7 +8,7 @@ const cropImage = (
   image: HTMLImageElement,
   crop: Crop,
   name: string
-): Promise<BlobWithName> => {
+): Promise<BlobWithName | void> => {
   if (!crop.width || !crop.height) {
     crop.width = image.width;
     crop.height = image.height;
