@@ -208,7 +208,7 @@ const LegoEditor = (props: Props): JSX.Element => {
   const onKeyDown = (event: React.KeyboardEvent): void => {
     // Apparently there is a type mismatch between React.KeyboardEvent
     // and KeyboardEvent included in TS libraries
-    const e = (event as unknown) as KeyboardEvent;
+    const e = event as unknown as KeyboardEvent;
     if (isHotKey('mod+b')(e)) {
       e.preventDefault();
       editor.exec({ type: 'toggle_mark', mark: 'bold' });

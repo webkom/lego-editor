@@ -83,9 +83,11 @@ export default class ImageUpload extends React.Component<Props, State> {
 
     crop &&
       uploadFunction &&
-      cropImage(image, crop, file.name).then((result: Blob) =>
-        uploadFunction(result)
-      );
+      cropImage(image, crop, file.name).then((result: Blob | null) => {
+        if (result) {
+          uploadFunction(result);
+        }
+      });
   };
 
   cancel = (): void => {

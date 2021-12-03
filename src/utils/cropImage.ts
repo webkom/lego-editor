@@ -8,7 +8,7 @@ const cropImage = (
   image: HTMLImageElement,
   crop: Crop,
   name: string
-): Promise<BlobWithName | void> => {
+): Promise<BlobWithName | null> => {
   if (!crop.width || !crop.height) {
     crop.width = image.width;
     crop.height = image.height;
@@ -23,7 +23,7 @@ const cropImage = (
   // canvas.getContext(<identifier>) returns null if
   // identifier is not supported, which '2d' is
   if (!ctx) {
-    return new Promise((resolve) => resolve());
+    return new Promise((resolve) => resolve(null));
   }
   ctx.fillStyle = '#FFFFFF';
   ctx.drawImage(
