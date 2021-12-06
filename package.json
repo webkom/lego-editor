@@ -28,7 +28,7 @@
     "escape-html": "^1.0.3",
     "lodash": "^4.17.15",
     "react-dropzone": "^11.0.1",
-    "react-image-crop": "^8.4.2",
+    "react-image-crop": "^9.0.5",
     "react-modal": "^3.11.2",
     "slate": "^0.56.0",
     "slate-history": "^0.56.0",
