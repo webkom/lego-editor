@@ -5120,13 +5120,12 @@ react-dropzone@^11.0.1:
     file-selector "^0.2.2"
     prop-types "^15.7.2"
 
-react-image-crop@^8.4.2:
-  version "8.6.12"
-  resolved "https://registry.yarnpkg.com/react-image-crop/-/react-image-crop-8.6.12.tgz#fb57e17c3b56ac0a52ba1967c108975b1f132dcd"
-  integrity sha512-3CNz1xfsRRSH/iH023IDMXxzsb1M6RTHHUVsVcb8uFPcjGiA9WisvQ24G1eRDf2j4NlybupOEEdfK2vT0etN6A==
+react-image-crop@^10.0.3:
+  version "10.0.3"
+  resolved "https://registry.yarnpkg.com/react-image-crop/-/react-image-crop-10.0.3.tgz#db95dac438798b68c216be4c1bdf45afd715d468"
+  integrity sha512-gdBlrnyzRCcje7n45XX0I/ttGFFZdGCAVi63HEo/+LJ079B2h2HZ6hOytpzr7FnoaV001AABOhlV/jVBLCLOpw==
   dependencies:
     clsx "^1.1.1"
-    prop-types "^15.7.2"
 
 react-is@^16.13.1:
   version "16.13.1"
