@@ -74,6 +74,8 @@ export const serialize = (node: Node): string => {
       return `<h3>${children}</h3>`;
     case 'h4':
       return `<h4>${children}</h4>`;
+    case 'h5':
+      return `<h5>${children}</h5>`;
     case 'ul_list':
       return `<ul>${children}</ul>`;
 
