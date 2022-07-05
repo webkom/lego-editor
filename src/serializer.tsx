@@ -91,13 +91,13 @@ export const serialize = (node: Node): string => {
       return `<figure>${children}</figure>`;
     case 'image': {
       // For compatibility with https://github.com/webkom/lego
-      const { fileKey, src } = node;
-      return `<img
-          src=${src}
-          data-file-key=${fileKey}
-          ${serializeData({ ...node })}
-          alt="Placeholder"
-        />`;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { fileKey, type, children, ...imageData } = node;
+      if (fileKey) {
+        imageData['data-file-key'] = fileKey;
+      }
+      imageData.alt ??= 'Placeholder';
+      return `<img ${serializeData(imageData)} />`;
     }
     case 'image_caption':
       return `<figcaption>${children}</figcaption>`;
