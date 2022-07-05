@@ -1,5 +1,6 @@
-import { deserializeHtmlString } from './serializer';
-import { Node } from 'slate';
+import { deserializeHtmlString, serialize } from './serializer';
+import { createEditor, Editor, Node } from 'slate';
+import { jsx } from 'slate-hyperscript';
 
 const MARK_TYPES = ['bold', 'italic', 'underline', 'code'] as const;
 type MARK_TYPE = typeof MARK_TYPES[number];
@@ -14,6 +15,149 @@ const checkMarks = (
     expect(element[mark] ?? false).toBe(marks[mark] ?? false);
   }
 };
+
+describe('serializer', () => {
+  it('serializes a paragraph', () => {
+    const element = jsx(
+      'element',
+      { type: 'paragraph' },
+      jsx('text', { text: 'Hello world' })
+    );
+
+    const serialized = serialize(element);
+
+    expect(serialized).toEqual('<p>Hello world</p>');
+  });
+
+  it('serializes editor with headers and paragraph', () => {
+    const editor = createEditor();
+    Editor.insertNodes(editor, [
+      jsx('element', { type: 'h1' }, jsx('text', { text: 'Header 1' })),
+      jsx('element', { type: 'h2' }, jsx('text', { text: 'Header 2' })),
+      jsx('element', { type: 'h3' }, jsx('text', { text: 'Header 3' })),
+      jsx('element', { type: 'h4' }, jsx('text', { text: 'Header 4' })),
+      jsx('element', { type: 'h5' }, jsx('text', { text: 'Header 5' })),
+      jsx('element', { type: 'paragraph' }, jsx('text', { text: 'Paragraph' })),
+    ]);
+
+    const serialized = serialize(editor);
+
+    expect(serialized).toEqual(
+      '<h1>Header 1</h1><h2>Header 2</h2><h3>Header 3</h3><h4>Header 4</h4><h5>Header 5</h5><p>Paragraph</p>'
+    );
+  });
+
+  it('serializes editor with lists', () => {
+    const editor = createEditor();
+    Editor.insertNodes(editor, [
+      jsx(
+        'element',
+        { type: 'ul_list' },
+        jsx(
+          'element',
+          { type: 'list_item' },
+          jsx('text', { text: 'List item' })
+        ),
+        jsx(
+          'element',
+          { type: 'list_item' },
+          jsx('text', { text: 'Another list item' })
+        )
+      ),
+      jsx(
+        'element',
+        { type: 'ol_list' },
+        jsx(
+          'element',
+          { type: 'list_item' },
+          jsx('text', { text: 'First item' })
+        ),
+        jsx(
+          'element',
+          { type: 'list_item' },
+          jsx('text', { text: 'Second item' })
+        )
+      ),
+    ]);
+
+    const serialized = serialize(editor);
+
+    expect(serialized).toEqual(
+      '<ul><li>List item</li><li>Another list item</li></ul><ol><li>First item</li><li>Second item</li></ol>'
+    );
+  });
+
+  it('serializes a marked paragraph', () => {
+    const element = jsx(
+      'element',
+      { type: 'paragraph' },
+      jsx('text', { text: 'Paragraph ' }),
+      jsx('text', { text: 'with ', bold: true }),
+      jsx('text', {
+        text: 'marks',
+        bold: true,
+        italic: true,
+        underline: true,
+        code: true,
+      })
+    );
+
+    const serialized = serialize(element);
+
+    expect(serialized).toEqual(
+      '<p>Paragraph <strong>with </strong><code><u><em property="italic"><strong>marks</strong></em></u></code></p>'
+    );
+  });
+
+  it('serializes a code block', () => {
+    const element = jsx(
+      'element',
+      { type: 'code_block' },
+      jsx('text', { text: 'NaN != NaN' })
+    );
+
+    const serialized = serialize(element);
+
+    expect(serialized).toBe('<pre>NaN != NaN</pre>');
+  });
+
+  it('serializes an image figure with caption', () => {
+    const element = jsx(
+      'element',
+      { type: 'figure' },
+      jsx('element', {
+        type: 'image',
+        src: 'figure.svg',
+        fileKey: 'figure',
+      }),
+      jsx(
+        'element',
+        { type: 'image_caption' },
+        jsx('text', { text: 'Cool figure' })
+      )
+    );
+
+    const serialized = serialize(element);
+
+    expect(serialized).toBe(
+      '<figure><img src="figure.svg" data-file-key="figure" alt="Placeholder"><figcaption>Cool figure</figcaption></figure>'
+    );
+  });
+
+  it('serializes a link', () => {
+    const element = jsx(
+      'element',
+      { type: 'link', url: 'https://abakus.no' },
+      jsx('text', { text: 'Link' })
+    );
+
+    const serialized = serialize(element);
+
+    expect(serialized).toBe(
+      '<a target="_blank" href="https://abakus.no">Link</a>'
+    );
+  });
+});
 
 describe('deserializeHtmlString', () => {
   it('deserializes a text node', () => {
