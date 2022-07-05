@@ -100,7 +100,7 @@ export const serialize = (node: Node): string => {
     case 'image_caption':
       return `<figcaption>${children}</figcaption>`;
     case 'link':
-      return `<a target="blank" href=${node.url}>${children}</a>`;
+      return `<a target="_blank" href="${node.url}">${children}</a>`;
     default:
       return children;
   }
