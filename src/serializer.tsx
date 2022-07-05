@@ -84,9 +84,7 @@ export const serialize = (node: Node): string => {
     case 'list_item':
       return `<li>${children}</li>`;
     case 'code_block':
-      return `<pre>
-          <code>${children}</code>
-        </pre>`;
+      return `<pre>${children}</pre>`;
     case 'figure':
       return `<figure>${children}</figure>`;
     case 'image': {
