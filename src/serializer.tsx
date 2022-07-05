@@ -151,9 +151,6 @@ export const deserialize = (
   const elementType = ELEMENT_TAGS[el.nodeName.toLowerCase()];
   if (elementType) {
     switch (elementType) {
-      case 'figure': {
-        return jsx('element', { type: 'figure' }, children);
-      }
       case 'image': {
         const fileKey = el.getAttribute('data-file-key');
         const dataFromHtml = el.getAttributeNames().reduce(
