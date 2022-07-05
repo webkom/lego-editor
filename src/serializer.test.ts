@@ -1,17 +1,15 @@
 import { deserializeHtmlString, serialize } from './serializer';
 import { createEditor, Editor, Node } from 'slate';
 import { jsx } from 'slate-hyperscript';
-
-const MARK_TYPES = ['bold', 'italic', 'underline', 'code'] as const;
-type MARK_TYPE = typeof MARK_TYPES[number];
+import { Mark, MARKS } from './index';
 
 const checkMarks = (
   element: Node,
   marks: {
-    [key in MARK_TYPE]?: boolean;
+    [key in Mark]?: boolean;
   }
 ): void => {
-  for (const mark of MARK_TYPES) {
+  for (const mark of MARKS) {
     expect(element[mark] ?? false).toBe(marks[mark] ?? false);
   }
 };

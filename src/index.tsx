@@ -42,7 +42,8 @@ interface Props {
 export const DEFAULT_BLOCK = 'paragraph';
 export type Next = () => unknown;
 
-export type Marks = 'bold' | 'italic' | 'code' | 'underline';
+export const MARKS = ['bold', 'italic', 'code', 'underline'] as const;
+export type Mark = typeof MARKS[number];
 export type Elements =
   | 'h1'
   | 'h2'
@@ -68,7 +69,7 @@ export const nodeType = (type: Elements): ((node: Node) => boolean) => {
 };
 
 export const LEditor = {
-  isMarkActive(editor: Editor, mark: Marks) {
+  isMarkActive(editor: Editor, mark: Mark) {
     const marks = Editor.marks(editor);
     return marks ? marks[mark] === true : false;
   },
