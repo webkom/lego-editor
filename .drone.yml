@@ -17,6 +17,13 @@ steps:
       event: push
     commands:
       - yarn lint
+      -
+  - name: test
+    image: node:16
+    when:
+      event: push
+    commands:
+      - yarn test
 
   - name: build
     image: node:16
