@@ -140,7 +140,7 @@ describe('serializer', () => {
     const serialized = serialize(element);
 
     expect(serialized).toBe(
-      '<figure><img src="figure.svg" data-file-key="figure" alt="Placeholder"><figcaption>Cool figure</figcaption></figure>'
+      '<figure><img src="figure.svg" data-file-key="figure" alt="Placeholder" /><figcaption>Cool figure</figcaption></figure>'
     );
   });
 
@@ -372,7 +372,7 @@ describe('deserializeHtmlString', () => {
 
   it('deserializes an image figure', () => {
     const deserialized = deserializeHtmlString(
-      '<figure><img src="image_src.jpg" alt="Cool figure 😎"><figcaption>Fig.1 - Cool stuff.</figcaption></figure>'
+      '<figure><img src="image_src.jpg" alt="Cool figure 😎" /><figcaption>Fig.1 - Cool stuff.</figcaption></figure>'
     );
 
     expect(deserialized).toHaveLength(1);
@@ -420,5 +420,44 @@ describe('deserializeHtmlString', () => {
     expect(deserialized[1].children[1].type).toBe('list_item');
     expect(deserialized[1].children[0].children[0].text).toBe('first item');
     expect(deserialized[1].children[1].children[0].text).toBe('second item');
+  });
+});
+
+// Try to deserialize a html string, then serialize it back to a html string
+// and compare the result to the original.
+describe('reserialize deserialized html', () => {
+  const deserializeAndReserialize = (html: string): string => {
+    const deserialized = deserializeHtmlString(html);
+    const editor = createEditor();
+    Editor.insertNodes(editor, deserialized);
+    return serialize(editor);
+  };
+
+  const testHtml = (html: string, expectedHtml?: string): void => {
+    const reserialized = deserializeAndReserialize(html);
+
+    expect(reserialized).toBe(expectedHtml ?? html);
+  };
+
+  it('serializes lists correctly', () => {
+    testHtml(
+      '<ul><li>an item</li><li>another item</li></ul><ol><li>first item</li><li>second item</li></ol>'
+    );
+  });
+
+  it('serializes images correctly', () => {
+    testHtml('<img src="image.jpg" alt="alternative text" />');
+    testHtml('<img src="123.png" alt="alt" data-file-key="fileKey" />');
+    testHtml('<img src="123.png">', '<img src="123.png" alt="Placeholder" />');
+  });
+
+  it('serializes links correctly', () => {
+    testHtml('<a href="/">link</a>', '<a target="_blank" href="/">link</a>');
+    testHtml('<a target="_blank" href="/events"><strong>link</strong></a>');
+    testHtml('<a target="_blank" href="https://abakus.no"><u>link</u></a>');
+  });
+
+  it('serializes code blocks correctly', () => {
+    testHtml('<pre>this.block = code</pre>');
   });
 });
