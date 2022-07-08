@@ -71,7 +71,6 @@
         "accessibility": "no-public"
       }
     ],
-    "@typescript-eslint/camelcase": ["warn", { "properties": "never" }],
     "@typescript-eslint/no-use-before-define": [
       "warn",
       { "functions": false, "variables": false }
