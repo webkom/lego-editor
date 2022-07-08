@@ -74,6 +74,8 @@ export const serialize = (node: Node): string => {
       return `<h3>${children}</h3>`;
     case 'h4':
       return `<h4>${children}</h4>`;
+    case 'h5':
+      return `<h5>${children}</h5>`;
     case 'ul_list':
       return `<ul>${children}</ul>`;
 
@@ -82,25 +84,25 @@ export const serialize = (node: Node): string => {
     case 'list_item':
       return `<li>${children}</li>`;
     case 'code_block':
-      return `<pre>
-          <code>${children}</code>
-        </pre>`;
+      return `<pre>${children}</pre>`;
     case 'figure':
       return `<figure>${children}</figure>`;
     case 'image': {
       // For compatibility with https://github.com/webkom/lego
-      const { fileKey, src } = node;
-      return `<img
-          src=${src}
-          data-file-key=${fileKey}
-          ${serializeData({ ...node })}
-          alt="Placeholder"
-        />`;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { fileKey, type, children, ...imageData } = node;
+      if (fileKey) {
+        imageData['data-file-key'] = fileKey;
+      }
+      imageData.alt ??= 'Placeholder';
+      return `<img ${serializeData(imageData)} />`;
     }
     case 'image_caption':
       return `<figcaption>${children}</figcaption>`;
     case 'link':
-      return `<a target="blank" href=${node.url}>${children}</a>`;
+      return `<a target="_blank" href="${node.url}">${children}</a>`;
+    case 'quote':
+      return `<blockquote>${children}</blockquote>`;
     default:
       return children;
   }
@@ -151,9 +153,6 @@ export const deserialize = (
   const elementType = ELEMENT_TAGS[el.nodeName.toLowerCase()];
   if (elementType) {
     switch (elementType) {
-      case 'figure': {
-        return jsx('element', { type: 'figure' }, children);
-      }
       case 'image': {
         const fileKey = el.getAttribute('data-file-key');
         const dataFromHtml = el.getAttributeNames().reduce(

@@ -1,7 +1,8 @@
 {
   "parser": "@typescript-eslint/parser",
   "env": {
-    "node": true
+    "node": true,
+    "jest/globals": true
   },
   "globals": {
     "Image": "readonly",
@@ -17,6 +18,7 @@
     "prettier",
     "plugin:prettier/recommended"
   ],
+  "plugins": ["jest"],
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType": "module",

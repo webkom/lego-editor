@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Editor, NodeEntry, Range, Node } from 'slate';
 import { useSlate } from 'slate-react';
-import { LEditor, Marks, Elements, nodeType } from '../index';
+import { LEditor, Mark, Elements, nodeType } from '../index';
 import ImageUpload from './ImageUpload';
 import LinkInput from './LinkInput';
 import cx from 'classnames';
@@ -39,7 +39,7 @@ const Toolbar = (): JSX.Element => {
 
   const [lastSelection, setLastSelection] = useState(editor.selection);
 
-  const checkActiveMark = (type: Marks): boolean =>
+  const checkActiveMark = (type: Mark): boolean =>
     LEditor.isMarkActive(editor, type);
 
   const checkActiveElement = (type: Elements): boolean =>
@@ -74,7 +74,7 @@ const Toolbar = (): JSX.Element => {
     }
   };
 
-  const toggleMark = (e: React.PointerEvent, type: Marks): void => {
+  const toggleMark = (e: React.PointerEvent, type: Mark): void => {
     e.preventDefault();
     editor.exec({ type: 'toggle_mark', mark: type });
   };
