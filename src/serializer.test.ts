@@ -155,6 +155,18 @@ describe('serializer', () => {
       '<a target="_blank" href="https://abakus.no">Link</a>'
     );
   });
+
+  it('serializes a quote', () => {
+    const element = jsx(
+      'element',
+      { type: 'quote' },
+      jsx('text', { text: 'Quote' })
+    );
+
+    const serialized = serialize(element);
+
+    expect(serialized).toBe('<blockquote>Quote</blockquote>');
+  });
 });
 
 describe('deserializeHtmlString', () => {
@@ -419,6 +431,17 @@ describe('deserializeHtmlString', () => {
     expect(deserialized[1].children[0].children[0].text).toBe('first item');
     expect(deserialized[1].children[1].children[0].text).toBe('second item');
   });
+
+  it('deserializes a block quote', () => {
+    const deserialized = deserializeHtmlString(
+      '<blockquote>This is a block quote</blockquote>'
+    );
+
+    expect(deserialized).toHaveLength(1);
+    expect(deserialized[0].type).toBe('quote');
+    expect(deserialized[0].children).toHaveLength(1);
+    expect(deserialized[0].children[0].text).toBe('This is a block quote');
+  });
 });
 
 // Try to deserialize a html string, then serialize it back to a html string
@@ -457,5 +480,9 @@ describe('reserialize deserialized html', () => {
 
   it('serializes code blocks correctly', () => {
     testHtml('<pre>this.block = code</pre>');
+  });
+
+  it('serializes blockquote correctly', () => {
+    testHtml('<blockquote>test</blockquote>');
   });
 });
