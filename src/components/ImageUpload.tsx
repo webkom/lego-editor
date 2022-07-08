@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import ReactCrop, { Crop } from 'react-image-crop';
 import cropImage from '../utils/cropImage';
 import Modal from './Modal';
+import { FunctionComponent } from 'react';
 
 interface Props {
   uploadFunction?: (image: Blob) => void;
@@ -26,7 +27,7 @@ interface ImageDropProps {
   onDrop: (images: File[]) => void;
 }
 
-const ImageDrop: React.StatelessComponent<ImageDropProps> = (
+const ImageDrop: FunctionComponent<ImageDropProps> = (
   props: ImageDropProps
 ) => {
   const { onDrop } = props;
@@ -60,7 +61,13 @@ export default class ImageUpload extends React.Component<Props, State> {
 
   onImageLoaded = (image: HTMLImageElement): boolean => {
     this.setState({
-      crop: { x: 0, y: 0, width: image.width, height: image.height },
+      crop: {
+        x: 0,
+        y: 0,
+        width: image.width,
+        height: image.height,
+        unit: 'px',
+      },
       imageWidth: image.width,
       imageHeight: image.height,
     });
@@ -102,12 +109,13 @@ export default class ImageUpload extends React.Component<Props, State> {
         <div className="_legoEditor_imageUploader_crop_wrapper">
           {currentImage ? (
             <div className="_legoEditor_imageUploader_crop_container">
-              <ReactCrop
-                src={currentImage.url}
-                onChange={this.handleCrop}
-                onImageLoaded={this.onImageLoaded}
-                crop={crop}
-              />
+              <ReactCrop onChange={this.handleCrop} crop={crop}>
+                <img
+                  src={currentImage.url}
+                  alt="Uploaded image"
+                  onLoad={(evt) => this.onImageLoaded(evt.currentTarget)}
+                />
+              </ReactCrop>
             </div>
           ) : (
             <ImageDrop onDrop={this.onDrop} />
