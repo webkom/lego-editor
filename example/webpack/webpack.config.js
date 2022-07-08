@@ -49,12 +49,12 @@ module.exports = () => {
     plugins: [
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, '../src/index.html'),
-        filname: './index.html',
+        filename: './index.html',
       }),
       new webpack.HotModuleReplacementPlugin(),
     ],
     devServer: {
-      contentBase: path.resolve(__dirname, '../dist'),
+      static: path.resolve(__dirname, '../dist'),
       hot: true,
     },
     devtool: 'inline-source-map',
