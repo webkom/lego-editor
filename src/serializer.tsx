@@ -1,6 +1,7 @@
-import { Node, Text, Element } from 'slate';
+import { Node as SlateNode, Text, Element } from 'slate';
 import escape from 'escape-html';
 import { jsx } from 'slate-hyperscript';
+import { Mark } from './index';
 
 interface TAGS {
   [key: string]: string;
@@ -24,23 +25,29 @@ const ELEMENT_TAGS: TAGS = {
   blockquote: 'quote',
 };
 
-const MARK_TAGS: TAGS = {
+const MARK_TAGS = {
   em: 'italic',
   i: 'italic',
   strong: 'bold',
   u: 'underline',
   code: 'code',
-};
+} as const;
+
+type MarkNode = 'em' | 'i' | 'strong' | 'u' | 'code';
 
 const serializeData = (object: Record<string, unknown>): string =>
   Object.keys(object)
     .map((key) => `${key}="${object[key]}"`)
     .join(' ');
 
+const isMarkNode = (name: string): name is MarkNode => {
+  return Object.keys(MARK_TAGS).includes(name);
+};
+
 /**
  *  Serialize a slate fragment to html
  */
-export const serialize = (node: Node): string => {
+export const serialize = (node: SlateNode): string => {
   /**
    *  Text nodes are serialized with the corresponding tags if needed
    */
@@ -61,7 +68,10 @@ export const serialize = (node: Node): string => {
     return text;
   }
 
-  const children = node.children.map((n: Node) => serialize(n)).join('');
+  const children = node.children.map((n: SlateNode) => serialize(n)).join('');
+  if (!Element.isElement(node)) {
+    return children;
+  }
 
   switch (node.type) {
     case 'paragraph':
@@ -91,11 +101,12 @@ export const serialize = (node: Node): string => {
       // For compatibility with https://github.com/webkom/lego
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { fileKey, type, children, ...imageData } = node;
+      const imgData: { [k: string]: unknown } = { ...imageData };
       if (fileKey) {
-        imageData['data-file-key'] = fileKey;
+        imgData['data-file-key'] = fileKey;
       }
-      imageData.alt ??= 'Placeholder';
-      return `<img ${serializeData(imageData)} />`;
+      imgData.alt ??= 'Placeholder';
+      return `<img ${serializeData(imgData)} />`;
     }
     case 'image_caption':
       return `<figcaption>${children}</figcaption>`;
@@ -115,7 +126,7 @@ export const serialize = (node: Node): string => {
  * In order to conform to slates structure, we need to create the
  * slate node such that we have: <a><em>example.com</em></a>
  */
-const normalizeMark = (node: Node, mark: string): void => {
+const normalizeMark = (node: SlateNode, mark: Mark): void => {
   for (const child of node.children) {
     Text.isText(child) ? (child[mark] = true) : normalizeMark(child, mark);
   }
@@ -125,22 +136,25 @@ const normalizeMark = (node: Node, mark: string): void => {
  *  Deserialize a html tree to a slate fragment.
  */
 export const deserialize = (
-  el: HTMLElement
-): Node[] | Element | Text | string | null => {
+  element: Node
+): SlateNode | string | (SlateNode | string)[] => {
   // See https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
   // for what the different nodeTypes are.
-  if (el.nodeType === 3) {
-    return el.textContent;
-  } else if (el.nodeType !== 1) {
-    return null;
-  } else if (el.nodeName === 'BR') {
+  if (element.nodeType === Node.TEXT_NODE) {
+    return element.textContent || '';
+  } else if (element.nodeType !== Node.ELEMENT_NODE) {
+    return '';
+  } else if (element.nodeName === 'BR') {
     return '\n';
   }
 
+  // Type check is done above. TS cannot infer, hence the cast
+  const el = element as HTMLElement;
+
   // This is flatmapped to make sure we have a situation where a child is an array.
-  let children = Array.from(el.childNodes).flatMap((n: ChildNode) =>
-    deserialize(n as HTMLElement)
-  ) as Node[];
+  let children = Array.from(el.childNodes)
+    .map((n) => deserialize(n))
+    .flat();
 
   if (children.length === 0) {
     children = [jsx('text', {}, '')];
@@ -179,12 +193,13 @@ export const deserialize = (
     }
   }
 
-  const markType = MARK_TAGS[el.nodeName.toLowerCase()];
-  if (markType) {
-    return children.map((child: Node) => {
+  const nodeName = el.nodeName.toLowerCase();
+  if (isMarkNode(nodeName)) {
+    const markType = MARK_TAGS[nodeName];
+    return children.map((child) => {
       // If the child node is not a text node, we need
       // to apply the formatting to all text nodes in that node.
-      if (child.type && child.type !== 'text') {
+      if (!Text.isText(child) && SlateNode.isNode(child)) {
         normalizeMark(child, markType);
         return child;
       }
@@ -202,7 +217,7 @@ export const deserialize = (
   if (children) {
     return children;
   }
-  return el.textContent;
+  return el.textContent || '';
 };
 
 interface DeserializerOptions {
@@ -218,7 +233,7 @@ interface DeserializerOptions {
 export const deserializeHtmlString = (
   html: string,
   options?: DeserializerOptions
-): Node[] => {
+): SlateNode[] => {
   let document: HTMLDocument;
   if (options?.domParser) {
     document = options.domParser(html);
@@ -226,5 +241,5 @@ export const deserializeHtmlString = (
     document = new DOMParser().parseFromString(html, 'text/html');
   }
 
-  return deserialize(document.body) as Node[];
+  return deserialize(document.body) as SlateNode[];
 };

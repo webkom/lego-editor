@@ -1,10 +1,19 @@
 import { deserializeHtmlString, serialize } from './serializer';
-import { createEditor, Editor, Node } from 'slate';
+import { createEditor, Transforms, Element } from 'slate';
 import { jsx } from 'slate-hyperscript';
-import { Mark, MARKS } from './index';
+import {
+  Mark,
+  MARKS,
+  CustomText,
+  TextElement,
+  ImageElement,
+  ImageCaptionElement,
+  ListElement,
+  LinkElement,
+} from './index';
 
 const checkMarks = (
-  element: Node,
+  element: CustomText,
   marks: {
     [key in Mark]?: boolean;
   }
@@ -29,7 +38,7 @@ describe('serializer', () => {
 
   it('serializes editor with headers and paragraph', () => {
     const editor = createEditor();
-    Editor.insertNodes(editor, [
+    Transforms.insertNodes(editor, [
       jsx('element', { type: 'h1' }, jsx('text', { text: 'Header 1' })),
       jsx('element', { type: 'h2' }, jsx('text', { text: 'Header 2' })),
       jsx('element', { type: 'h3' }, jsx('text', { text: 'Header 3' })),
@@ -47,7 +56,7 @@ describe('serializer', () => {
 
   it('serializes editor with lists', () => {
     const editor = createEditor();
-    Editor.insertNodes(editor, [
+    Transforms.insertNodes(editor, [
       jsx(
         'element',
         { type: 'ul_list' },
@@ -171,7 +180,9 @@ describe('serializer', () => {
 
 describe('deserializeHtmlString', () => {
   it('deserializes a text node', () => {
-    const deserialized = deserializeHtmlString('<p>Hello World</p>');
+    const deserialized = deserializeHtmlString(
+      '<p>Hello World</p>'
+    ) as TextElement[];
 
     expect(deserialized).toHaveLength(1);
     expect(deserialized[0].type).toBe('paragraph');
@@ -204,7 +215,7 @@ describe('deserializeHtmlString', () => {
       <body><p>Test</p><!--HTML comment--></body>
     </html>
   `;
-    const deserialized = deserializeHtmlString(htmlString);
+    const deserialized = deserializeHtmlString(htmlString) as TextElement[];
 
     expect(deserialized[0].type).toBe('paragraph');
 
@@ -221,7 +232,7 @@ describe('deserializeHtmlString', () => {
 
     const deserialized = deserializeHtmlString('', {
       domParser: () => htmlDocument,
-    });
+    }) as TextElement[];
 
     expect(deserialized).toHaveLength(1);
     expect(deserialized[0].type).toBe('paragraph');
@@ -232,7 +243,7 @@ describe('deserializeHtmlString', () => {
   });
 
   it('deserializes an element with no children', () => {
-    const deserialized = deserializeHtmlString('<p/>');
+    const deserialized = deserializeHtmlString('<p/>') as TextElement[];
 
     expect(deserialized).toHaveLength(1);
     expect(deserialized[0].type).toBe('paragraph');
@@ -245,7 +256,7 @@ describe('deserializeHtmlString', () => {
   it('deserializes document with various headers and text tags', () => {
     const deserialized = deserializeHtmlString(
       '<h1>Header 1</h1><h2>Header 2</h2><h3>Header 3</h3><h4>Header 4</h4><h5>Header 5</h5><p><strong>bold, </strong><u>underlined</u> and <i>italic</i> text<code> + some code</code></p>'
-    );
+    ) as TextElement[];
 
     expect(deserialized).toHaveLength(6);
     expect(deserialized[0].type).toBe('h1');
@@ -286,25 +297,25 @@ describe('deserializeHtmlString', () => {
 
   it('deserializes link tags', () => {
     const deserialized = deserializeHtmlString(
-      '<p>paragraph <a href="https://abakus.no">with a link</a></p>'
-    );
+      '<p>paragraph </p><a href="https://abakus.no"><p>with a link</p></a>'
+    ) as Element[];
 
-    expect(deserialized).toHaveLength(1);
-    const paragraph = deserialized[0];
+    expect(deserialized).toHaveLength(2);
+    const paragraph = deserialized[0] as TextElement;
     expect(paragraph.type).toBe('paragraph');
-    expect(paragraph.children).toHaveLength(2);
+    expect(paragraph.children).toHaveLength(1);
     expect(paragraph.children[0].text).toBe('paragraph ');
-    const link = paragraph.children[1];
+    const link = deserialized[1] as LinkElement;
     expect(link.type).toBe('link');
     expect(link.url).toBe('https://abakus.no');
     expect(link.children).toHaveLength(1);
-    expect(link.children[0].text).toBe('with a link');
+    expect(link.children[0].children[0].text).toBe('with a link');
   });
 
   it('deserializes document with <br> tag', () => {
     const deserialized = deserializeHtmlString(
       '<p>paragraph <br> with a line break</p>'
-    );
+    ) as TextElement[];
 
     expect(deserialized).toHaveLength(1);
     expect(deserialized[0].type).toBe('paragraph');
@@ -317,7 +328,7 @@ describe('deserializeHtmlString', () => {
   it('deserializes text with multiple marks', () => {
     const deserialized = deserializeHtmlString(
       '<p>this <em>text <strong>is <u>marked <code>up!</code></u></strong></em></p>'
-    );
+    ) as TextElement[];
 
     expect(deserialized).toHaveLength(1);
     const paragraph = deserialized[0];
@@ -353,7 +364,7 @@ describe('deserializeHtmlString', () => {
   it('handles mark tags around other elements', () => {
     const deserialized = deserializeHtmlString(
       '<strong><u><h1>Strong header</h1></u><p>and paragraph</p></strong>'
-    );
+    ) as TextElement[];
 
     expect(deserialized).toHaveLength(2);
 
@@ -371,7 +382,7 @@ describe('deserializeHtmlString', () => {
   it('ignores unknown tag but finds children', () => {
     const deserialized = deserializeHtmlString(
       '<testing-tag><p>should be <taggy-mctagface>found</taggy-mctagface></p></testing-tag>'
-    );
+    ) as TextElement[];
 
     expect(deserialized).toHaveLength(1);
 
@@ -383,15 +394,15 @@ describe('deserializeHtmlString', () => {
   it('deserializes an image figure', () => {
     const deserialized = deserializeHtmlString(
       '<figure><img src="image_src.jpg" alt="Cool figure 😎" /><figcaption>Fig.1 - Cool stuff.</figcaption></figure>'
-    );
+    ) as Element[];
 
     expect(deserialized).toHaveLength(1);
 
     expect(deserialized[0].type).toBe('figure');
     expect(deserialized[0].children).toHaveLength(2);
 
-    const image = deserialized[0].children[0];
-    const caption = deserialized[0].children[1];
+    const image = deserialized[0].children[0] as ImageElement;
+    const caption = deserialized[0].children[1] as ImageCaptionElement;
 
     expect(image.type).toBe('image');
     expect(image.src).toBe('image_src.jpg');
@@ -405,7 +416,7 @@ describe('deserializeHtmlString', () => {
   it('ignores <script /> and <style />', () => {
     const deserialized = deserializeHtmlString(
       '<script>alert("I am a script tag!");</script><style>body { background-color: #fff; }</style>'
-    );
+    ) as CustomText[];
 
     expect(deserialized).toHaveLength(1);
     expect(deserialized[0].text).toBe('');
@@ -414,28 +425,32 @@ describe('deserializeHtmlString', () => {
   it('deserializes lists', () => {
     const deserialized = deserializeHtmlString(
       '<ul><li>an item</li><li>another item</li></ul><ol><li>first item</li><li>second item</li></ol>'
-    );
+    ) as ListElement[];
 
     expect(deserialized).toHaveLength(2);
     expect(deserialized[0].type).toBe('ul_list');
     expect(deserialized[0].children).toHaveLength(2);
     expect(deserialized[0].children[0].type).toBe('list_item');
     expect(deserialized[0].children[1].type).toBe('list_item');
-    expect(deserialized[0].children[0].children[0].text).toBe('an item');
-    expect(deserialized[0].children[1].children[0].text).toBe('another item');
+    const textEl = deserialized[0].children[0].children[0] as CustomText;
+    expect(textEl.text).toBe('an item');
+    const textEl2 = deserialized[0].children[1].children[0] as CustomText;
+    expect(textEl2.text).toBe('another item');
 
     expect(deserialized[1].type).toBe('ol_list');
     expect(deserialized[1].children).toHaveLength(2);
     expect(deserialized[1].children[0].type).toBe('list_item');
     expect(deserialized[1].children[1].type).toBe('list_item');
-    expect(deserialized[1].children[0].children[0].text).toBe('first item');
-    expect(deserialized[1].children[1].children[0].text).toBe('second item');
+    const textEl3 = deserialized[1].children[0].children[0] as CustomText;
+    expect(textEl3.text).toBe('first item');
+    const textEl4 = deserialized[1].children[1].children[0] as CustomText;
+    expect(textEl4.text).toBe('second item');
   });
 
   it('deserializes a block quote', () => {
     const deserialized = deserializeHtmlString(
       '<blockquote>This is a block quote</blockquote>'
-    );
+    ) as TextElement[];
 
     expect(deserialized).toHaveLength(1);
     expect(deserialized[0].type).toBe('quote');
@@ -450,7 +465,7 @@ describe('reserialize deserialized html', () => {
   const deserializeAndReserialize = (html: string): string => {
     const deserialized = deserializeHtmlString(html);
     const editor = createEditor();
-    Editor.insertNodes(editor, deserialized);
+    Transforms.insertNodes(editor, deserialized);
     return serialize(editor);
   };
 
