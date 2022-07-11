@@ -32,7 +32,7 @@
 
 ## Extending the editor
 
-Lego-editor uses [Slate.js](https://github.com/ianstormtaylor/slate) version [0.56](https://docs.slatejs.org/general/changelog#0-56-0-december-17-2019). You can therefore add any plugins as described in this version of Slate.
+Lego-editor uses [Slate.js](https://github.com/ianstormtaylor/slate) version [0.81](https://docs.slatejs.org/general/changelog). You can therefore add any plugins as described in this version of Slate.
 The `<Editor />` component accepts the prop `plugins`, which takes an array of plugins
 (`plugins: (Editor => Editor)[]`).
 

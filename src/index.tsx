@@ -5,17 +5,28 @@ import {
   withReact,
   RenderElementProps,
   RenderLeafProps,
+  ReactEditor,
 } from 'slate-react';
-import { createEditor, Editor, Node, Location } from 'slate';
-import { withHistory } from 'slate-history';
+import {
+  createEditor,
+  Editor,
+  BaseEditor,
+  Node,
+  Element,
+  Location,
+  Descendant,
+} from 'slate';
+import { withHistory, HistoryEditor } from 'slate-history';
 import isHotKey from 'is-hotkey';
 import Toolbar from './components/Toolbar';
 import ImageBlock from './components/ImageBlock';
 import {
   basePlugin,
+  PluginsEditor,
   insertTab,
   softEnter,
   lists,
+  ListEditor,
   links,
   images,
   markdownShortcuts,
@@ -34,7 +45,7 @@ interface Props {
   autoFocus?: boolean;
   placeholder?: string;
   imageUpload: (file: Blob) => Promise<Record<string, unknown>>;
-  plugins?: ((editor: Editor) => Editor)[];
+  plugins?: ((editor: BaseEditor) => BaseEditor)[];
   domParser?: (value: string) => HTMLDocument;
   darkMode?: boolean;
 }
@@ -61,11 +72,74 @@ export type Elements =
   | 'image_caption'
   | 'quote';
 
+type CustomText = { text: string; children: [] } & { [key in Mark]?: boolean };
+
+type ImageElement = {
+  type: 'image';
+  src: string;
+  objectUrl: string;
+  children: [];
+};
+type ImageCaptionElement = { type: 'image_caption'; children: CustomText[] };
+type FigureElement = {
+  type: 'figure';
+  children: (ImageElement | ImageCaptionElement)[];
+};
+type TextElement = {
+  type: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'paragraph';
+  children: CustomText[];
+};
+type CodeBlockElement = {
+  type: 'code_block';
+  children: TextElement[];
+};
+
+type QuoteElement = {
+  type: 'quote';
+  children: CustomText[];
+};
+type ListItemElement = {
+  type: 'list_item';
+  children: TextElement[];
+};
+type ListElement = {
+  type: 'ol_list' | 'ul_list';
+  children: (ListElement | ListItemElement)[];
+};
+type LinkElement = {
+  type: 'link';
+  children: (TextElement | CustomText)[];
+  url: string;
+};
+
+type CustomElement =
+  | ListElement
+  | ListItemElement
+  | TextElement
+  | ImageElement
+  | ImageCaptionElement
+  | FigureElement
+  | QuoteElement
+  | CodeBlockElement
+  | LinkElement;
+
+declare module 'slate' {
+  interface CustomTypes {
+    Editor: BaseEditor &
+      ReactEditor &
+      HistoryEditor &
+      ListEditor &
+      PluginsEditor;
+    Element: CustomElement;
+    Text: CustomText;
+  }
+}
+
 /**
  *  Returns a function to be used for matching against node types
  */
 export const nodeType = (type: Elements): ((node: Node) => boolean) => {
-  return (node: Node) => node.type === type;
+  return (node: Node) => Element.isElement(node) && node.type === type;
 };
 
 export const LEditor = {
@@ -93,7 +167,9 @@ export const LEditor = {
   ...Editor,
 };
 
-const initialValue: Node[] = [{ type: 'paragraph', children: [{ text: '' }] }];
+const initialValue: Descendant[] = [
+  { type: 'paragraph', children: [{ text: '' }] },
+];
 
 // Components to be rendered for leaf nodes
 const renderLeaf = (props: RenderLeafProps): JSX.Element => {
@@ -266,7 +342,7 @@ const LegoEditor = (props: Props): JSX.Element => {
           : '_legoEditor_root'
       }
     >
-      <Slate editor={editor} value={value} onChange={onChange}>
+      <Slate editor={editor} value={value as Descendant[]} onChange={onChange}>
         {!props.disabled && !props.simple && <Toolbar />}
         <Editable
           onKeyDown={onKeyDown}
