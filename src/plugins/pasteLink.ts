@@ -1,9 +1,16 @@
 import isUrl from '../utils/isUrl';
-import { Command, Editor, Range, Element } from 'slate';
+import { Transforms, Editor, Range, Element, BaseEditor } from 'slate';
 import { LEditor, nodeType } from '../index';
 
-const links = (editor: Editor): Editor => {
-  const { exec, isInline } = editor;
+export interface LinkEditor extends BaseEditor {
+  insertLink: (url: string, text?: string) => void;
+  wrapLink: (url: string, at?: Location) => void;
+  unwrapLink: () => void;
+}
+
+const links = <T extends Editor>(e: T): T & LinkEditor => {
+  const editor = e as T & LinkEditor;
+  const { isInline, insertData, insertText } = editor;
   // Tell the editor that `link` elements are inline
   editor.isInline = (element: Element & { type?: string }): boolean => {
     if (element.type === 'link') {
@@ -13,66 +20,66 @@ const links = (editor: Editor): Editor => {
     }
   };
 
-  // Add link editing commands
-  editor.exec = (command: Command) => {
-    switch (command.type) {
-      case 'insert_link':
-        Editor.insertNodes(editor, {
-          type: 'link',
-          url: command.url,
-          children: [{ text: command.text || command.url }],
-        });
-        break;
-      case 'wrap_link': {
-        // Links should only contain text, so we just use the first text node
-        // in the current selection
-        const at = command.at || editor.selection;
-        if (at !== null) {
-          // Unwrap any existing link elements, if they exist in the selection
-          if (LEditor.isElementActive(editor, 'link', { at })) {
-            Editor.unwrapNodes(editor, {
-              match: nodeType('link'),
-              split: true,
-              at,
-            });
-          }
-          Editor.wrapNodes(
-            editor,
-            { type: 'link', url: command.url, children: [] },
-            { split: true, at }
-          );
-        }
-        break;
-      }
-      case 'unwrap_ink':
-        Editor.unwrapNodes(editor, { match: nodeType('link') });
-        break;
+  editor.insertLink = (url, text) => {
+    Transforms.insertNodes(editor, {
+      type: 'link',
+      url: url,
+      children: [{ text: text || url, children: [] }],
+    });
+  };
 
-      // Pasting links should issue link commands
-      case 'insert_text':
-      case 'insert_data': {
-        let text;
-        if (command.type === 'insert_data') {
-          text = command.data.getData('text/plain');
-        } else {
-          text = command.text;
-        }
-        if (isUrl(text)) {
-          const { selection } = editor;
-          if (selection && Range.isCollapsed(selection)) {
-            editor.exec({ type: 'insert_link', url: text });
-          } else {
-            editor.exec({ type: 'wrap_link', url: text });
-          }
-        } else {
-          exec(command);
-        }
-        break;
+  editor.wrapLink = (url, optionAt) => {
+    // Links should only contain text, so we just use the first text node
+    // in the current selection
+    const at = (optionAt || editor.selection) as Range | null;
+    if (at) {
+      // Unwrap any existing link elements, if they exist in the selection
+      if (LEditor.isElementActive(editor, 'link', { at })) {
+        Transforms.unwrapNodes(editor, {
+          match: nodeType('link'),
+          split: true,
+          at,
+        });
       }
-      default:
-        exec(command);
+      Transforms.wrapNodes(
+        editor,
+        { type: 'link', url: url, children: [] },
+        { split: true, at }
+      );
     }
   };
+
+  editor.unwrapLink = () => {
+    Transforms.unwrapNodes(editor, { match: nodeType('link') });
+  };
+
+  editor.insertData = (data) => {
+    const text = data.getData('text/plain');
+    if (isUrl(text)) {
+      const { selection } = editor;
+      if (selection && Range.isCollapsed(selection)) {
+        editor.insertLink(text);
+      } else {
+        editor.wrapLink(text);
+      }
+    } else {
+      insertData(data);
+    }
+  };
+
+  editor.insertText = (text) => {
+    if (isUrl(text)) {
+      const { selection } = editor;
+      if (selection && Range.isCollapsed(selection)) {
+        editor.insertLink(text);
+      } else {
+        editor.wrapLink(text);
+      }
+    } else {
+      insertText(text);
+    }
+  };
+
   return editor;
 };
 

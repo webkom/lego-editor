@@ -12,12 +12,12 @@ import { LEditor, Elements, DEFAULT_BLOCK, Mark } from '../index';
 import { deserializeHtmlString } from '../serializer';
 
 import lists, { ListEditor } from './editList';
-import links from './pasteLink';
-import images from './images';
+import links, { LinkEditor } from './pasteLink';
+import images, { ImageEditor } from './images';
 import markdownShortcuts from './markdown';
 
 export { lists, links, images, markdownShortcuts };
-export { ListEditor };
+export { ListEditor, LinkEditor, ImageEditor };
 
 type KeyHandlerCommand = {
   event: KeyboardEvent;

@@ -19,7 +19,7 @@ type InsertImageOptions = {
   at?: Location;
 };
 
-interface ImageEditor extends BaseEditor {
+export interface ImageEditor extends BaseEditor {
   insertImage: (options: InsertImageOptions) => void;
 }
 
@@ -50,11 +50,11 @@ const images = (
                 type: 'image',
                 objectUrl,
                 src: src || (returnData?.src as string),
-                ...returnData,
+                children: [],
               },
               {
                 type: 'image_caption',
-                children: [{ text: 'Caption', italic: true }],
+                children: [{ text: 'Caption', italic: true, children: [] }],
               },
             ],
           },
@@ -115,7 +115,7 @@ const images = (
           Transforms.removeNodes(editor, { at: children[0][1] });
           Transforms.insertNodes(
             editor,
-            { type: 'image_caption', children: [{ text }] },
+            { type: 'image_caption', children: [{ text, children: [] }] },
             { at: path }
           );
           return;

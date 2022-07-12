@@ -28,7 +28,9 @@ import {
   lists,
   ListEditor,
   links,
+  LinkEditor,
   images,
+  ImageEditor,
   markdownShortcuts,
 } from './plugins';
 import { serialize, deserializeHtmlString } from './serializer';
@@ -72,20 +74,26 @@ export type Elements =
   | 'image_caption'
   | 'quote';
 
-type CustomText = { text: string; children: [] } & { [key in Mark]?: boolean };
-
-type ImageElement = {
-  type: 'image';
-  src: string;
-  objectUrl: string;
-  children: [];
+export type CustomText = { text: string; children: [] } & {
+  [key in Mark]?: boolean;
 };
-type ImageCaptionElement = { type: 'image_caption'; children: CustomText[] };
-type FigureElement = {
+
+export type ImageElement = {
+  type: 'image';
+  src?: string;
+  objectUrl: string;
+  fileKey?: string;
+  children: [];
+} & { [key: string]: unknown };
+export type ImageCaptionElement = {
+  type: 'image_caption';
+  children: CustomText[];
+};
+export type FigureElement = {
   type: 'figure';
   children: (ImageElement | ImageCaptionElement)[];
 };
-type TextElement = {
+export type TextElement = {
   type: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'paragraph';
   children: CustomText[];
 };
@@ -93,23 +101,22 @@ type CodeBlockElement = {
   type: 'code_block';
   children: TextElement[];
 };
-
+export type LinkElement = {
+  type: 'link';
+  children: (TextElement | CustomText)[];
+  url: string;
+};
 type QuoteElement = {
   type: 'quote';
   children: CustomText[];
 };
-type ListItemElement = {
+export type ListItemElement = {
   type: 'list_item';
-  children: TextElement[];
+  children: (TextElement | CustomText | LinkElement)[];
 };
-type ListElement = {
+export type ListElement = {
   type: 'ol_list' | 'ul_list';
   children: (ListElement | ListItemElement)[];
-};
-type LinkElement = {
-  type: 'link';
-  children: (TextElement | CustomText)[];
-  url: string;
 };
 
 type CustomElement =
@@ -129,6 +136,8 @@ declare module 'slate' {
       ReactEditor &
       HistoryEditor &
       ListEditor &
+      LinkEditor &
+      ImageEditor &
       PluginsEditor;
     Element: CustomElement;
     Text: CustomText;
@@ -168,7 +177,7 @@ export const LEditor = {
 };
 
 const initialValue: Descendant[] = [
-  { type: 'paragraph', children: [{ text: '' }] },
+  { type: 'paragraph', children: [{ text: '', children: [] }] },
 ];
 
 // Components to be rendered for leaf nodes

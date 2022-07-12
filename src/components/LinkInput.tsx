@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Node, NodeEntry } from 'slate';
+import { Node, NodeEntry, Element } from 'slate';
 import isUrl, { prependHttps } from '../utils/isUrl';
 import Modal from './Modal';
 
@@ -20,7 +20,11 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
   }, []);
 
   const [url, setUrl] = useState<string>(
-    props.activeLink ? props.activeLink[0].url : ''
+    props.activeLink &&
+      Element.isElement(props.activeLink[0]) &&
+      props.activeLink[0].type === 'link'
+      ? props.activeLink[0].url
+      : ''
   );
   const [linkText, setLinkText] = useState<string>(
     props.activeLink ? Node.string(props.activeLink[0]) : ''

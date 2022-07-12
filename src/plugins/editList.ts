@@ -20,7 +20,7 @@ type ListType = typeof LIST_TYPES[number];
 export interface ListEditor extends BaseEditor {
   increaseListDepth: (at?: Location) => void;
   decreaseListDepth: (at?: Location) => void;
-  toggleList: (command: { listType: ListType }) => void;
+  toggleList: (listType: ListType) => void;
   isList: (options?: { at?: Location }) => boolean;
   listDepth: (options?: { at?: Location }) => number;
 }
@@ -52,7 +52,7 @@ const editList = <T extends Editor>(baseEditor: T): T & ListEditor => {
       const { event } = command;
       if (isHotKey('mod+l')(event)) {
         event.preventDefault();
-        editor.toggleList({ listType: 'ul_list' });
+        editor.toggleList('ul_list');
       } else {
         keyHandler(command);
       }
@@ -80,7 +80,7 @@ const editList = <T extends Editor>(baseEditor: T): T & ListEditor => {
 
   editor.increaseListDepth = (at) => increaseListDepth(editor, at);
   editor.decreaseListDepth = (at) => decreaseListDepth(editor, at);
-  editor.toggleList = (command) => setListType(editor, command);
+  editor.toggleList = (listType) => setListType(editor, listType);
 
   editor.isList = (options?: { at?: Location }): boolean => {
     const [match] = Editor.nodes(editor, { match: isList, at: options?.at });
@@ -447,12 +447,8 @@ const decreaseListDepth = (
  *  Sets the type of the list at the location specified. Defaults to current selection
  *  If there is no list, wraps the current block in a list of the specified type
  */
-const setListType = (
-  editor: Editor & ListEditor,
-  command: { listType: ListType }
-): void => {
+const setListType = (editor: Editor & ListEditor, listType: ListType): void => {
   Editor.withoutNormalizing(editor, () => {
-    const { listType } = command;
     let parentList = getParentList(editor);
 
     // If there is no parentList, we check for a list in the current selection

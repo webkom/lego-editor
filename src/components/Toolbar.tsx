@@ -58,7 +58,7 @@ const Toolbar = (): JSX.Element => {
     type: 'ul_list' | 'ol_list'
   ): void => {
     e.preventDefault();
-    editor.toggleList({ listType: type });
+    editor.toggleList(type);
   };
 
   const increaseIndent = (e: React.PointerEvent): void => {
@@ -110,14 +110,14 @@ const Toolbar = (): JSX.Element => {
           {
             type: 'link',
             url,
-            children: [{ text: text || url }],
+            children: [{ text: text || url, children: [] }],
           },
           {
             at: lastSelection || undefined,
           }
         );
       } else {
-        editor.wrapLink({ url: data.url, at: lastSelection });
+        editor.wrapLink(data.url, lastSelection);
       }
     }
   };
