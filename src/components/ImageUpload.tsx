@@ -37,8 +37,10 @@ const ImageDrop: FunctionComponent<ImageDropProps> = ({ onDrop }) => {
 const ImageUpload: FunctionComponent<Props> = ({ uploadFunction, cancel }) => {
   const [currentImage, setCurrentImage] = useState<Image>();
   const [crop, setCrop] = useState<Crop>();
-  const [imageDimensions, setImageDimensions] =
-    useState<{ width: number; height: number }>();
+  const [imageDimensions, setImageDimensions] = useState<{
+    width: number;
+    height: number;
+  }>();
 
   const onDrop = (files: (Blob & { name: string })[]): void => {
     if (files.length === 1) {
