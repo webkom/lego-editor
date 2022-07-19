@@ -1,5 +1,12 @@
 import isUrl from '../utils/isUrl';
-import { Transforms, Editor, Range, Element, BaseEditor } from 'slate';
+import {
+  Transforms,
+  Editor,
+  Range,
+  Element,
+  BaseEditor,
+  Location,
+} from 'slate';
 import { LEditor, nodeType } from '../index';
 
 export interface LinkEditor extends BaseEditor {

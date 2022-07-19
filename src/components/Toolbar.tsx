@@ -117,7 +117,7 @@ const Toolbar = (): JSX.Element => {
           }
         );
       } else {
-        editor.wrapLink(data.url, lastSelection);
+        editor.wrapLink(data.url, lastSelection || undefined);
       }
     }
   };
@@ -140,7 +140,7 @@ const Toolbar = (): JSX.Element => {
   const insertImage = (image: Blob, data?: Record<string, unknown>): void => {
     editor.insertImage({
       file: image,
-      at: lastSelection,
+      at: lastSelection || undefined,
       ...data,
     });
     setInsertingImage(false);
