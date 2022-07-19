@@ -6,7 +6,8 @@ import {
   Point,
   EditorDirectedDeletionOptions,
 } from 'slate';
-import { LEditor, DEFAULT_BLOCK, Elements } from '../index';
+import { LEditor, DEFAULT_BLOCK } from '../index';
+import type { Elements } from '../custom-types';
 
 type TextUnit = NonNullable<EditorDirectedDeletionOptions['unit']>;
 

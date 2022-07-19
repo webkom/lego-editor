@@ -1,7 +1,7 @@
 import { Node as SlateNode, Text, Element } from 'slate';
 import escape from 'escape-html';
 import { jsx } from 'slate-hyperscript';
-import { Mark } from './index';
+import { Mark } from './custom-types';
 
 interface TAGS {
   [key: string]: string;

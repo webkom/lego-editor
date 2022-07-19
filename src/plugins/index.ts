@@ -8,7 +8,8 @@ import {
   BaseEditor,
 } from 'slate';
 import isHotKey from 'is-hotkey';
-import { LEditor, Elements, DEFAULT_BLOCK, Mark } from '../index';
+import { LEditor, DEFAULT_BLOCK } from '../index';
+import type { Elements, Mark } from '../custom-types';
 import { deserializeHtmlString } from '../serializer';
 
 import lists, { ListEditor } from './editList';

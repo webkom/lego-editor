@@ -10,7 +10,7 @@ import {
   ImageCaptionElement,
   ListElement,
   LinkElement,
-} from './index';
+} from './custom-types';
 
 const checkMarks = (
   element: CustomText,

@@ -1,0 +1,96 @@
+import { ReactEditor } from 'slate-react';
+import { BaseEditor } from 'slate';
+import { HistoryEditor } from 'slate-history';
+
+import { PluginsEditor, ListEditor, LinkEditor, ImageEditor } from './plugins';
+
+export type Next = () => unknown;
+
+export const MARKS = ['bold', 'italic', 'code', 'underline'] as const;
+export type Mark = typeof MARKS[number];
+export type Elements =
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'h5'
+  | 'paragraph'
+  | 'ul_list'
+  | 'ol_list'
+  | 'list_item'
+  | 'code_block'
+  | 'link'
+  | 'figure'
+  | 'image'
+  | 'image_caption'
+  | 'quote';
+
+export type CustomText = { text: string; children: [] } & {
+  [key in Mark]?: boolean;
+};
+
+export type ImageElement = {
+  type: 'image';
+  src?: string;
+  objectUrl: string;
+  fileKey?: string;
+  children: [];
+} & { [key: string]: unknown };
+export type ImageCaptionElement = {
+  type: 'image_caption';
+  children: CustomText[];
+};
+export type FigureElement = {
+  type: 'figure';
+  children: (ImageElement | ImageCaptionElement)[];
+};
+export type TextElement = {
+  type: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'paragraph';
+  children: CustomText[];
+};
+type CodeBlockElement = {
+  type: 'code_block';
+  children: TextElement[];
+};
+export type LinkElement = {
+  type: 'link';
+  children: (TextElement | CustomText)[];
+  url: string;
+};
+type QuoteElement = {
+  type: 'quote';
+  children: CustomText[];
+};
+export type ListItemElement = {
+  type: 'list_item';
+  children: (TextElement | CustomText | LinkElement)[];
+};
+export type ListElement = {
+  type: 'ol_list' | 'ul_list';
+  children: (ListElement | ListItemElement)[];
+};
+
+type CustomElement =
+  | ListElement
+  | ListItemElement
+  | TextElement
+  | ImageElement
+  | ImageCaptionElement
+  | FigureElement
+  | QuoteElement
+  | CodeBlockElement
+  | LinkElement;
+
+declare module 'slate' {
+  interface CustomTypes {
+    Editor: BaseEditor &
+      ReactEditor &
+      HistoryEditor &
+      ListEditor &
+      LinkEditor &
+      ImageEditor &
+      PluginsEditor;
+    Element: CustomElement;
+    Text: CustomText;
+  }
+}

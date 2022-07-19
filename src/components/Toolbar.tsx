@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Editor, NodeEntry, Range, Node, Element, Transforms } from 'slate';
 import { useSlate } from 'slate-react';
-import { LEditor, Mark, Elements, nodeType } from '../index';
+import { LEditor, nodeType } from '../index';
+import type { Mark, Elements } from '../custom-types';
+import ImageUpload from './ImageUpload';
 import LinkInput from './LinkInput';
 import cx from 'classnames';
 
