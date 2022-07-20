@@ -297,7 +297,7 @@ describe('deserializeHtmlString', () => {
 
   it('deserializes link tags', () => {
     const deserialized = deserializeHtmlString(
-      '<p>paragraph </p><a href="https://abakus.no"><p>with a link</p></a>'
+      '<p>paragraph </p><a href="https://abakus.no">with a link</a>'
     ) as Element[];
 
     expect(deserialized).toHaveLength(2);
@@ -309,7 +309,8 @@ describe('deserializeHtmlString', () => {
     expect(link.type).toBe('link');
     expect(link.url).toBe('https://abakus.no');
     expect(link.children).toHaveLength(1);
-    expect(link.children[0].children[0].text).toBe('with a link');
+    const text = link.children[0] as CustomText;
+    expect(text.text).toBe('with a link');
   });
 
   it('deserializes document with <br> tag', () => {

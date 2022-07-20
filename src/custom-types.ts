@@ -1,5 +1,5 @@
 import { ReactEditor } from 'slate-react';
-import { BaseEditor } from 'slate';
+import { BaseEditor, BaseRange } from 'slate';
 import { HistoryEditor } from 'slate-history';
 
 import { PluginsEditor, ListEditor, LinkEditor, ImageEditor } from './plugins';
@@ -25,7 +25,7 @@ export type Elements =
   | 'image_caption'
   | 'quote';
 
-export type CustomText = { text: string; children: [] } & {
+export type CustomText = { text: string } & {
   [key in Mark]?: boolean;
 };
 
@@ -54,7 +54,7 @@ type CodeBlockElement = {
 };
 export type LinkElement = {
   type: 'link';
-  children: (TextElement | CustomText)[];
+  children: CustomText[];
   url: string;
 };
 type QuoteElement = {
@@ -81,9 +81,14 @@ type CustomElement =
   | CodeBlockElement
   | LinkElement;
 
+export interface ExtendedEditor extends BaseEditor {
+  savedSelection?: BaseRange;
+}
+
 declare module 'slate' {
   interface CustomTypes {
-    Editor: BaseEditor &
+    Editor: ExtendedEditor &
+      BaseEditor &
       ReactEditor &
       HistoryEditor &
       ListEditor &

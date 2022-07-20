@@ -40,7 +40,7 @@ const images = (
         return;
       }
       const objectUrl = URL.createObjectURL(file);
-      uploadFunction(file as Blob).then((returnData: Record<string, unknown>) =>
+      uploadFunction(file).then((returnData: Record<string, unknown>) => {
         Transforms.insertNodes(
           editor,
           {
@@ -54,15 +54,15 @@ const images = (
               },
               {
                 type: 'image_caption',
-                children: [{ text: 'Caption', italic: true, children: [] }],
+                children: [{ text: 'Caption', italic: true }],
               },
             ],
           },
           {
             at: at,
           }
-        )
-      );
+        );
+      });
     };
 
     editor.isVoid = (element: Element): boolean => {
@@ -115,7 +115,7 @@ const images = (
           Transforms.removeNodes(editor, { at: children[0][1] });
           Transforms.insertNodes(
             editor,
-            { type: 'image_caption', children: [{ text, children: [] }] },
+            { type: 'image_caption', children: [{ text }] },
             { at: path }
           );
           return;

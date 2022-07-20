@@ -178,5 +178,10 @@ export const basePlugin = <T extends Editor>(editor: T): Editor => {
     normalizeNode(entry);
   };
 
+  // Base keyHandler: pass
+  // To be extended by plugins. This is just to define
+  // a noop if no other plugins handles the key
+  e.keyHandler = () => null;
+
   return editor;
 };

@@ -126,7 +126,7 @@ export const serialize = (node: SlateNode): string => {
  * In order to conform to slates structure, we need to create the
  * slate node such that we have: <a><em>example.com</em></a>
  */
-const normalizeMark = (node: SlateNode, mark: Mark): void => {
+const normalizeMark = (node: Exclude<SlateNode, Text>, mark: Mark): void => {
   for (const child of node.children) {
     Text.isText(child) ? (child[mark] = true) : normalizeMark(child, mark);
   }

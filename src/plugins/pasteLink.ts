@@ -31,7 +31,7 @@ const links = <T extends Editor>(e: T): T & LinkEditor => {
     Transforms.insertNodes(editor, {
       type: 'link',
       url: url,
-      children: [{ text: text || url, children: [] }],
+      children: [{ text: text || url }],
     });
   };
 

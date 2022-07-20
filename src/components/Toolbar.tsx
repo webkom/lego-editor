@@ -112,7 +112,7 @@ const Toolbar = (): JSX.Element => {
           {
             type: 'link',
             url,
-            children: [{ text: text || url, children: [] }],
+            children: [{ text: text || url }],
           },
           {
             at: lastSelection || undefined,

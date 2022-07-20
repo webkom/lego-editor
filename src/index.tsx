@@ -84,7 +84,7 @@ export const LEditor = {
 };
 
 const initialValue: Descendant[] = [
-  { type: 'paragraph', children: [{ text: '', children: [] }] },
+  { type: 'paragraph', children: [{ text: '' }] },
 ];
 
 // Components to be rendered for leaf nodes
@@ -204,23 +204,25 @@ const LegoEditor = (props: Props): JSX.Element => {
     const e = event as unknown as KeyboardEvent;
     if (isHotKey('mod+b')(e)) {
       e.preventDefault();
-      editor.exec({ type: 'toggle_mark', mark: 'bold' });
+      editor.toggleMark('bold');
     } else if (isHotKey('mod+i')(e)) {
       e.preventDefault();
-      editor.exec({ type: 'toggle_mark', mark: 'italic' });
+      editor.toggleMark('italic');
     } else if (isHotKey('mod+u')(e)) {
       e.preventDefault();
-      editor.exec({ type: 'toggle_mark', mark: 'underline' });
+      editor.toggleMark('underline');
     } else {
-      editor.exec({ type: 'key_handler', event: e });
+      editor.keyHandler({ event: e });
     }
   };
 
   const onFocus = (event: React.SyntheticEvent): void =>
     props.onFocus && props.onFocus(event);
 
-  const onBlur = (event: React.SyntheticEvent): void =>
+  const onBlur = (event: React.SyntheticEvent): void => {
+    editor.savedSelection = editor.selection ?? undefined;
     props.onBlur && props.onBlur(event);
+  };
 
   // Dont remove this or the app won't build!
   const otherPlugins = props.plugins || [];
@@ -236,7 +238,7 @@ const LegoEditor = (props: Props): JSX.Element => {
     ...otherPlugins,
   ].reverse();
 
-  const editor = useMemo(
+  const editor: Editor = useMemo(
     () => compose(...plugins, withHistory, withReact, createEditor)(),
     []
   );
