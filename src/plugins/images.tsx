@@ -1,59 +1,72 @@
-import { Editor, Command, Element, NodeEntry, Node, Location } from 'slate';
+import {
+  Editor,
+  BaseEditor,
+  Element,
+  NodeEntry,
+  Node,
+  Location,
+  Transforms,
+} from 'slate';
 import { DEFAULT_BLOCK, nodeType } from '../index';
 
 interface Options {
   uploadFunction: (file: Blob) => Promise<Record<string, unknown>>;
 }
 
+type InsertImageOptions = {
+  src?: string;
+  file?: Blob;
+  at?: Location;
+};
+
+export interface ImageEditor extends BaseEditor {
+  insertImage: (options: InsertImageOptions) => void;
+}
+
 /**
  *  Plugin for inserting and normalizing images, needs a function for uploading the file.
  */
-const images = (options: Options): ((editor: Editor) => Editor) => {
+const images = (
+  options: Options
+): (<T extends Editor>(editor: T) => Editor) => {
   const { uploadFunction } = options;
-  return (editor: Editor): Editor => {
-    const { exec, isVoid, normalizeNode } = editor;
+  return <T extends Editor>(editorBase: T): Editor & ImageEditor => {
+    const editor = editorBase as T & ImageEditor;
+    const { isVoid, normalizeNode } = editor;
 
-    editor.exec = (
-      command: Command & { src?: string; file?: Blob; at?: Location }
-    ) => {
-      if (command.type === 'insert_image') {
-        const { file, src, at } = command;
-        if (!file) {
-          return;
-        }
-        const objectUrl = URL.createObjectURL(file);
-        uploadFunction(file as Blob).then(
-          (returnData: Record<string, unknown>) =>
-            Editor.insertNodes(
-              editor,
+    editor.insertImage = (options: InsertImageOptions) => {
+      const { file, src, at } = options;
+      if (!file) {
+        return;
+      }
+      const objectUrl = URL.createObjectURL(file);
+      uploadFunction(file).then((returnData: Record<string, unknown>) => {
+        Transforms.insertNodes(
+          editor,
+          {
+            type: 'figure',
+            children: [
               {
-                type: 'figure',
-                children: [
-                  {
-                    type: 'image',
-                    objectUrl,
-                    src: src || returnData?.src,
-                    children: [{ text: '' }],
-                    ...returnData,
-                  },
-                  {
-                    type: 'image_caption',
-                    children: [{ text: 'Caption', italic: true }],
-                  },
-                ],
+                type: 'image',
+                objectUrl,
+                src: src || (returnData?.src as string),
+                children: [],
               },
               {
-                at: at,
-              }
-            )
+                type: 'image_caption',
+                children: [{ text: 'Caption', italic: true }],
+              },
+            ],
+          },
+          {
+            at: at,
+          }
         );
-      } else {
-        exec(command);
-      }
+      });
     };
 
     editor.isVoid = (element: Element): boolean => {
-      return element.type === 'image' ? true : isVoid(editor);
+      return element.type === 'image' ? true : isVoid(element);
     };
 
     /**
@@ -68,7 +81,7 @@ const images = (options: Options): ((editor: Editor) => Editor) => {
         // A figure should only contain an img and a figure caption
         if (children.length > 2) {
           for (const [, path] of children.slice(2, children.length)) {
-            Editor.removeNodes(editor, { at: path });
+            Transforms.removeNodes(editor, { at: path });
           }
           return;
         }
@@ -76,18 +89,19 @@ const images = (options: Options): ((editor: Editor) => Editor) => {
          *  Ensure the only nodes are images and figure captions.
          *  Any image_captions will be kept and turned into a paragraph
          */
-        if (children[0][0].type !== 'image') {
-          Editor.setNodes(
+        const img = children[0][0];
+        if (!Element.isElement(img) || img.type !== 'image') {
+          Transforms.setNodes(
             editor,
             { type: DEFAULT_BLOCK },
             { at: path, match: nodeType('image_caption') }
           );
-          Editor.unwrapNodes(editor, { at: path });
+          Transforms.unwrapNodes(editor, { at: path });
           return;
         }
 
         if (children.length === 1) {
-          Editor.insertNodes(
+          Transforms.insertNodes(
             editor,
             { type: 'image_caption', children: [] },
             { at: path }
@@ -95,10 +109,11 @@ const images = (options: Options): ((editor: Editor) => Editor) => {
           return;
         }
 
-        if (children[1][0].type !== 'image_caption') {
+        const capt = children[1][0];
+        if (!Element.isElement(capt) || capt.type !== 'image_caption') {
           const text = Editor.string(editor, children[1][1]);
-          Editor.removeNodes(editor, { at: children[0][1] });
-          Editor.insertNodes(
+          Transforms.removeNodes(editor, { at: children[0][1] });
+          Transforms.insertNodes(
             editor,
             { type: 'image_caption', children: [{ text }] },
             { at: path }
@@ -108,8 +123,9 @@ const images = (options: Options): ((editor: Editor) => Editor) => {
       }
 
       if (Element.isElement(node) && node.type === 'image_caption') {
-        if (Editor.parent(editor, path)[0].type !== 'figure') {
-          Editor.setNodes(editor, { type: DEFAULT_BLOCK }, { at: path });
+        const fig = Editor.parent(editor, path)[0];
+        if (Element.isElement(fig) && fig.type !== 'figure') {
+          Transforms.setNodes(editor, { type: DEFAULT_BLOCK }, { at: path });
           return;
         }
       }

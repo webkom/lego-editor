@@ -1,7 +1,17 @@
-import { Editor, Command, Range, Element, Point } from 'slate';
+import {
+  Editor,
+  Transforms,
+  Range,
+  Element,
+  Point,
+  EditorDirectedDeletionOptions,
+} from 'slate';
 import { LEditor, DEFAULT_BLOCK } from '../index';
+import type { Elements } from '../custom-types';
 
-const getType = (chars: string): string | null => {
+type TextUnit = NonNullable<EditorDirectedDeletionOptions['unit']>;
+
+const getType = (chars: string): Elements | null => {
   switch (chars) {
     case '*':
     case '-':
@@ -19,8 +29,6 @@ const getType = (chars: string): string | null => {
       return 'h4';
     case '#####':
       return 'h5';
-    case '######':
-      return 'h6';
     case '>':
       return 'quote';
     default:
@@ -31,14 +39,14 @@ const getType = (chars: string): string | null => {
 /**
  *  A plugin that uses markdown prefixes to set block type.
  */
-const MarkdownShortcuts = (editor: Editor): Editor => {
-  const { exec } = editor;
+const MarkdownShortcuts = <T extends Editor>(editor: T): T => {
+  const { insertText, deleteBackward } = editor;
 
   /**
    * On space, if it was after an auto-markdown shortcut, convert the current
    * node into the shortcut's corresponding type.
    */
-  const onSpace = (editor: Editor, command: Command): void => {
+  const onSpace = (editor: Editor, text: string): void => {
     const { selection } = editor;
     if (selection && Range.isCollapsed(selection)) {
       const { anchor } = selection;
@@ -49,19 +57,19 @@ const MarkdownShortcuts = (editor: Editor): Editor => {
 
       const type = getType(chars);
       if (!type || (type === 'ul_list' && editor.isList())) {
-        exec(command);
+        insertText(text);
         return;
       }
 
-      Editor.delete(editor, { at: charsRange });
+      Transforms.delete(editor, { at: charsRange });
 
       if (type === 'ul_list' || type === 'ol_list') {
-        editor.exec({ type: 'toggle_list', listType: type });
+        editor.toggleList(type);
       } else {
-        editor.exec({ type: 'toggle_block', block: type });
+        editor.toggleBlock(type);
       }
     } else {
-      exec(command);
+      insertText(text);
     }
   };
 
@@ -69,7 +77,7 @@ const MarkdownShortcuts = (editor: Editor): Editor => {
    * On backspace, if at the start of a non-default, convert it back into a
    * default block.
    */
-  const onBackspace = (editor: Editor, command: Command): void => {
+  const onBackspace = (editor: Editor, unit: TextUnit): void => {
     const { selection } = editor;
 
     const element = Editor.above(editor, { match: Element.isElement });
@@ -82,22 +90,25 @@ const MarkdownShortcuts = (editor: Editor): Editor => {
       LEditor.isElementActive(editor, DEFAULT_BLOCK) ||
       !Point.equals(selection.anchor, start)
     ) {
-      exec(command);
+      deleteBackward(unit);
       return;
     }
 
-    editor.exec({ type: 'toggle_block', block: DEFAULT_BLOCK });
+    editor.toggleBlock(DEFAULT_BLOCK);
   };
 
-  editor.exec = (command: Command) => {
-    if (command.type === 'insert_text' && command.text === ' ') {
-      onSpace(editor, command);
-    } else if (command.type === 'delete_backward') {
-      onBackspace(editor, command);
+  editor.insertText = (text) => {
+    if (text === ' ') {
+      onSpace(editor, text);
     } else {
-      exec(command);
+      insertText(text);
     }
   };
+
+  editor.deleteBackward = (unit) => {
+    onBackspace(editor, unit);
+  };
+
   return editor;
 };
 

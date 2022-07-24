@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Editor, NodeEntry, Range, Node } from 'slate';
+import { Editor, NodeEntry, Range, Node, Element, Transforms } from 'slate';
 import { useSlate } from 'slate-react';
-import { LEditor, Mark, Elements, nodeType } from '../index';
+import { LEditor, nodeType } from '../index';
+import type { Mark, Elements } from '../custom-types';
 import ImageUpload from './ImageUpload';
 import LinkInput from './LinkInput';
 import cx from 'classnames';
@@ -47,41 +48,45 @@ const Toolbar = (): JSX.Element => {
 
   const checkActiveList = (type: 'ol_list' | 'ul_list'): boolean => {
     const [list] = Editor.nodes(editor, {
-      match: (n: Node) => n.type === 'ol_list' || n.type === 'ul_list',
+      match: (n: Node) =>
+        Element.isElement(n) && (n.type === 'ol_list' || n.type === 'ul_list'),
       mode: 'lowest',
     });
-    return list && list[0].type === type;
+    return list && Element.isElement(list[0]) && list[0].type === type;
   };
 
-  const setListType = (e: React.PointerEvent, type: string): void => {
+  const setListType = (
+    e: React.PointerEvent,
+    type: 'ul_list' | 'ol_list'
+  ): void => {
     e.preventDefault();
-    editor.exec({ type: 'toggle_list', listType: type });
+    editor.toggleList(type);
   };
 
   const increaseIndent = (e: React.PointerEvent): void => {
     e.preventDefault();
     if (editor.isList()) {
-      editor.exec({ type: 'increase_list_depth' });
+      editor.increaseListDepth();
     } else {
-      editor.exec({ type: 'insert_text', text: '\n' });
+      editor.insertText('\n');
     }
   };
 
   const decreaseIndent = (e: React.PointerEvent): void => {
     e.preventDefault();
     if (editor.isList()) {
-      editor.exec({ type: 'decrease_list_depth' });
+      editor.decreaseListDepth();
     }
   };
 
   const toggleMark = (e: React.PointerEvent, type: Mark): void => {
     e.preventDefault();
-    editor.exec({ type: 'toggle_mark', mark: type });
+    editor.toggleMark(type);
   };
 
-  const toggleBlock = (e: React.PointerEvent, type: string): void => {
+  const toggleBlock = (e: React.PointerEvent, type: Elements): void => {
     e.preventDefault();
-    editor.exec({ type: 'toggle_block', block: type });
+    editor.toggleBlock(type);
   };
 
   const toggleLinkInput = (): void => {
@@ -95,21 +100,26 @@ const Toolbar = (): JSX.Element => {
     const isCollapsed = lastSelection && Range.isCollapsed(lastSelection);
 
     if (checkActiveElement('link')) {
-      Editor.setNodes(
+      Transforms.setNodes(
         editor,
         { url, text: text || url },
         { match: nodeType('link') }
       );
     } else {
       if (isCollapsed) {
-        Editor.insertNodes(editor, {
-          type: 'link',
-          url,
-          children: [{ text: text || url }],
-          at: lastSelection || undefined,
-        });
+        Transforms.insertNodes(
+          editor,
+          {
+            type: 'link',
+            url,
+            children: [{ text: text || url }],
+          },
+          {
+            at: lastSelection || undefined,
+          }
+        );
       } else {
-        editor.exec({ type: 'wrap_link', url: data.url, at: lastSelection });
+        editor.wrapLink(data.url, lastSelection || undefined);
       }
     }
   };
@@ -130,10 +140,9 @@ const Toolbar = (): JSX.Element => {
   };
 
   const insertImage = (image: Blob, data?: Record<string, unknown>): void => {
-    editor.exec({
-      type: 'insert_image',
+    editor.insertImage({
       file: image,
-      at: lastSelection,
+      at: lastSelection || undefined,
       ...data,
     });
     setInsertingImage(false);

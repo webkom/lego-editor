@@ -6,7 +6,15 @@ import {
   RenderElementProps,
   RenderLeafProps,
 } from 'slate-react';
-import { createEditor, Editor, Node, Location } from 'slate';
+import {
+  createEditor,
+  Editor,
+  BaseEditor,
+  Node,
+  Element,
+  Location,
+  Descendant,
+} from 'slate';
 import { withHistory } from 'slate-history';
 import isHotKey from 'is-hotkey';
 import Toolbar from './components/Toolbar';
@@ -24,6 +32,8 @@ import { serialize, deserializeHtmlString } from './serializer';
 import { debounce } from 'lodash';
 import { compose } from 'lodash/fp';
 
+import { Elements, Mark } from './custom-types';
+
 interface Props {
   value?: string;
   disabled?: boolean;
@@ -34,38 +44,18 @@ interface Props {
   autoFocus?: boolean;
   placeholder?: string;
   imageUpload: (file: Blob) => Promise<Record<string, unknown>>;
-  plugins?: ((editor: Editor) => Editor)[];
+  plugins?: ((editor: BaseEditor) => BaseEditor)[];
   domParser?: (value: string) => HTMLDocument;
   darkMode?: boolean;
 }
 
 export const DEFAULT_BLOCK = 'paragraph';
-export type Next = () => unknown;
-
-export const MARKS = ['bold', 'italic', 'code', 'underline'] as const;
-export type Mark = typeof MARKS[number];
-export type Elements =
-  | 'h1'
-  | 'h2'
-  | 'h3'
-  | 'h4'
-  | 'h5'
-  | 'paragraph'
-  | 'ul_list'
-  | 'ol_list'
-  | 'list_item'
-  | 'code_block'
-  | 'link'
-  | 'figure'
-  | 'image'
-  | 'image_caption'
-  | 'quote';
 
 /**
  *  Returns a function to be used for matching against node types
  */
 export const nodeType = (type: Elements): ((node: Node) => boolean) => {
-  return (node: Node) => node.type === type;
+  return (node: Node) => Element.isElement(node) && node.type === type;
 };
 
 export const LEditor = {
@@ -93,7 +83,9 @@ export const LEditor = {
   ...Editor,
 };
 
-const initialValue: Node[] = [{ type: 'paragraph', children: [{ text: '' }] }];
+const initialValue: Descendant[] = [
+  { type: 'paragraph', children: [{ text: '' }] },
+];
 
 // Components to be rendered for leaf nodes
 const renderLeaf = (props: RenderLeafProps): JSX.Element => {
@@ -212,23 +204,25 @@ const LegoEditor = (props: Props): JSX.Element => {
     const e = event as unknown as KeyboardEvent;
     if (isHotKey('mod+b')(e)) {
       e.preventDefault();
-      editor.exec({ type: 'toggle_mark', mark: 'bold' });
+      editor.toggleMark('bold');
     } else if (isHotKey('mod+i')(e)) {
       e.preventDefault();
-      editor.exec({ type: 'toggle_mark', mark: 'italic' });
+      editor.toggleMark('italic');
     } else if (isHotKey('mod+u')(e)) {
       e.preventDefault();
-      editor.exec({ type: 'toggle_mark', mark: 'underline' });
+      editor.toggleMark('underline');
     } else {
-      editor.exec({ type: 'key_handler', event: e });
+      editor.keyHandler({ event: e });
     }
   };
 
   const onFocus = (event: React.SyntheticEvent): void =>
     props.onFocus && props.onFocus(event);
 
-  const onBlur = (event: React.SyntheticEvent): void =>
+  const onBlur = (event: React.SyntheticEvent): void => {
+    editor.savedSelection = editor.selection ?? undefined;
     props.onBlur && props.onBlur(event);
+  };
 
   // Dont remove this or the app won't build!
   const otherPlugins = props.plugins || [];
@@ -244,7 +238,7 @@ const LegoEditor = (props: Props): JSX.Element => {
     ...otherPlugins,
   ].reverse();
 
-  const editor = useMemo(
+  const editor: Editor = useMemo(
     () => compose(...plugins, withHistory, withReact, createEditor)(),
     []
   );
@@ -266,7 +260,7 @@ const LegoEditor = (props: Props): JSX.Element => {
           : '_legoEditor_root'
       }
     >
-      <Slate editor={editor} value={value} onChange={onChange}>
+      <Slate editor={editor} value={value as Descendant[]} onChange={onChange}>
         {!props.disabled && !props.simple && <Toolbar />}
         <Editable
           onKeyDown={onKeyDown}

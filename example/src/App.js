@@ -24,12 +24,10 @@ const App = () => {
         darkMode={darkMode}
         placeholder="Testing lego editor"
         imageUpload={(file) =>
-          new Promise((resolve) =>
-            setTimeout(() => {
-              console.log(file);
-              return resolve;
-            }, 1000)
-          )
+          new Promise((resolve) => {
+            console.log(file);
+            resolve({ src: null });
+          })
         }
         onChange={(str) => {
           console.log(str);

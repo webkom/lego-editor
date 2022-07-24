@@ -30,10 +30,10 @@
     "react-dropzone": "^14.2.2",
     "react-image-crop": "^10.0.4",
     "react-modal": "^3.11.2",
-    "slate": "^0.56.0",
-    "slate-history": "^0.56.0",
-    "slate-hyperscript": "^0.56.0",
-    "slate-react": "^0.56.0"
+    "slate": "^0.81.1",
+    "slate-history": "^0.66.0",
+    "slate-hyperscript": "^0.77.0",
+    "slate-react": "^0.81.0"
   },
   "peerDependencies": {
     "react": "^16.8.6",
@@ -43,13 +43,11 @@
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0",
-    "@types/classnames": "^2.2.8",
     "@types/escape-html": "^1.0.0",
     "@types/is-hotkey": "^0.1.1",
     "@types/jest": "^28.1.4",
     "@types/lodash": "^4.14.137",
     "@types/react": "^17.0.3",
-    "@types/react-image-crop": "^8.1.2",
     "@types/react-modal": "^3.10.6",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",

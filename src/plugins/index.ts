@@ -1,36 +1,55 @@
-import { Editor, Command, Element, Node, NodeEntry, Range } from 'slate';
+import {
+  Editor,
+  Element,
+  Node,
+  NodeEntry,
+  Range,
+  Transforms,
+  BaseEditor,
+} from 'slate';
 import isHotKey from 'is-hotkey';
-import { LEditor, Elements, DEFAULT_BLOCK } from '../index';
+import { LEditor, DEFAULT_BLOCK } from '../index';
+import type { Elements, Mark } from '../custom-types';
 import { deserializeHtmlString } from '../serializer';
 
-import lists from './editList';
-import links from './pasteLink';
-import images from './images';
+import lists, { ListEditor } from './editList';
+import links, { LinkEditor } from './pasteLink';
+import images, { ImageEditor } from './images';
 import markdownShortcuts from './markdown';
 
 export { lists, links, images, markdownShortcuts };
+export { ListEditor, LinkEditor, ImageEditor };
+
+type KeyHandlerCommand = {
+  event: KeyboardEvent;
+};
+
+export interface PluginsEditor extends BaseEditor {
+  keyHandler: (command: KeyHandlerCommand) => void;
+  toggleMark: (mark: Mark) => void;
+  toggleBlock: (block: Elements) => void;
+}
 
 /**
  *  A simple plugin that inserts a 'tab' character on pressing tab.
  */
-export const insertTab = (editor: Editor): Editor => {
-  const { exec } = editor;
-
-  editor.exec = (command: Command) => {
+export const insertTab = <T extends Editor>(editor: T): T & PluginsEditor => {
+  const e = editor as T & PluginsEditor;
+  const { keyHandler } = e;
+  e.keyHandler = (command: KeyHandlerCommand) => {
     const { selection } = editor;
     if (
-      command.type === 'key_handler' &&
       isHotKey('Tab')(command.event) &&
       selection &&
       Range.isCollapsed(selection)
     ) {
       command.event.preventDefault();
-      editor.exec({ type: 'insert_text', text: '\t' });
+      editor.insertText('\t');
     } else {
-      exec(command);
+      keyHandler(command);
     }
   };
-  return editor;
+  return e;
 };
 
 /**
@@ -38,36 +57,37 @@ export const insertTab = (editor: Editor): Editor => {
  *  of a type specified. For all other blocks enables soft enter on
  *  Shift+Enter
  */
-export const softEnter = (editor: Editor): Editor => {
-  const { exec } = editor;
-  editor.exec = (command: Command) => {
-    if (command.type === 'key_handler') {
-      const { event } = command;
-      if (
-        isHotKey('Enter')(event) &&
-        LEditor.isElementActive(editor, 'code_block') &&
-        editor.selection !== null
-      ) {
-        event.preventDefault();
-        editor.exec({ type: 'insert_text', text: '\n' });
-        Editor.move(editor);
-      } else if (
-        isHotKey('Shift+Enter')(event) &&
-        LEditor.isElementActive(editor, 'code_block') &&
-        editor.selection
-      ) {
-        return;
-      } else if (isHotKey('Shift+Enter')(event)) {
-        event.preventDefault();
-        editor.exec({ type: 'insert_text', text: '\n' });
-      } else {
-        exec(command);
-      }
+export const softEnter = <T extends Editor>(
+  editor: T
+): Editor & PluginsEditor => {
+  const e = editor as T & PluginsEditor;
+
+  const { keyHandler } = e;
+
+  e.keyHandler = (command: KeyHandlerCommand) => {
+    const { event } = command;
+    if (
+      isHotKey('Enter')(event) &&
+      LEditor.isElementActive(editor, 'code_block') &&
+      editor.selection !== null
+    ) {
+      event.preventDefault();
+      editor.insertText('\n');
+      Transforms.move(editor);
+    } else if (
+      isHotKey('Shift+Enter')(event) &&
+      LEditor.isElementActive(editor, 'code_block') &&
+      editor.selection
+    ) {
+      return;
+    } else if (isHotKey('Shift+Enter')(event)) {
+      event.preventDefault();
+      editor.insertText('\n');
     } else {
-      exec(command);
+      keyHandler(command);
     }
   };
-  return editor;
+  return e;
 };
 
 const TEXT_BLOCKS: Elements[] = [
@@ -84,37 +104,37 @@ const TEXT_BLOCKS: Elements[] = [
 /**
  *  A base plugin that defines some general commands, queries ans normalization rules
  */
-export const basePlugin = (editor: Editor): Editor => {
-  const { exec, normalizeNode } = editor;
+export const basePlugin = <T extends Editor>(editor: T): Editor => {
+  const { normalizeNode, insertData } = editor;
 
-  editor.exec = (command: Command) => {
-    // Toggles the block type of everything except lists
-    if (
-      command.type === 'toggle_block' &&
-      !(command.block === 'ul_list' || command.block === 'ol_list')
-    ) {
-      const isActive = LEditor.isElementActive(editor, command.block);
-      Editor.setNodes(editor, {
-        type: isActive ? DEFAULT_BLOCK : command.block,
+  const e = editor as T & PluginsEditor;
+
+  // Toggle the block type of everything except lists
+  e.toggleBlock = (block: Elements) => {
+    if (!(block === 'ul_list' || block === 'ol_list')) {
+      const isActive = LEditor.isElementActive(e, block);
+      Transforms.setNodes(e, {
+        type: isActive ? DEFAULT_BLOCK : block,
       });
-    } else if (command.type === 'toggle_mark') {
-      const isActive = LEditor.isMarkActive(editor, command.mark);
-      if (isActive) {
-        editor.exec({ type: 'remove_mark', key: command.mark });
-      } else {
-        editor.exec({ type: 'add_mark', key: command.mark, value: true });
-      }
     }
-    if (command.type === 'insert_data') {
-      const text = command.data.getData('text/html');
-      const fragment = deserializeHtmlString(text);
-      if (text) {
-        Editor.insertFragment(editor, fragment);
-      } else {
-        exec(command);
-      }
+  };
+
+  e.toggleMark = (mark) => {
+    const isActive = LEditor.isMarkActive(e, mark);
+    if (isActive) {
+      e.removeMark(mark);
     } else {
-      exec(command);
+      e.addMark(mark, true);
+    }
+  };
+
+  e.insertData = (data) => {
+    const text = data.getData('text/html');
+    const fragment = deserializeHtmlString(text);
+    if (text) {
+      Editor.insertFragment(e, fragment);
+    } else {
+      insertData(data);
     }
   };
 
@@ -122,9 +142,9 @@ export const basePlugin = (editor: Editor): Editor => {
     const [node, path] = entry;
 
     if (Element.isElement(node) && TEXT_BLOCKS.includes(node.type)) {
-      for (const [child, childPath] of Node.children(editor, path)) {
-        if (Element.isElement(child) && !editor.isInline(child)) {
-          Editor.unwrapNodes(editor, { at: childPath });
+      for (const [child, childPath] of Node.children(e, path)) {
+        if (Element.isElement(child) && !e.isInline(child)) {
+          Transforms.unwrapNodes(e, { at: childPath });
           return;
         }
       }
@@ -137,14 +157,14 @@ export const basePlugin = (editor: Editor): Editor => {
      *  deny splitting these nodes, and the user would still be able to
      *  edit the document.
      */
-    if (path.length === 1 && path[0] === Editor.last(editor, [])[1][0]) {
+    if (path.length === 1 && path[0] === Editor.last(e, [])[1][0]) {
       if (Element.isElement(node) && !TEXT_BLOCKS.includes(node.type)) {
         // If the last node is not a text node we insert a default block
         // at the top level next path.
-        Editor.insertNodes(
-          editor,
+        Transforms.insertNodes(
+          e,
           { type: DEFAULT_BLOCK, children: [] },
-          { at: [Editor.last(editor, [])[1][0] + 1] }
+          { at: [Editor.last(e, [])[1][0] + 1] }
         );
         return;
       }
@@ -157,6 +177,11 @@ export const basePlugin = (editor: Editor): Editor => {
 
     normalizeNode(entry);
   };
+
+  // Base keyHandler: pass
+  // To be extended by plugins. This is just to define
+  // a noop if no other plugins handles the key
+  e.keyHandler = () => null;
 
   return editor;
 };
