@@ -16,10 +16,8 @@
 
   ```JSX
   import Editor from '@webkom/lego-editor'
-  // Add the stylesheets
-  import '@webkom/lego-editor/dist/Editor.css'
-  import '@webkom/lego-editor/dist/components/Toolbar.css'
-  import '@webkom/lego-editor/dist/components/ImageUpload.css'
+  // Add the stylesheet
+  import '@webkom/lego-editor/dist/style.css'
   // Also add the stylesheet from react-image-crop
   import 'react-image-crop/dist/ReactCrop.css'
 

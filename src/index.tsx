@@ -34,6 +34,8 @@ import { compose } from 'lodash/fp';
 
 import { Elements, Mark } from './custom-types';
 
+import './Editor.css';
+
 interface Props {
   value?: string;
   disabled?: boolean;

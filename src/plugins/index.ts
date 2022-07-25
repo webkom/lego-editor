@@ -18,7 +18,7 @@ import images, { ImageEditor } from './images';
 import markdownShortcuts from './markdown';
 
 export { lists, links, images, markdownShortcuts };
-export { ListEditor, LinkEditor, ImageEditor };
+export type { ListEditor, LinkEditor, ImageEditor };
 
 type KeyHandlerCommand = {
   event: KeyboardEvent;

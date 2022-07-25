@@ -10,6 +10,8 @@ interface LinkInputProps {
   updateLink: ({ url, text }: { url: string; text?: string }) => void;
 }
 
+import './LinkInput.css';
+
 const LinkInput = (props: LinkInputProps): JSX.Element => {
   const input = useRef<HTMLInputElement>(null);
 
