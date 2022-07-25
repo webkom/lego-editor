@@ -1,5 +1,5 @@
 dist
-src/coverage
+coverage
 example/build
 node_modules
 npm-debug.log
