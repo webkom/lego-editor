@@ -5,6 +5,8 @@ import cropImage from '../utils/cropImage';
 import Modal from './Modal';
 import { FunctionComponent, useState } from 'react';
 
+import './ImageUpload.css';
+
 interface Props {
   uploadFunction?: (image: Blob) => void;
   cancel: () => void;

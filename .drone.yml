@@ -17,7 +17,14 @@ steps:
       event: push
     commands:
       - yarn lint
-      -
+
+  - name: Type check
+    image: node:16
+    when:
+      event: push
+    commands:
+      - yarn check
+
   - name: test
     image: node:16
     when:
@@ -30,6 +37,4 @@ steps:
     when:
       event: push
     commands:
-      - apt-get update
-      - apt-get install rsync -y
       - yarn build

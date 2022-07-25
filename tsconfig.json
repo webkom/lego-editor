@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
     "lib": ["ES2019", "DOM"],
     "allowJs": false,
@@ -9,8 +9,7 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "downlevelIteration": true,
 
     "strict": true,
@@ -21,6 +20,7 @@
     "noImplicitReturns": false,
 
     "esModuleInterop": true,
-    "inlineSources": true
+    "inlineSources": true,
+    "isolatedModules": true
   }
 }

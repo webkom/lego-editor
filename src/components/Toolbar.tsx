@@ -7,6 +7,8 @@ import ImageUpload from './ImageUpload';
 import LinkInput from './LinkInput';
 import cx from 'classnames';
 
+import './Toolbar.css';
+
 interface ButtonProps
   extends React.ComponentPropsWithoutRef<React.FunctionComponent> {
   handler: (e: React.PointerEvent) => void;
