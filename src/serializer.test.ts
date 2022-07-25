@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { deserializeHtmlString, serialize } from './serializer';
 import { createEditor, Transforms, Element } from 'slate';
 import { jsx } from 'slate-hyperscript';
