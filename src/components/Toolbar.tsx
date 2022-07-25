@@ -9,8 +9,7 @@ import cx from 'classnames';
 
 import './Toolbar.css';
 
-interface ButtonProps
-  extends React.ComponentPropsWithoutRef<React.FunctionComponent> {
+interface ButtonProps extends React.PropsWithChildren {
   handler: (e: React.PointerEvent) => void;
   active?: boolean;
 }

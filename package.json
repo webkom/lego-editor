@@ -9,7 +9,7 @@
   ],
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepublish": "yarn check && yarn build",
+    "prepublish": "yarn ts && yarn build",
     "build": "vite build",
     "dev": "vite",
     "preview": "vite preview",
@@ -17,7 +17,7 @@
     "coverage": "vitest run --coverage",
     "lint": "eslint '{src,example}/**/*.{js,ts,tsx}' && prettier '{src,example}/**' --list-different",
     "prettier": "prettier '{src,example}/**' --write",
-    "check": "tsc --noEmit"
+    "ts": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -46,6 +46,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@types/babel__core": "^7.1.19",
     "@types/escape-html": "^1.0.0",
     "@types/is-hotkey": "^0.1.1",
     "@types/lodash": "^4.14.137",

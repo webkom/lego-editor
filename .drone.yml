@@ -23,7 +23,7 @@ steps:
     when:
       event: push
     commands:
-      - yarn check
+      - yarn ts
 
   - name: test
     image: node:16

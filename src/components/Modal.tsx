@@ -9,12 +9,12 @@ type Props = {
   children?: React.ReactChild[] | React.ReactChild;
 };
 
-const LegoModal: React.StatelessComponent<Props> = ({
+const LegoModal: React.FC<Props> = ({
   children,
   onCancel,
   onSubmit,
   disabled,
-}: Props) => (
+}) => (
   <Modal ariaHideApp={false} isOpen={true} className="_legoEditor_modal_modal">
     <div className="_legoEditor_modal_wrapper">
       <div className="_legoEditor_modal_root">
