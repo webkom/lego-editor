@@ -18,12 +18,12 @@ steps:
     commands:
       - yarn lint
 
-  - name: Type check
+  - name: type check
     image: node:16
     when:
       event: push
     commands:
-      - yarn check
+      - yarn ts
 
   - name: test
     image: node:16

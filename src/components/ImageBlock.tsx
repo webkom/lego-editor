@@ -2,9 +2,8 @@ import * as React from 'react';
 import { RenderElementProps, useSelected } from 'slate-react';
 import cx from 'classnames';
 
-interface Props extends RenderElementProps {
+interface Props extends React.PropsWithChildren<RenderElementProps> {
   src: string;
-  children: unknown;
   uploading?: boolean;
 }
 
