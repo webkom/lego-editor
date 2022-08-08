@@ -10,7 +10,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepublish": "yarn ts && yarn build",
-    "build": "vite build",
+    "build": "vite build && yarn build:types",
+    "build:types": "tsc -d --emitDeclarationOnly",
     "dev": "vite",
     "preview": "vite preview",
     "test": "vitest run",
