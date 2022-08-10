@@ -3,10 +3,22 @@
   "version": "2.0.0",
   "description": "A React editor written in TS with slate.js for lego-webapp",
   "type": "module",
-  "main": "dist/lego-editor.js",
+  "main": "./dist/lego-editor.umd.cjs",
+  "module": "./dist/lego-editor.js",
+  "style": "dist/style.css",
   "files": [
-    "dist/**/*"
+    "dist"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/lego-editor.js",
+      "require": "./dist/lego-editor.umd.cjs"
+    },
+    "./dist/style.css": {
+      "import": "./dist/style.css",
+      "require": "./dist/style.css"
+    }
+  },
   "types": "dist/index.d.ts",
   "scripts": {
     "prepublish": "yarn ts && yarn build",

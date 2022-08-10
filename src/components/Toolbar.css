@@ -1,6 +1,7 @@
 @import '../variables.css';
 
 ._legoEditor_Toolbar_root {
+  z-index: 2;
   border-bottom: 1px solid var(--color-mono-gray-4);
   padding-left: 10px;
   position: sticky;

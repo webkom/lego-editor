@@ -7,7 +7,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.tsx'),
-      formats: ['es'],
+      name: 'lego-editor',
     },
     sourcemap: true,
     rollupOptions: {
