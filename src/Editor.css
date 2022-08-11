@@ -127,11 +127,8 @@
   border: none;
 }
 
-._legoEditor_modal_modal {
-  background-color: red;
-}
-
 ._legoEditor_modal_wrapper {
+  z-index: 15;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -148,7 +145,6 @@
   opacity: 1;
   background-color: var(--color-white);
   width: 60%;
-  z-index: 15;
   top: 10%;
   left: 20%;
   margin: 0 30px;

@@ -50,6 +50,7 @@ const images = (
                 type: 'image',
                 objectUrl,
                 src: src || (returnData?.src as string),
+                ...returnData,
                 children: [],
               },
               {

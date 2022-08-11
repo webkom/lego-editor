@@ -15,7 +15,7 @@ const LegoModal: React.FC<Props> = ({
   onSubmit,
   disabled,
 }) => (
-  <Modal ariaHideApp={false} isOpen={true} className="_legoEditor_modal_modal">
+  <Modal style={{ overlay: { zIndex: 10 } }} ariaHideApp={false} isOpen={true}>
     <div className="_legoEditor_modal_wrapper">
       <div className="_legoEditor_modal_root">
         {children}
