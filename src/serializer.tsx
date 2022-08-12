@@ -140,9 +140,9 @@ export const deserialize = (
 ): SlateNode | string | (SlateNode | string)[] => {
   // See https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
   // for what the different nodeTypes are.
-  if (element.nodeType === Node.TEXT_NODE) {
+  if (element.nodeType === 3) {
     return element.textContent || '';
-  } else if (element.nodeType !== Node.ELEMENT_NODE) {
+  } else if (element.nodeType !== 1) {
     return '';
   } else if (element.nodeName === 'BR') {
     return '\n';
