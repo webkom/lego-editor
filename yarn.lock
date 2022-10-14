@@ -2888,9 +2888,9 @@ vite@^3.0.0, vite@^3.0.2:
     fsevents "~2.3.2"
 
 vitest@^0.24.0:
-  version "0.24.1"
-  resolved "https://registry.yarnpkg.com/vitest/-/vitest-0.24.1.tgz#4b4ceb3d9c6710e8fb7a3b936b740f9c9f9cde10"
-  integrity sha512-NKkK1xnDIOOr42pKBfGQQl6b6IWdFVBpG6ZS1T+nUlJuqcOiZ7lxjVwHy9wrtTYpJ0BWww9y6bSGYXubD29Nag==
+  version "0.24.2"
+  resolved "https://registry.yarnpkg.com/vitest/-/vitest-0.24.2.tgz#7de6814512d0aa35dbbe4866bd74bc6d27568017"
+  integrity sha512-ZKZaODrv/FzfOmcrnTt7SGwQODT/yXWi8tLa7+dV8fWlmG+Z0VaY4qHnpy2sMJXP6N2IRUXmsWGtDaIhUgk+XQ==
   dependencies:
     "@types/chai" "^4.3.3"
     "@types/chai-subset" "^1.3.3"
