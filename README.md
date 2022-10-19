@@ -23,7 +23,7 @@
 
   const YourComponent = () => (
     <div>
-      <Editor placeholder="Let the words flow!">
+      <Editor placeholder="Let the words flow!"/>
     </div>
   )
   ```
