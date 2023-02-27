@@ -182,6 +182,12 @@ const Toolbar = (): JSX.Element => {
         <i className="fa fa-underline" />
       </ToolbarButton>
       <ToolbarButton
+        active={checkActiveMark('strikethrough')}
+        handler={(e) => toggleMark(e, 'strikethrough')}
+      >
+        <i className="fa fa-strikethrough" />
+      </ToolbarButton>
+      <ToolbarButton
         active={checkActiveMark('code')}
         handler={(e) => toggleMark(e, 'code')}
       >

@@ -6,7 +6,13 @@ import { PluginsEditor, ListEditor, LinkEditor, ImageEditor } from './plugins';
 
 export type Next = () => unknown;
 
-export const MARKS = ['bold', 'italic', 'code', 'underline'] as const;
+export const MARKS = [
+  'bold',
+  'italic',
+  'code',
+  'underline',
+  'strikethrough',
+] as const;
 export type Mark = typeof MARKS[number];
 export type Elements =
   | 'h1'

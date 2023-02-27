@@ -107,13 +107,14 @@ describe('serializer', () => {
         italic: true,
         underline: true,
         code: true,
+        strikethrough: true,
       })
     );
 
     const serialized = serialize(element);
 
     expect(serialized).toEqual(
-      '<p>Paragraph <strong>with </strong><code><u><em property="italic"><strong>marks</strong></em></u></code></p>'
+      '<p>Paragraph <strong>with </strong><s><code><u><em property="italic"><strong>marks</strong></em></u></code></s></p>'
     );
   });
 
@@ -329,7 +330,7 @@ describe('deserializeHtmlString', () => {
 
   it('deserializes text with multiple marks', () => {
     const deserialized = deserializeHtmlString(
-      '<p>this <em>text <strong>is <u>marked <code>up!</code></u></strong></em></p>'
+      '<p>this <em>text <strong>is <s><u>marked <code>up!</code></u></s></strong></em></p>'
     ) as TextElement[];
 
     expect(deserialized).toHaveLength(1);
@@ -352,6 +353,7 @@ describe('deserializeHtmlString', () => {
       italic: true,
       bold: true,
       underline: true,
+      strikethrough: true,
     });
 
     expect(paragraph.children[4].text).toBe('up!');
@@ -359,6 +361,7 @@ describe('deserializeHtmlString', () => {
       italic: true,
       bold: true,
       underline: true,
+      strikethrough: true,
       code: true,
     });
   });

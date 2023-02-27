@@ -105,6 +105,9 @@ const renderLeaf = (props: RenderLeafProps): JSX.Element => {
   if (leaf.code) {
     children = <code>{children}</code>;
   }
+  if (leaf.strikethrough) {
+    children = <s>{children}</s>;
+  }
   return <span {...props.attributes}>{children}</span>;
 };
 
@@ -213,6 +216,9 @@ const LegoEditor = (props: Props): JSX.Element => {
     } else if (isHotKey('mod+u')(e)) {
       e.preventDefault();
       editor.toggleMark('underline');
+    } else if (isHotKey('shift+alt+5')(e)) {
+      e.preventDefault();
+      editor.toggleMark('strikethrough');
     } else {
       editor.keyHandler({ event: e });
     }

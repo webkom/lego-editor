@@ -31,9 +31,10 @@ const MARK_TAGS = {
   strong: 'bold',
   u: 'underline',
   code: 'code',
+  s: 'strikethrough',
 } as const;
 
-type MarkNode = 'em' | 'i' | 'strong' | 'u' | 'code';
+type MarkNode = 'em' | 'i' | 'strong' | 'u' | 'code' | 's';
 
 const serializeData = (object: Record<string, unknown>): string =>
   Object.keys(object)
@@ -64,6 +65,9 @@ export const serialize = (node: SlateNode): string => {
     }
     if (node.code) {
       text = `<code>${text}</code>`;
+    }
+    if (node.strikethrough) {
+      text = `<s>${text}</s>`;
     }
     return text;
   }
