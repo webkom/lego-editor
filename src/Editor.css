@@ -94,6 +94,7 @@
   margin-block-start: 1em;
   margin-block-end: 1em;
   line-height: 24px;
+  word-break: break-word;
 }
 
 ._legoEditor_figure {
