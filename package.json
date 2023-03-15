@@ -1,6 +1,6 @@
 {
   "name": "@webkom/lego-editor",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "A React editor written in TS with slate.js for lego-webapp",
   "type": "module",
   "main": "./dist/lego-editor.umd.cjs",
