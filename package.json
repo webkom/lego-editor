@@ -52,7 +52,7 @@
     "slate": "^0.82.0",
     "slate-history": "^0.66.0",
     "slate-hyperscript": "^0.77.0",
-    "slate-react": "^0.82.0"
+    "slate-react": "^0.94.0"
   },
   "peerDependencies": {
     "react": "^18.2.0",
