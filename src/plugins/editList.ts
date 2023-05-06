@@ -235,7 +235,15 @@ const handleTab = (
     keyHandler(command);
     return;
   }
-  if (!Editor.string(editor, listItemPath)) {
+  const beforeCursorRange = editor.selection?.anchor
+    ? {
+        anchor: { path: listItemPath, offset: 0 },
+        focus: editor.selection?.anchor,
+      }
+    : null;
+  const cursorIsAtListPoint =
+    beforeCursorRange && !Editor.string(editor, beforeCursorRange);
+  if (!Editor.string(editor, listItemPath) || cursorIsAtListPoint) {
     command.event.preventDefault();
     // If the list has no text, increase the depth
     increaseListDepth(editor, listItemPath);
@@ -430,7 +438,7 @@ const decreaseListDepth = (
     if (listItemPath) {
       const [blockEntry] = Editor.nodes(editor, {
         at: listItemPath,
-        match: (n: Node) => Editor.isBlock(editor, n),
+        match: (n: Node) => Element.isElement(n) && Editor.isBlock(editor, n),
         mode: 'lowest',
       });
       Transforms.unwrapNodes(editor, {
@@ -472,7 +480,10 @@ const setListType = (editor: Editor & ListEditor, listType: ListType): void => {
         // We go through all the selected blocks that are not list blocks
         const selectedBlocks = Editor.nodes(editor, {
           match: (n: Node) =>
-            Editor.isBlock(editor, n) && n.type !== 'list_item' && !isList(n),
+            Element.isElement(n) &&
+            Editor.isBlock(editor, n) &&
+            n.type !== 'list_item' &&
+            !isList(n),
         });
         const pathRefs = Array.from(selectedBlocks, ([, path]) =>
           Editor.pathRef(editor, path)
