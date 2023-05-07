@@ -29,9 +29,6 @@ const App = () => {
             resolve({ src: null });
           })
         }
-        onChange={(str) => {
-          console.log(str);
-        }}
       />
     </div>
   );
