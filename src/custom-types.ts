@@ -13,7 +13,7 @@ export const MARKS = [
   'underline',
   'strikethrough',
 ] as const;
-export type Mark = typeof MARKS[number];
+export type Mark = (typeof MARKS)[number];
 export type Elements =
   | 'h1'
   | 'h2'
