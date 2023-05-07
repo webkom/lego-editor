@@ -15,7 +15,7 @@ type NodeEntry<T extends Node = Node> = [T, Path];
 
 const LIST_TYPES = ['ul_list', 'ol_list'] as const;
 
-type ListType = typeof LIST_TYPES[number];
+type ListType = (typeof LIST_TYPES)[number];
 
 export interface ListEditor extends BaseEditor {
   increaseListDepth: (at?: Location) => void;
