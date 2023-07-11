@@ -193,6 +193,14 @@
   animation: pop-in var(--easing-medium) forwards;
 }
 
+@media only screen and (max-device-width: 736px) {
+  ._legoEditor_modal_root {
+    width: calc(100vw - 100px);
+    height: calc(100vh - 100px);
+    border-radius: 0;
+  }
+}
+
 ._legoEditor_modal_buttonContainer {
   display: flex;
   justify-content: space-evenly;

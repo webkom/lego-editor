@@ -1,5 +1,6 @@
-import * as React from 'react';
-import { useDropzone } from 'react-dropzone';
+import React, { useMemo } from 'react';
+import cx from 'classnames';
+import { type Accept, useDropzone } from 'react-dropzone';
 import ReactCrop, { Crop } from 'react-image-crop';
 import cropImage from '../utils/cropImage';
 import Modal from './Modal';
@@ -22,16 +23,48 @@ interface ImageDropProps {
 }
 
 const ImageDrop: FunctionComponent<ImageDropProps> = ({ onDrop }) => {
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const accept: Accept = {
+    'image/jpeg': ['*'],
+    'image/png': ['*'],
+    'image/gif': ['*'],
+    'image/tif': ['*'],
+    'image/bmp': ['*'],
+    'image/avif': ['*'],
+  };
+
+  const {
+    getRootProps,
+    getInputProps,
+    isDragActive,
+    isFocused,
+    isDragAccept,
+    isDragReject,
+  } = useDropzone({ onDrop, accept });
+
+  const style = useMemo(
+    () =>
+      cx(
+        isFocused && '_legoEditor_imageUploader_dropZone_focused',
+        isDragAccept && '_legoEditor_imageUploader_dropZone_dragAccept',
+        isDragReject && '_legoEditor_imageUploader_dropZone_dragReject'
+      ),
+    [isFocused, isDragAccept, isDragReject]
+  );
 
   return (
-    <div className="_legoEditor_imageUploader_dropZone" {...getRootProps()}>
+    <div
+      {...getRootProps({
+        className: cx('_legoEditor_imageUploader_dropZone', style),
+      })}
+    >
+      <div className="_legoEditor_imageUploader_dropArea">
+        {isDragActive ? (
+          <h4>Dropp bilder her ...</h4>
+        ) : (
+          <h4>Dropp bilder her eller trykk for å velge fra filsystem</h4>
+        )}
+      </div>
       <input {...getInputProps()} />
-      {isDragActive ? (
-        <h4>Drop files here...</h4>
-      ) : (
-        <h4>Click to select or drop files here</h4>
-      )}
     </div>
   );
 };

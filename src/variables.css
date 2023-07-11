@@ -18,6 +18,8 @@
 
   --additive-background: rgba(0, 0, 0, 5%);
 
+  --danger-color: #c81917;
+
   --color-gray-1: #f2f2f2;
   --color-gray-2: #e7e7e7;
   --color-gray-3: #d9d9d9;
@@ -27,6 +29,10 @@
   --color-gray-7: #595959;
   --color-gray-8: #373737;
   --color-gray-9: #0d0d0d;
+
+  --color-blue: #0072f5;
+
+  --color-orange: #f5a524;
 
   --color-green: #17c964;
 
