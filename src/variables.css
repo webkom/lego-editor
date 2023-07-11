@@ -3,6 +3,7 @@
   --lego-card-color: #fff;
 
   --lego-font-color: var(--color-gray-9);
+  --inverted-font-color: var(--color-gray-1);
   --secondary-font-color: #606060;
 
   --color-white: #fff;
@@ -58,6 +59,7 @@
   --lego-card-color: #222;
 
   --lego-font-color: var(--color-gray-9);
+  --inverted-font-color: var(--color-gray-1);
   --secondary-font-color: #aaa;
 
   --border-gray: var(--color-gray-2);

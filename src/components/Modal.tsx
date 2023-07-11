@@ -22,6 +22,17 @@ const LegoModal: React.FC<Props> = ({
         <div className="_legoEditor_modal_buttonContainer">
           <button
             className={cx(
+              '_legoEditor_modal_cancelButton',
+              '_legoEditor_modal_button'
+            )}
+            onClick={onCancel}
+            type="button"
+          >
+            Avbryt
+          </button>
+
+          <button
+            className={cx(
               '_legoEditor_modal_applyButton',
               '_legoEditor_modal_button'
             )}
@@ -29,18 +40,7 @@ const LegoModal: React.FC<Props> = ({
             type="button"
             disabled={disabled}
           >
-            Apply
-          </button>
-
-          <button
-            className={cx(
-              '_legoEditor_modal_cancelButton',
-              '_legoEditor_modal_button'
-            )}
-            onClick={onCancel}
-            type="button"
-          >
-            Cancel
+            Bruk
           </button>
         </div>
       </div>

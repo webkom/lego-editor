@@ -171,93 +171,53 @@
 }
 
 ._legoEditor_modal_button {
-  border-radius: 4px;
-  background-color: var(--color-white);
-  padding: 9px 18px;
-  cursor: pointer;
-  font-family: inherit;
-  background: none;
-  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
-  position: relative;
-  vertical-align: middle;
+  width: fit-content;
+  height: 2.3rem;
+  padding: 0 1rem;
+  font-family: inherit;
+  font-weight: 600;
+  outline: none;
+  border-radius: 2rem;
+  cursor: pointer;
+  border: 0;
   font-size: var(--font-size-md);
   color: var(--lego-font-color);
-}
 
-._legoEditor_modal_button::before,
-._legoEditor_modal_button::after {
-  box-sizing: inherit;
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
+  &:focus-visible {
+    box-shadow: 0 0 0 1.5px var(--color-black);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
 }
 
 ._legoEditor_modal_button:hover {
-  transition: color 0.2s;
+  transition: background-color var(--easing-fast);
 }
 
-._legoEditor_modal_button::before,
-._legoEditor_modal_button::after {
-  border: 2px solid transparent;
-  border-radius: 4px;
-  width: 0;
-  height: 0;
+._legoEditor_modal_applyButton {
+  background-color: var(--lego-font-color);
+  color: var(--inverted-font-color);
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-gray-8);
+  }
 }
 
-._legoEditor_modal_button::before,
-._legoEditor_modal_button::after {
-  top: 0;
-  left: 0;
-}
+._legoEditor_modal_cancelButton {
+  background-color: transparent;
 
-._legoEditor_modal_applyButton:hover {
-  color: var(--color-green);
-}
-
-._legoEditor_modal_cancelButton:hover {
-  color: var(--lego-red-color);
-}
-
-._legoEditor_modal_button:hover::before,
-._legoEditor_modal_button:hover::after {
-  width: 100%;
-  height: 100%;
-}
-
-._legoEditor_modal_applyButton:hover::before {
-  border-top-color: var(--color-green);
-  border-right-color: var(--color-green);
-  transition: height 0.2s ease-out 0.2s, width 0.2s ease-out;
-}
-
-._legoEditor_modal_cancelButton:hover::before {
-  border-top-color: var(--lego-red-color);
-  border-right-color: var(--lego-red-color);
-  transition: width 0.2s ease-out, height 0.2s ease-out 0.2s;
-}
-
-._legoEditor_modal_applyButton:hover::after {
-  border-bottom-color: var(--color-green);
-  border-left-color: var(--color-green);
-  transition: height 0.2s ease-out, width 0.2s ease-out 0.2s;
-}
-
-._legoEditor_modal_cancelButton:hover::after {
-  border-bottom-color: var(--lego-red-color);
-  border-left-color: var(--lego-red-color);
-  transition: height 0.2s ease-out, width 0.2s ease-out 0.2s;
+  &:hover:not(:disabled) {
+    background-color: var(--additive-background);
+  }
 }
 
 ._legoEditor_modal_button:disabled {
-  border: none;
-  cursor: inherit;
-  color: rgba(var(--rgb-min), var(--rgb-min), var(--rgb-min), 0.3);
-}
-
-._legoEditor_modal_button:disabled::before,
-._legoEditor_modal_button:disabled::after {
-  width: none;
-  border: none;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
