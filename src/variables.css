@@ -1,46 +1,81 @@
 :root {
+  --lego-background-color: #f8f9fa;
+  --lego-card-color: #fff;
+
+  --lego-font-color: var(--color-gray-9);
+  --secondary-font-color: #606060;
+
   --color-white: #fff;
-  --color-box-shadow: #c7c7c7;
-  --lego-red-color: #c0392b;
-  --color-green-1: #0a6640;
-  --color-almost-white-1: #f9f9f9;
-  --color-almost-white-2: #efefef;
-  --color-almost-white-3: #fafafa;
-  --color-almost-grey: #c1c1c1;
-  --color-mono-gray-1: #aaa;
-  --color-dark-mono-gray-3: #ccc;
-  --color-mono-gray-4: #ddd;
-  --color-mono-gray-5: #eee;
-  --text-color-block-quote: #565d64;
-  --color-black: #000;
-  --color-link-input-button: #fefefe;
-  --color-link-input-border: #cdcdcd;
-  --color-background: #f5f4f4;
+  --color-black: #181818;
+
+  --lego-red-color: #e21617;
+
+  --border-gray: var(--color-gray-2);
 
   --rgb-max: 255;
   --rgb-min: 0;
+
+  --additive-background: rgba(0, 0, 0, 5%);
+
+  --color-gray-1: #f2f2f2;
+  --color-gray-2: #e7e7e7;
+  --color-gray-3: #d9d9d9;
+  --color-gray-4: #b6b6b6;
+  --color-gray-5: #8c8c8c;
+  --color-gray-6: #757575;
+  --color-gray-7: #595959;
+  --color-gray-8: #373737;
+  --color-gray-9: #0d0d0d;
+
+  --color-green: #17c964;
+
+  --font-size-xs: 0.7rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.875rem;
+
+  --border-radius-sm: 0.3rem;
+  --border-radius-md: 0.5rem;
+  --border-radius-lg: 1rem;
+
+  --easing: cubic-bezier(0.35, 0, 0.65, 1);
+  --easing-blazingly-fast: 30ms var(--easing);
+  --easing-fast: 100ms var(--easing);
+  --easing-medium: 200ms var(--easing);
+  --easing-slow: 400ms var(--easing);
+
+  --shadow-xs: 0 2px 8px 1px rgba(104, 112, 118, 7%),
+    0 1px 1px -1px rgba(104, 112, 118, 4%);
+  --shadow-sm: 0 2px 8px 2px rgba(104, 112, 118, 7%),
+    0 2px 4px -1px rgba(104, 112, 118, 4%);
+  --shadow-md: 0 12px 20px 6px rgba(104, 112, 118, 8%);
+  --shadow-lg: 0 12px 34px 6px rgba(104, 112, 118, 18%);
 }
 
 [data-theme='dark'] {
-  --color-white: #000;
-  --color-box-shadow: #c7c7c7;
-  --lego-red-color: #c0392b;
-  --color-green-1: #0a6640;
-  --color-almost-white-1: #060606;
-  --color-almost-white-2: #1a1a1a;
-  --color-almost-white-3: #040404;
-  --color-almost-grey: #3e3e3e;
-  --color-mono-gray-1: #555;
-  --color-dark-mono-gray-3: #ccc;
-  --color-mono-gray-4: #ddd;
-  --color-mono-gray-5: #222;
-  --text-color-block-quote: #565d64;
-  --color-black: #fff;
-  --color-link-input-button: #010101;
-  --color-link-input-border: #323232;
-  --color-background: #10161a;
-  --color-gray-light: #555;
+  --lego-background-color: #0d0d0d;
+  --lego-card-color: #222;
+
+  --lego-font-color: var(--color-gray-9);
+  --secondary-font-color: #aaa;
+
+  --border-gray: var(--color-gray-2);
 
   --rgb-max: 0;
   --rgb-min: 255;
+
+  --additive-background: rgba(255, 255, 255, 10%);
+
+  --color-gray-1: #0d0d0d;
+  --color-gray-2: #373737;
+  --color-gray-3: #595959;
+  --color-gray-4: #757575;
+  --color-gray-5: #8c8c8c;
+  --color-gray-6: #b6b6b6;
+  --color-gray-7: #d9d9d9;
+  --color-gray-8: #e7e7e7;
+  --color-gray-9: #f2f2f2;
+
+  --color-green: #17c964;
 }
