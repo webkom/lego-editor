@@ -158,10 +158,22 @@ const Toolbar = (): JSX.Element => {
         H1
       </ToolbarButton>
       <ToolbarButton
+        active={checkActiveElement('h2')}
+        handler={(e) => toggleBlock(e, 'h2')}
+      >
+        H2
+      </ToolbarButton>
+      <ToolbarButton
         active={checkActiveElement('h3')}
         handler={(e) => toggleBlock(e, 'h3')}
       >
         H3
+      </ToolbarButton>
+      <ToolbarButton
+        active={checkActiveElement('h4')}
+        handler={(e) => toggleBlock(e, 'h4')}
+      >
+        H4
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('bold')}

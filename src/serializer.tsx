@@ -92,7 +92,6 @@ export const serialize = (node: SlateNode): string => {
       return `<h5>${children}</h5>`;
     case 'ul_list':
       return `<ul>${children}</ul>`;
-
     case 'ol_list':
       return `<ol>${children}</ol>`;
     case 'list_item':
