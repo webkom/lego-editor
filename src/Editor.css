@@ -40,6 +40,10 @@
   padding: 10px;
   margin: 10px 0;
   overflow: scroll;
+
+  & code {
+    background-color: transparent;
+  }
 }
 
 ._legoEditor_disabled blockquote,
