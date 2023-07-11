@@ -62,6 +62,9 @@
   --inverted-font-color: var(--color-gray-1);
   --secondary-font-color: #aaa;
 
+  --color-white: #181818;
+  --color-black: #fff;
+
   --border-gray: var(--color-gray-2);
 
   --rgb-max: 0;

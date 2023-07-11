@@ -135,6 +135,16 @@
   border: none;
 }
 
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 ._legoEditor_modal_wrapper {
   z-index: 15;
   display: flex;
@@ -146,27 +156,47 @@
   min-height: 100%;
   left: 0;
   top: 0;
-  background-color: rgba(0, 0, 0, 80%);
+  background-color: rgba(0, 0, 0, 10%);
+  backdrop-filter: blur(3px);
+
+  animation: fade-in var(--easing-medium) forwards;
+}
+
+@keyframes pop-in {
+  from {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+  }
+
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
 }
 
 ._legoEditor_modal_root {
-  opacity: 1;
-  background: var(--color-white);
-  width: 60%;
-  top: 10%;
-  left: 20%;
-  margin: 0 30px;
-  padding: 15px;
   display: flex;
   flex-direction: column;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 475px;
+  max-width: 100%;
+  max-height: calc(100vh - 100px);
+  padding: 35px;
+  background: var(--color-white);
+  outline: none;
+  overflow-y: auto;
   box-shadow: var(--shadow-sm);
   border-radius: var(--border-radius-lg);
+  animation: pop-in var(--easing-medium) forwards;
 }
 
 ._legoEditor_modal_buttonContainer {
   display: flex;
   justify-content: space-evenly;
-  margin: 30px;
+  margin-top: 30px;
   flex: 0 1 auto;
 }
 
@@ -194,10 +224,26 @@
   &:active:not(:disabled) {
     transform: translateY(1px);
   }
+
+  &:hover {
+    transition: background-color var(--easing-fast);
+  }
 }
 
-._legoEditor_modal_button:hover {
-  transition: background-color var(--easing-fast);
+._legoEditor_modal_closeButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 7px;
+  width: 30px;
+  height: 30px;
+  background-color: transparent;
+  font-size: var(--font-size-lg);
+  font-weight: thin;
+
+  &:hover:not(:disabled) {
+    background-color: var(--additive-background);
+  }
 }
 
 ._legoEditor_modal_applyButton {
