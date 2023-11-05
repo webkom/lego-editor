@@ -1,9 +1,9 @@
+import { Button, Flex, Modal } from '@webkom/lego-bricks';
 import React, { useMemo } from 'react';
 import cx from 'classnames';
 import { type Accept, useDropzone } from 'react-dropzone';
 import ReactCrop, { Crop } from 'react-image-crop';
 import cropImage from '../utils/cropImage';
-import Modal from './Modal';
 import { FunctionComponent, useState } from 'react';
 
 import './ImageUpload.css';
@@ -70,6 +70,7 @@ const ImageDrop: FunctionComponent<ImageDropProps> = ({ onDrop }) => {
 };
 
 const ImageUpload: FunctionComponent<Props> = ({ uploadFunction, cancel }) => {
+  const [showModal, setShowModal] = useState(true);
   const [currentImage, setCurrentImage] = useState<Image>();
   const [crop, setCrop] = useState<Crop>();
   const [imageDimensions, setImageDimensions] = useState<{
@@ -111,9 +112,20 @@ const ImageUpload: FunctionComponent<Props> = ({ uploadFunction, cancel }) => {
     });
   };
 
+  const closeModal = (): void => {
+    cancel();
+    setShowModal(false);
+  };
+
   return (
-    <Modal onCancel={cancel} onSubmit={submitImage}>
-      <div className="_legoEditor_imageUploader_crop_wrapper">
+    <Modal show={showModal} onHide={closeModal}>
+      <Flex
+        column
+        alignItems="center"
+        justifyContent="center"
+        gap={35}
+        className="_legoEditor_imageUploader_crop_wrapper"
+      >
         {currentImage ? (
           <div className="_legoEditor_imageUploader_crop_container">
             <ReactCrop onChange={setCrop} crop={crop}>
@@ -127,7 +139,15 @@ const ImageUpload: FunctionComponent<Props> = ({ uploadFunction, cancel }) => {
         ) : (
           <ImageDrop onDrop={onDrop} />
         )}
-      </div>
+        <Flex wrap gap={35}>
+          <Button flat onClick={closeModal}>
+            Avbryt
+          </Button>
+          <Button secondary disabled={!currentImage} onClick={submitImage}>
+            Last opp
+          </Button>
+        </Flex>
+      </Flex>
     </Modal>
   );
 };

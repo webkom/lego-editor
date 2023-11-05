@@ -35,7 +35,6 @@ const App = () => {
         placeholder="Testing lego editor"
         imageUpload={(file) =>
           new Promise((resolve) => {
-            console.log(file);
             resolve({ src: null });
           })
         }

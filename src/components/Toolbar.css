@@ -25,42 +25,4 @@
 
 ._legoEditor_Toolbar_active {
   background-color: var(--color-gray-3);
-
-  &:hover {
-    background-color: var(--color-gray-4);
-  }
-}
-
-._legoEditor_Toolbar_linkInput {
-  position: absolute;
-  top: 30px;
-  left: 40%;
-  border: 1.5px solid var(--border-gray);
-  border-radius: var(--border-radius-sm);
-  padding: 15px;
-  background-color: brown;
-}
-
-._legoEditor_Toolbar_linkInput input {
-  border: 1.5px solid var(--border-gray);
-  border-radius: var(--border-radius-md);
-  height: 30px;
-  padding: 5px;
-}
-
-._legoEditor_Toolbar_linkInput input:focus {
-  outline: none;
-  box-shadow: var(--shadow-sm);
-}
-
-._legoEditor_Toolbar_linkInput button {
-  border: 1.5px solid var(--border-gray);
-  border-radius: var(--border-radius-md);
-  background-color: var(--color-almost-white-3);
-  padding: 6px;
-  margin-left: 5px;
-}
-
-._legoEditor_Toolbar_linkInput button:hover {
-  border-color: var(--color-gray-2);
 }
