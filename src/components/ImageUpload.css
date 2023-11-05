@@ -1,4 +1,4 @@
-@import '../variables.css';
+@import '~@webkom/lego-bricks/dist/style.css';
 
 ._legoEditor_imageUploader_dropZone {
   display: flex;
@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 3px dashed var(--color-blue);
+  border: 3px dashed var(--color-blue-6);
   border-radius: var(--border-radius-lg);
   margin: 0 auto;
   color: var(--secondary-font-color);
@@ -26,12 +26,12 @@
 
 ._legoEditor_imageUploader_dropZone_focused
   ._legoEditor_imageUploader_dropArea {
-  border-color: var(--color-orange);
+  border-color: var(--color-orange-6);
 }
 
 ._legoEditor_imageUploader_dropZone_dragAccept
   ._legoEditor_imageUploader_dropArea {
-  border-color: var(--color-green);
+  border-color: var(--color-green-6);
 }
 
 ._legoEditor_imageUploader_dropZone_dragReject

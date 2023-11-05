@@ -1,4 +1,4 @@
-@import './variables.css';
+@import '~@webkom/lego-bricks/dist/style.css';
 
 ._legoEditor_root {
   border: 1.5px solid var(--border-gray);

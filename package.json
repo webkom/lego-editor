@@ -43,6 +43,7 @@
   },
   "homepage": "https://github.com/webkom/lego-editor#readme",
   "dependencies": {
+    "@webkom/lego-bricks": "^1.2.1",
     "classnames": "^2.2.6",
     "escape-html": "^1.0.3",
     "lodash": "^4.17.15",

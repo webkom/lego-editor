@@ -1,4 +1,4 @@
-@import '../variables.css';
+@import '~@webkom/lego-bricks/dist/style.css';
 
 ._legoEditor_Toolbar_root {
   z-index: 2;
