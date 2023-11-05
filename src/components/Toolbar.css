@@ -1,19 +1,17 @@
-@import '../variables.css';
+@import '~@webkom/lego-bricks/dist/style.css';
 
 ._legoEditor_Toolbar_root {
   z-index: 2;
-  border-bottom: 1px solid var(--color-mono-gray-4);
+  margin: 0 -10px;
   padding-left: 10px;
-  position: sticky;
-  top: 0px;
-  background-color: var(--color-white);
+  background-color: var(--additive-background);
 }
 
 ._legoEditor_Toolbar_button {
-  border-radius: 2px;
+  border-radius: var(--border-radius-sm);
+  background-color: transparent;
   border: none;
-  background-color: var(--color-white);
-  color: var(--color-black);
+  color: var(--lego-font-color);
   cursor: pointer;
   margin: 2px;
   height: 30px;
@@ -21,45 +19,10 @@
 }
 
 ._legoEditor_Toolbar_button:hover {
-  background-color: var(--color-mono-gray-5);
+  background-color: var(--color-gray-3);
+  transition: background-color var(--easing-blazingly-fast);
 }
 
 ._legoEditor_Toolbar_active {
-  background-color: var(--color-mono-gray-5);
-}
-
-._legoEditor_Toolbar_linkInput {
-  position: absolute;
-  top: 30px;
-  left: 40%;
-  border: 1px solid var(--color-mono-gray-4);
-  border-radius: 2px;
-  background-color: var(--color-link-input-button);
-  padding: 15px;
-}
-
-._legoEditor_Toolbar_linkInput input {
-  border: 1px solid var(--color-link-input-border);
-  background-color: red;
-  border-radius: 4px;
-  height: 30px;
-  padding: 5px;
-}
-
-._legoEditor_Toolbar_linkInput input:focus {
-  outline: none;
-  box-shadow: 2px 2px 1px var(--color-almost-white-2);
-}
-
-._legoEditor_Toolbar_linkInput button {
-  border: 1px solid var(--color-link-input-border);
-  border-radius: 3px;
-  background-color: var(--color-almost-white-3);
-  padding: 6px;
-  margin-left: 5px;
-}
-
-._legoEditor_Toolbar_linkInput button:hover {
-  background-color: var(--color-link-input-button);
-  border-color: var(--color-almost-grey);
+  background-color: var(--color-gray-3);
 }

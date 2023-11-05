@@ -1,7 +1,7 @@
+import { Button, Flex, Modal } from '@webkom/lego-bricks';
 import React, { useRef, useState, useEffect } from 'react';
 import { Node, NodeEntry, Element } from 'slate';
 import isUrl, { prependHttps } from '../utils/isUrl';
-import Modal from './Modal';
 
 interface LinkInputProps {
   active: boolean;
@@ -21,6 +21,7 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
     setTimeout(() => input.current?.focus(), 10);
   }, []);
 
+  const [showModal, setShowModal] = useState(true);
   const [url, setUrl] = useState<string>(
     props.activeLink &&
       Element.isElement(props.activeLink[0]) &&
@@ -57,14 +58,15 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
     }
   };
 
+  const closeModal = (): void => {
+    props.toggleLinkInput();
+    setShowModal(false);
+  };
+
   return (
-    <Modal
-      onCancel={props.toggleLinkInput}
-      onSubmit={submit}
-      disabled={!isUrl(url)}
-    >
-      <div className="_legoEditor_linkInput_wrapper">
-        <div className="_legoEditor_linkInput_inputWrapper">
+    <Modal show={showModal} onHide={closeModal}>
+      <Flex column alignItems="center" justifyContent="center" gap={20}>
+        <Flex column>
           <label className="_legoEditor_linkInput_label">
             <span>Link:</span>
             <input
@@ -77,8 +79,6 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
               value={url}
             />
           </label>
-        </div>
-        <div className="_legoEditor_linkInput_inputWrapper">
           <label className="_legoEditor_linkInput_label">
             <span>Text to display:</span>
             <input
@@ -89,8 +89,16 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
               value={linkText}
             />
           </label>
-        </div>
-      </div>
+        </Flex>
+        <Flex>
+          <Button flat onClick={closeModal}>
+            Avbryt
+          </Button>
+          <Button secondary disabled={!isUrl(url)} onClick={submit}>
+            Bruk
+          </Button>
+        </Flex>
+      </Flex>
     </Modal>
   );
 };
