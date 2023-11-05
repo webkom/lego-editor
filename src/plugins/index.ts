@@ -58,7 +58,7 @@ export const insertTab = <T extends Editor>(editor: T): T & PluginsEditor => {
  *  Shift+Enter
  */
 export const softEnter = <T extends Editor>(
-  editor: T
+  editor: T,
 ): Editor & PluginsEditor => {
   const e = editor as T & PluginsEditor;
 
@@ -164,7 +164,7 @@ export const basePlugin = <T extends Editor>(editor: T): Editor => {
         Transforms.insertNodes(
           e,
           { type: DEFAULT_BLOCK, children: [] },
-          { at: [Editor.last(e, [])[1][0] + 1] }
+          { at: [Editor.last(e, [])[1][0] + 1] },
         );
         return;
       }

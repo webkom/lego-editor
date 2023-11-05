@@ -51,7 +51,7 @@ const links = <T extends Editor>(e: T): T & LinkEditor => {
       Transforms.wrapNodes(
         editor,
         { type: 'link', url: url, children: [] },
-        { split: true, at }
+        { split: true, at },
       );
     }
   };

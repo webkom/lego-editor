@@ -46,9 +46,9 @@ const ImageDrop: FunctionComponent<ImageDropProps> = ({ onDrop }) => {
       cx(
         isFocused && '_legoEditor_imageUploader_dropZone_focused',
         isDragAccept && '_legoEditor_imageUploader_dropZone_dragAccept',
-        isDragReject && '_legoEditor_imageUploader_dropZone_dragReject'
+        isDragReject && '_legoEditor_imageUploader_dropZone_dragReject',
       ),
-    [isFocused, isDragAccept, isDragReject]
+    [isFocused, isDragAccept, isDragReject],
   );
 
   return (

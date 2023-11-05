@@ -17,7 +17,7 @@ const checkMarks = (
   element: CustomText,
   marks: {
     [key in Mark]?: boolean;
-  }
+  },
 ): void => {
   for (const mark of MARKS) {
     expect(element[mark] ?? false).toBe(marks[mark] ?? false);
@@ -29,7 +29,7 @@ describe('serializer', () => {
     const element = jsx(
       'element',
       { type: 'paragraph' },
-      jsx('text', { text: 'Hello world' })
+      jsx('text', { text: 'Hello world' }),
     );
 
     const serialized = serialize(element);
@@ -51,7 +51,7 @@ describe('serializer', () => {
     const serialized = serialize(editor);
 
     expect(serialized).toEqual(
-      '<h1>Header 1</h1><h2>Header 2</h2><h3>Header 3</h3><h4>Header 4</h4><h5>Header 5</h5><p>Paragraph</p>'
+      '<h1>Header 1</h1><h2>Header 2</h2><h3>Header 3</h3><h4>Header 4</h4><h5>Header 5</h5><p>Paragraph</p>',
     );
   });
 
@@ -64,13 +64,13 @@ describe('serializer', () => {
         jsx(
           'element',
           { type: 'list_item' },
-          jsx('text', { text: 'List item' })
+          jsx('text', { text: 'List item' }),
         ),
         jsx(
           'element',
           { type: 'list_item' },
-          jsx('text', { text: 'Another list item' })
-        )
+          jsx('text', { text: 'Another list item' }),
+        ),
       ),
       jsx(
         'element',
@@ -78,20 +78,20 @@ describe('serializer', () => {
         jsx(
           'element',
           { type: 'list_item' },
-          jsx('text', { text: 'First item' })
+          jsx('text', { text: 'First item' }),
         ),
         jsx(
           'element',
           { type: 'list_item' },
-          jsx('text', { text: 'Second item' })
-        )
+          jsx('text', { text: 'Second item' }),
+        ),
       ),
     ]);
 
     const serialized = serialize(editor);
 
     expect(serialized).toEqual(
-      '<ul><li>List item</li><li>Another list item</li></ul><ol><li>First item</li><li>Second item</li></ol>'
+      '<ul><li>List item</li><li>Another list item</li></ul><ol><li>First item</li><li>Second item</li></ol>',
     );
   });
 
@@ -108,13 +108,13 @@ describe('serializer', () => {
         underline: true,
         code: true,
         strikethrough: true,
-      })
+      }),
     );
 
     const serialized = serialize(element);
 
     expect(serialized).toEqual(
-      '<p>Paragraph <strong>with </strong><s><code><u><em property="italic"><strong>marks</strong></em></u></code></s></p>'
+      '<p>Paragraph <strong>with </strong><s><code><u><em property="italic"><strong>marks</strong></em></u></code></s></p>',
     );
   });
 
@@ -122,7 +122,7 @@ describe('serializer', () => {
     const element = jsx(
       'element',
       { type: 'code_block' },
-      jsx('text', { text: 'NaN != NaN' })
+      jsx('text', { text: 'NaN != NaN' }),
     );
 
     const serialized = serialize(element);
@@ -142,14 +142,14 @@ describe('serializer', () => {
       jsx(
         'element',
         { type: 'image_caption' },
-        jsx('text', { text: 'Cool figure' })
-      )
+        jsx('text', { text: 'Cool figure' }),
+      ),
     );
 
     const serialized = serialize(element);
 
     expect(serialized).toBe(
-      '<figure><img src="figure.svg" data-file-key="figure" alt="Placeholder" /><figcaption>Cool figure</figcaption></figure>'
+      '<figure><img src="figure.svg" data-file-key="figure" alt="Placeholder" /><figcaption>Cool figure</figcaption></figure>',
     );
   });
 
@@ -157,13 +157,13 @@ describe('serializer', () => {
     const element = jsx(
       'element',
       { type: 'link', url: 'https://abakus.no' },
-      jsx('text', { text: 'Link' })
+      jsx('text', { text: 'Link' }),
     );
 
     const serialized = serialize(element);
 
     expect(serialized).toBe(
-      '<a target="_blank" href="https://abakus.no">Link</a>'
+      '<a target="_blank" href="https://abakus.no">Link</a>',
     );
   });
 
@@ -171,7 +171,7 @@ describe('serializer', () => {
     const element = jsx(
       'element',
       { type: 'quote' },
-      jsx('text', { text: 'Quote' })
+      jsx('text', { text: 'Quote' }),
     );
 
     const serialized = serialize(element);
@@ -183,7 +183,7 @@ describe('serializer', () => {
 describe('deserializeHtmlString', () => {
   it('deserializes a text node', () => {
     const deserialized = deserializeHtmlString(
-      '<p>Hello World</p>'
+      '<p>Hello World</p>',
     ) as TextElement[];
 
     expect(deserialized).toHaveLength(1);
@@ -229,7 +229,7 @@ describe('deserializeHtmlString', () => {
   it('uses the supplied domParser', () => {
     const htmlDocument = new DOMParser().parseFromString(
       '<p>Hello World</p>',
-      'text/html'
+      'text/html',
     );
 
     const deserialized = deserializeHtmlString('', {
@@ -257,7 +257,7 @@ describe('deserializeHtmlString', () => {
 
   it('deserializes document with various headers and text tags', () => {
     const deserialized = deserializeHtmlString(
-      '<h1>Header 1</h1><h2>Header 2</h2><h3>Header 3</h3><h4>Header 4</h4><h5>Header 5</h5><p><strong>bold, </strong><u>underlined</u> and <i>italic</i> text<code> + some code</code></p>'
+      '<h1>Header 1</h1><h2>Header 2</h2><h3>Header 3</h3><h4>Header 4</h4><h5>Header 5</h5><p><strong>bold, </strong><u>underlined</u> and <i>italic</i> text<code> + some code</code></p>',
     ) as TextElement[];
 
     expect(deserialized).toHaveLength(6);
@@ -299,7 +299,7 @@ describe('deserializeHtmlString', () => {
 
   it('deserializes link tags', () => {
     const deserialized = deserializeHtmlString(
-      '<p>paragraph </p><a href="https://abakus.no">with a link</a>'
+      '<p>paragraph </p><a href="https://abakus.no">with a link</a>',
     ) as Element[];
 
     expect(deserialized).toHaveLength(2);
@@ -317,20 +317,20 @@ describe('deserializeHtmlString', () => {
 
   it('deserializes document with <br> tag', () => {
     const deserialized = deserializeHtmlString(
-      '<p>paragraph <br> with a line break</p>'
+      '<p>paragraph <br> with a line break</p>',
     ) as TextElement[];
 
     expect(deserialized).toHaveLength(1);
     expect(deserialized[0].type).toBe('paragraph');
     expect(deserialized[0].children).toHaveLength(1);
     expect(deserialized[0].children[0].text).toBe(
-      'paragraph \n with a line break'
+      'paragraph \n with a line break',
     );
   });
 
   it('deserializes text with multiple marks', () => {
     const deserialized = deserializeHtmlString(
-      '<p>this <em>text <strong>is <s><u>marked <code>up!</code></u></s></strong></em></p>'
+      '<p>this <em>text <strong>is <s><u>marked <code>up!</code></u></s></strong></em></p>',
     ) as TextElement[];
 
     expect(deserialized).toHaveLength(1);
@@ -368,7 +368,7 @@ describe('deserializeHtmlString', () => {
 
   it('handles mark tags around other elements', () => {
     const deserialized = deserializeHtmlString(
-      '<strong><u><h1>Strong header</h1></u><p>and paragraph</p></strong>'
+      '<strong><u><h1>Strong header</h1></u><p>and paragraph</p></strong>',
     ) as TextElement[];
 
     expect(deserialized).toHaveLength(2);
@@ -386,7 +386,7 @@ describe('deserializeHtmlString', () => {
 
   it('ignores unknown tag but finds children', () => {
     const deserialized = deserializeHtmlString(
-      '<testing-tag><p>should be <taggy-mctagface>found</taggy-mctagface></p></testing-tag>'
+      '<testing-tag><p>should be <taggy-mctagface>found</taggy-mctagface></p></testing-tag>',
     ) as TextElement[];
 
     expect(deserialized).toHaveLength(1);
@@ -398,7 +398,7 @@ describe('deserializeHtmlString', () => {
 
   it('deserializes an image figure', () => {
     const deserialized = deserializeHtmlString(
-      '<figure><img src="image_src.jpg" alt="Cool figure 😎" /><figcaption>Fig.1 - Cool stuff.</figcaption></figure>'
+      '<figure><img src="image_src.jpg" alt="Cool figure 😎" /><figcaption>Fig.1 - Cool stuff.</figcaption></figure>',
     ) as Element[];
 
     expect(deserialized).toHaveLength(1);
@@ -420,7 +420,7 @@ describe('deserializeHtmlString', () => {
 
   it('ignores <script /> and <style />', () => {
     const deserialized = deserializeHtmlString(
-      '<script>alert("I am a script tag!");</script><style>body { background-color: #fff; }</style>'
+      '<script>alert("I am a script tag!");</script><style>body { background-color: #fff; }</style>',
     ) as CustomText[];
 
     expect(deserialized).toHaveLength(1);
@@ -429,7 +429,7 @@ describe('deserializeHtmlString', () => {
 
   it('deserializes lists', () => {
     const deserialized = deserializeHtmlString(
-      '<ul><li>an item</li><li>another item</li></ul><ol><li>first item</li><li>second item</li></ol>'
+      '<ul><li>an item</li><li>another item</li></ul><ol><li>first item</li><li>second item</li></ol>',
     ) as ListElement[];
 
     expect(deserialized).toHaveLength(2);
@@ -454,7 +454,7 @@ describe('deserializeHtmlString', () => {
 
   it('deserializes a block quote', () => {
     const deserialized = deserializeHtmlString(
-      '<blockquote>This is a block quote</blockquote>'
+      '<blockquote>This is a block quote</blockquote>',
     ) as TextElement[];
 
     expect(deserialized).toHaveLength(1);
@@ -482,7 +482,7 @@ describe('reserialize deserialized html', () => {
 
   it('serializes lists correctly', () => {
     testHtml(
-      '<ul><li>an item</li><li>another item</li></ul><ol><li>first item</li><li>second item</li></ol>'
+      '<ul><li>an item</li><li>another item</li></ul><ol><li>first item</li><li>second item</li></ol>',
     );
   });
 

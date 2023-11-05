@@ -195,7 +195,7 @@ const LegoEditor = (props: Props): JSX.Element => {
   // like redux-form
   const debouncedOnChange = useMemo(
     () => props.onChange && debounce(props.onChange, 250),
-    [props.onChange]
+    [props.onChange],
   );
 
   const onChange = (value: Node[]): void => {
@@ -248,7 +248,7 @@ const LegoEditor = (props: Props): JSX.Element => {
 
   const editor: Editor = useMemo(
     () => compose(...plugins, withHistory, withReact, createEditor)(),
-    []
+    [],
   );
 
   const [value, setValue] = useState(
@@ -256,7 +256,7 @@ const LegoEditor = (props: Props): JSX.Element => {
       ? deserializeHtmlString(props.value, {
           domParser: props.domParser,
         })
-      : initialValue
+      : initialValue,
   );
 
   return (

@@ -112,12 +112,12 @@ const editList = <T extends Editor>(baseEditor: T): T & ListEditor => {
         Transforms.setNodes(
           editor,
           { type: DEFAULT_BLOCK, children: [] },
-          { at: path }
+          { at: path },
         );
         Transforms.wrapNodes(
           editor,
           { type: 'list_item', children: [] },
-          { at: path }
+          { at: path },
         );
         return;
       }
@@ -131,7 +131,7 @@ const editList = <T extends Editor>(baseEditor: T): T & ListEditor => {
         Transforms.setNodes(
           editor,
           { type: DEFAULT_BLOCK, children: [] },
-          { at: path }
+          { at: path },
         );
         return;
       }
@@ -161,7 +161,7 @@ const isList = (node: Node): boolean =>
 const handleEnter = (
   editor: Editor & ListEditor,
   command: Parameters<Editor['keyHandler']>[0],
-  keyHandler: Editor['keyHandler']
+  keyHandler: Editor['keyHandler'],
 ): void => {
   // unwrap lowest level block from list_item and list if empty
   const listEntry = getListItem(editor);
@@ -182,7 +182,7 @@ const handleEnter = (
     Transforms.insertNodes(
       editor,
       { type: 'list_item', children: [{ type: DEFAULT_BLOCK, children: [] }] },
-      { at: path }
+      { at: path },
     );
     Transforms.select(editor, path);
   } else {
@@ -194,7 +194,7 @@ const handleEnter = (
 const handleBackspace = (
   editor: Editor & ListEditor,
   command: Parameters<Editor['keyHandler']>[0],
-  keyHandler: Editor['keyHandler']
+  keyHandler: Editor['keyHandler'],
 ): void => {
   const listItemEntry = getListItem(editor);
   if (!listItemEntry) {
@@ -220,7 +220,7 @@ const handleBackspace = (
 const handleTab = (
   editor: Editor & ListEditor,
   command: Parameters<Editor['keyHandler']>[0],
-  keyHandler: Editor['keyHandler']
+  keyHandler: Editor['keyHandler'],
 ): void => {
   const listItemEntry = getListItem(editor);
   if (!listItemEntry) {
@@ -255,7 +255,7 @@ const handleTab = (
 const handleShiftTab = (
   editor: Editor & ListEditor,
   command: Parameters<Editor['keyHandler']>[0],
-  keyHandler: Editor['keyHandler']
+  keyHandler: Editor['keyHandler'],
 ): void => {
   const listItemEntry = getListItem(editor);
   if (!listItemEntry) {
@@ -274,7 +274,7 @@ const handleShiftTab = (
 const getListItem = (
   editor: Editor & ListEditor,
   at?: Location,
-  mode?: 'highest' | 'lowest' | 'all'
+  mode?: 'highest' | 'lowest' | 'all',
 ): NodeEntry | undefined => {
   if (!!at || editor.selection !== null) {
     const [match] = Editor.nodes(editor, {
@@ -293,7 +293,7 @@ const getListItem = (
  */
 const getParentList = (
   editor: Editor & ListEditor,
-  at?: Location
+  at?: Location,
 ): NodeEntry | undefined => {
   if (!!at || editor.selection !== null) {
     return Editor.above(editor, {
@@ -324,7 +324,7 @@ const getListDepth = (editor: Editor, at?: Location): number => {
  */
 const increaseListDepth = (
   editor: Editor & ListEditor,
-  at?: Location
+  at?: Location,
 ): void => {
   // If the provided location is a range, we perform the operation on
   // every list item in the range
@@ -334,7 +334,7 @@ const increaseListDepth = (
       match: nodeType('list_item'),
     });
     const pathRefs = Array.from(listItemEntries, ([, path]) =>
-      Editor.pathRef(editor, path)
+      Editor.pathRef(editor, path),
     );
     for (const pathRef of pathRefs) {
       const path = pathRef.unref();
@@ -382,7 +382,7 @@ const increaseListDepth = (
       Transforms.wrapNodes(
         editor,
         { type: parentList.type, children: [] },
-        { at: listItemPath }
+        { at: listItemPath },
       );
     }
   });
@@ -395,7 +395,7 @@ const increaseListDepth = (
  */
 const decreaseListDepth = (
   editor: Editor & ListEditor,
-  at?: Location
+  at?: Location,
 ): void => {
   // If the provided location is a range, we perform the operation on
   // every list item in the range
@@ -405,7 +405,7 @@ const decreaseListDepth = (
       match: nodeType('list_item'),
     });
     const pathRefs = Array.from(listItemEntries, ([, path]) =>
-      Editor.pathRef(editor, path)
+      Editor.pathRef(editor, path),
     );
     for (const pathRef of pathRefs) {
       const path = pathRef.unref();
@@ -474,7 +474,7 @@ const setListType = (editor: Editor & ListEditor, listType: ListType): void => {
         Transforms.setNodes(
           editor,
           { type: listType },
-          { match: isList, mode: 'lowest' }
+          { match: isList, mode: 'lowest' },
         );
       } else {
         // We go through all the selected blocks that are not list blocks
@@ -486,7 +486,7 @@ const setListType = (editor: Editor & ListEditor, listType: ListType): void => {
             !isList(n),
         });
         const pathRefs = Array.from(selectedBlocks, ([, path]) =>
-          Editor.pathRef(editor, path)
+          Editor.pathRef(editor, path),
         );
 
         let change = false;
@@ -505,12 +505,12 @@ const setListType = (editor: Editor & ListEditor, listType: ListType): void => {
               Transforms.wrapNodes(
                 editor,
                 { type: 'list_item', children: [] },
-                { at: path }
+                { at: path },
               );
               Transforms.wrapNodes(
                 editor,
                 { type: listType, children: [] },
-                { at: path }
+                { at: path },
               );
               // And then we merge the list elements
               Transforms.mergeNodes(editor, { at: path });
@@ -526,7 +526,7 @@ const setListType = (editor: Editor & ListEditor, listType: ListType): void => {
           });
 
           const pathRefs = Array.from(selectedListItems, ([, path]) =>
-            Editor.pathRef(editor, path)
+            Editor.pathRef(editor, path),
           );
           for (const pathRef of pathRefs) {
             const path = pathRef.unref();
@@ -561,7 +561,7 @@ const setListType = (editor: Editor & ListEditor, listType: ListType): void => {
               type: 'list_item',
               children: [],
             },
-            { at: path }
+            { at: path },
           );
         }
       }
