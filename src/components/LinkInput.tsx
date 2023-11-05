@@ -27,14 +27,14 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
       Element.isElement(props.activeLink[0]) &&
       props.activeLink[0].type === 'link'
       ? props.activeLink[0].url
-      : ''
+      : '',
   );
   const [linkText, setLinkText] = useState<string>(
-    props.activeLink ? Node.string(props.activeLink[0]) : ''
+    props.activeLink ? Node.string(props.activeLink[0]) : '',
   );
 
   const submit = (
-    e?: React.FocusEvent | React.KeyboardEvent | React.MouseEvent
+    e?: React.FocusEvent | React.KeyboardEvent | React.MouseEvent,
   ): void => {
     e?.preventDefault();
     props.toggleLinkInput();

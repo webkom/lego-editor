@@ -58,7 +58,7 @@ const Toolbar = (): JSX.Element => {
 
   const setListType = (
     e: React.PointerEvent,
-    type: 'ul_list' | 'ol_list'
+    type: 'ul_list' | 'ol_list',
   ): void => {
     e.preventDefault();
     editor.toggleList(type);
@@ -104,7 +104,7 @@ const Toolbar = (): JSX.Element => {
       Transforms.setNodes(
         editor,
         { url, text: text || url },
-        { match: nodeType('link') }
+        { match: nodeType('link') },
       );
     } else {
       if (isCollapsed) {
@@ -117,7 +117,7 @@ const Toolbar = (): JSX.Element => {
           },
           {
             at: lastSelection || undefined,
-          }
+          },
         );
       } else {
         editor.wrapLink(data.url, lastSelection || undefined);

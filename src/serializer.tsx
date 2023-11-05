@@ -139,7 +139,7 @@ const normalizeMark = (node: Exclude<SlateNode, Text>, mark: Mark): void => {
  *  Deserialize a html tree to a slate fragment.
  */
 export const deserialize = (
-  element: Node
+  element: Node,
 ): SlateNode | string | (SlateNode | string)[] => {
   // See https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
   // for what the different nodeTypes are.
@@ -177,19 +177,19 @@ export const deserialize = (
             ...data,
             [attrName]: el.getAttribute(attrName),
           }),
-          {}
+          {},
         );
         return jsx(
           'element',
           { type: 'image', fileKey, ...dataFromHtml },
-          children
+          children,
         );
       }
       case 'link':
         return jsx(
           'element',
           { type: 'link', url: el.getAttribute('href') },
-          children
+          children,
         );
       default:
         return jsx('element', { type: elementType }, children);
@@ -211,7 +211,7 @@ export const deserialize = (
         {
           [markType]: true,
         },
-        child
+        child,
       );
     });
   }
@@ -235,7 +235,7 @@ interface DeserializerOptions {
  */
 export const deserializeHtmlString = (
   html: string,
-  options?: DeserializerOptions
+  options?: DeserializerOptions,
 ): SlateNode[] => {
   let document: HTMLDocument;
   if (options?.domParser) {

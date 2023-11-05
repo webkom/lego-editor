@@ -15,7 +15,7 @@ const App = () => {
     setDarkmode(isChecked);
     document.documentElement.setAttribute(
       'data-theme',
-      isChecked ? 'dark' : 'light'
+      isChecked ? 'dark' : 'light',
     );
   };
 

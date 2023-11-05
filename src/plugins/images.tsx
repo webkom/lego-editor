@@ -27,7 +27,7 @@ export interface ImageEditor extends BaseEditor {
  *  Plugin for inserting and normalizing images, needs a function for uploading the file.
  */
 const images = (
-  options: Options
+  options: Options,
 ): (<T extends Editor>(editor: T) => Editor) => {
   const { uploadFunction } = options;
   return <T extends Editor>(editorBase: T): Editor & ImageEditor => {
@@ -61,7 +61,7 @@ const images = (
           },
           {
             at: at,
-          }
+          },
         );
       });
     };
@@ -95,7 +95,7 @@ const images = (
           Transforms.setNodes(
             editor,
             { type: DEFAULT_BLOCK },
-            { at: path, match: nodeType('image_caption') }
+            { at: path, match: nodeType('image_caption') },
           );
           Transforms.unwrapNodes(editor, { at: path });
           return;
@@ -105,7 +105,7 @@ const images = (
           Transforms.insertNodes(
             editor,
             { type: 'image_caption', children: [] },
-            { at: path }
+            { at: path },
           );
           return;
         }
@@ -117,7 +117,7 @@ const images = (
           Transforms.insertNodes(
             editor,
             { type: 'image_caption', children: [{ text }] },
-            { at: path }
+            { at: path },
           );
           return;
         }

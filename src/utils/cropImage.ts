@@ -7,7 +7,7 @@ interface BlobWithName extends Blob {
 const cropImage = (
   image: HTMLImageElement,
   crop: Crop,
-  name: string
+  name: string,
 ): Promise<BlobWithName | null> => {
   if (!crop.width || !crop.height) {
     crop.width = image.width;
@@ -35,7 +35,7 @@ const cropImage = (
     0,
     0,
     crop.width,
-    crop.height
+    crop.height,
   );
 
   return new Promise((resolve, reject) => {
