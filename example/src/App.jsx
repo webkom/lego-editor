@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Editor from '../../src/index';
 import '../../src/Editor.css';
 import '../../src/components/Toolbar.css';
@@ -8,7 +8,16 @@ import 'react-image-crop/dist/ReactCrop.css';
 import './App.css';
 
 const App = () => {
-  const [darkMode, setDarkmode] = React.useState(false);
+  const [darkMode, setDarkmode] = useState(false);
+
+  const handleDarkModeToggle = (e) => {
+    const isChecked = e.target.checked;
+    setDarkmode(isChecked);
+    document.documentElement.setAttribute(
+      'data-theme',
+      isChecked ? 'dark' : 'light'
+    );
+  };
 
   return (
     <div>
@@ -17,7 +26,8 @@ const App = () => {
         Darkmode:
         <input
           type="checkbox"
-          onChange={(e) => setDarkmode(e.target.checked)}
+          checked={darkMode}
+          onChange={handleDarkModeToggle}
         />
       </label>
       <Editor
