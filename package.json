@@ -54,7 +54,7 @@
     "react-modal": "^3.11.2",
     "slate": "^0.94.0",
     "slate-history": "^0.93.0",
-    "slate-hyperscript": "^0.81.3",
+    "slate-hyperscript": "^0.100.0",
     "slate-react": "^0.94.0"
   },
   "peerDependencies": {
