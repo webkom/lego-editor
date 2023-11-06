@@ -19,7 +19,7 @@ export default defineConfig({
     },
     sourcemap: true,
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', 'react-router-dom'],
       output: {
         globals: {
           react: 'React',
