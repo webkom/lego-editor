@@ -592,9 +592,9 @@
   integrity sha512-mEo1sAde+UCE6b2hxn332f1g1E8WfYRu6p5SvTKr2ZKC1f7gFJXk4h5PyGP9Dt6gCaG8y8XhwnXWC6Iy2cmBng==
 
 "@types/escape-html@^1.0.0":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@types/escape-html/-/escape-html-1.0.3.tgz#89bb42fa116c5506bc5cfb3430464c6377e7113b"
-  integrity sha512-QbNxKa2IX2y/9eGiy4w8rrwk//ERHXA6zwYVRA3+ayA/D3pkz+/bLL4b5uSLA0L0kPuNX1Jbv9HyPzv9T4zbJQ==
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@types/escape-html/-/escape-html-1.0.4.tgz#dc7c166b76c7b03b27e32f80edf01d91eb5d9af2"
+  integrity sha512-qZ72SFTgUAZ5a7Tj6kf2SHLetiH5S6f8G5frB2SPQ3EyF02kxdyBFf4Tz4banE3xCgGnKgWLt//a6VuYHKYJTg==
 
 "@types/is-hotkey@^0.1.1":
   version "0.1.7"
