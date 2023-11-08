@@ -629,9 +629,9 @@
   integrity sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==
 
 "@types/react-modal@^3.10.6":
-  version "3.16.2"
-  resolved "https://registry.yarnpkg.com/@types/react-modal/-/react-modal-3.16.2.tgz#b9cfd9641f88d3984168702776662722fb31618e"
-  integrity sha512-4LIHFLP8EmQnps3QhUIPyfF87b1BGikQD/MHuYNdx/30gH1d4Q3OUtyqrh6GUfifNVMPWXOrlRekJDWzPzu1Gg==
+  version "3.16.3"
+  resolved "https://registry.yarnpkg.com/@types/react-modal/-/react-modal-3.16.3.tgz#250f32c07f1de28e2bcf9c3e84b56adaa6897013"
+  integrity sha512-xXuGavyEGaFQDgBv4UVm8/ZsG+qxeQ7f77yNrW3n+1J6XAstUy5rYHeIHPh1KzsGc6IkCIdu6lQ2xWzu1jBTLg==
   dependencies:
     "@types/react" "*"
 
