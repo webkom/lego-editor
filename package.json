@@ -50,7 +50,7 @@
     "escape-html": "^1.0.3",
     "lodash": "^4.17.15",
     "react-dropzone": "^14.2.2",
-    "react-image-crop": "^10.0.4",
+    "react-image-crop": "^11.0.4",
     "react-modal": "^3.11.2",
     "slate": "^0.94.0",
     "slate-history": "^0.93.0",
