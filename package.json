@@ -52,7 +52,7 @@
     "react-dropzone": "^14.2.2",
     "react-image-crop": "^11.0.5",
     "react-modal": "^3.11.2",
-    "slate": "^0.94.0",
+    "slate": "^0.102.0",
     "slate-history": "^0.93.0",
     "slate-hyperscript": "^0.81.3",
     "slate-react": "^0.94.0"
