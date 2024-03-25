@@ -1,5 +1,5 @@
 const protocolRe = /^(?:f|ht)tps?:\/\//;
-const hostnameRe = /([a-zA-Z]\.?)+\.([a-zA-Z]){2,}/;
+const hostnameRe = /([a-zA-Z0-9][a-zA-Z0-9\-]*\.)+([a-zA-Z]{2,})(\/[a-zA-Z0-9\-._~:\/?#[\]@!$&'()*+,;=]*)?/;
 
 const urlRe = new RegExp(protocolRe.source + hostnameRe.source);
 const mailRe = new RegExp('^mailto:([a-zA-Z](\\.|\\+)?)+@' + hostnameRe.source);
