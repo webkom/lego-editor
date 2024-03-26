@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import {
   Slate,
   Editable,
@@ -258,6 +258,11 @@ const LegoEditor = (props: Props): JSX.Element => {
         })
       : initialValue,
   );
+
+  useEffect(() => {
+    const event = new CustomEvent('editorReady');
+    window.dispatchEvent(event);
+  }, []);
 
   return (
     <div
