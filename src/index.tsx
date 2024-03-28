@@ -268,7 +268,11 @@ const LegoEditor = (props: Props): JSX.Element => {
           : '_legoEditor_root'
       }
     >
-      <Slate editor={editor} value={value as Descendant[]} onChange={onChange}>
+      <Slate
+        editor={editor}
+        initialValue={value as Descendant[]}
+        onChange={onChange}
+      >
         {!props.disabled && !props.simple && <Toolbar />}
         <Editable
           onKeyDown={onKeyDown}
@@ -279,6 +283,7 @@ const LegoEditor = (props: Props): JSX.Element => {
           autoFocus={props.autoFocus}
           onBlur={onBlur}
           onFocus={onFocus}
+          className="_legoEditor_textInputField"
         />
       </Slate>
     </div>

@@ -1,13 +1,8 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: "/"
+    directory: '/'
     schedule:
       interval: daily
-      time: "10:00"
+      time: '10:00'
     open-pull-requests-limit: 10
-    ignore:
-      - dependency-name: slate-history
-        versions:
-          - ">= 0.59.a"
-          - "< 0.60"

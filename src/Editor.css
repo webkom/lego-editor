@@ -11,13 +11,17 @@
 
 ._legoEditor_root:focus-within {
   border-color: var(--border-gray);
-  box-shadow: var(--shadow-md);
-  transition: box-shadow var(--easing-fast);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--easing-medium);
   outline: none;
 }
 
 ._legoEditor_disabled {
   border: none;
+}
+
+._legoEditor_textInputField {
+  outline: none;
 }
 
 ._legoEditor_root a {
