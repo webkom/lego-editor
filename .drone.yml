@@ -5,35 +5,35 @@ name: default
 
 steps:
   - name: setup
-    image: node:16
+    image: node:18
     when:
       event: push
     commands:
       - yarn --frozen-lockfile --ignore-scripts
 
   - name: lint
-    image: node:16
+    image: node:18
     when:
       event: push
     commands:
       - yarn lint
 
   - name: type check
-    image: node:16
+    image: node:18
     when:
       event: push
     commands:
       - yarn ts
 
   - name: test
-    image: node:16
+    image: node:18
     when:
       event: push
     commands:
       - yarn test
 
   - name: build
-    image: node:16
+    image: node:18
     when:
       event: push
     commands:
