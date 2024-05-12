@@ -16,8 +16,8 @@ const cropImage = (
   const canvas = document.createElement('canvas');
   const scaleX = image.naturalWidth / image.width;
   const scaleY = image.naturalHeight / image.height;
-  canvas.width = crop.width;
-  canvas.height = crop.height;
+  canvas.width = crop.width * scaleX;
+  canvas.height = crop.height * scaleY;
   const ctx = canvas.getContext('2d');
 
   // canvas.getContext(<identifier>) returns null if
@@ -30,12 +30,12 @@ const cropImage = (
     image,
     (crop.x || 0) * scaleX,
     (crop.y || 0) * scaleY,
-    crop.width * scaleX,
-    crop.height * scaleY,
+    canvas.width,
+    canvas.height,
     0,
     0,
-    crop.width,
-    crop.height,
+    canvas.width,
+    canvas.height,
   );
 
   return new Promise((resolve, reject) => {
