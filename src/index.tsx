@@ -19,6 +19,7 @@ import { withHistory } from 'slate-history';
 import isHotKey from 'is-hotkey';
 import Toolbar from './components/Toolbar';
 import ImageBlock from './components/ImageBlock';
+import isInternalLink from './utils/isInternalLink';
 import {
   basePlugin,
   insertTab,
@@ -179,8 +180,8 @@ const renderElement = (props: RenderElementProps): JSX.Element => {
         <a
           {...attributes}
           href={element.url}
-          rel="noopener noreferrer"
-          target="_blank"
+          rel={isInternalLink(element.url) ? undefined : 'noopener noreferrer'}
+          target={isInternalLink(element.url) ? undefined : '_blank'}
         >
           {children}
         </a>

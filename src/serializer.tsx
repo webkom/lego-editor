@@ -1,5 +1,6 @@
 import { Node as SlateNode, Text, Element } from 'slate';
 import escape from 'escape-html';
+import isInternalLink from './utils/isInternalLink';
 import { jsx } from 'slate-hyperscript';
 import { Mark } from './custom-types';
 
@@ -114,7 +115,7 @@ export const serialize = (node: SlateNode): string => {
     case 'image_caption':
       return `<figcaption>${children}</figcaption>`;
     case 'link':
-      return `<a target="_blank" href="${node.url}">${children}</a>`;
+      return `<a ${isInternalLink(node.url) ? '' : 'target="_blank" '}href="${node.url}">${children}</a>`;
     case 'quote':
       return `<blockquote>${children}</blockquote>`;
     default:
