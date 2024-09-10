@@ -99,6 +99,8 @@ const TEXT_BLOCKS: Elements[] = [
   'paragraph',
   'code_block',
   'quote',
+  'ins',
+  'del',
 ];
 
 /**
