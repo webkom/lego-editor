@@ -186,6 +186,10 @@ const renderElement = (props: RenderElementProps): JSX.Element => {
           {children}
         </a>
       );
+    case 'ins':
+      return <ins className="_legoEditor_inserted">{children}</ins>;
+    case 'del':
+      return <del className="_legoEditor_deleted">{children}</del>;
     default:
       return <p {...attributes}>{children}</p>;
   }
