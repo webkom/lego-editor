@@ -29,7 +29,9 @@ export type Elements =
   | 'figure'
   | 'image'
   | 'image_caption'
-  | 'quote';
+  | 'quote'
+  | 'ins'
+  | 'del';
 
 export type CustomText = { text: string } & {
   [key in Mark]?: boolean;
@@ -75,6 +77,14 @@ export type ListElement = {
   type: 'ol_list' | 'ul_list';
   children: (ListElement | ListItemElement)[];
 };
+export type InsertedElement = {
+  type: 'ins';
+  children: CustomText[];
+};
+export type DeletedElement = {
+  type: 'del';
+  children: CustomText[];
+};
 
 type CustomElement =
   | ListElement
@@ -85,7 +95,9 @@ type CustomElement =
   | FigureElement
   | QuoteElement
   | CodeBlockElement
-  | LinkElement;
+  | LinkElement
+  | InsertedElement
+  | DeletedElement;
 
 export interface ExtendedEditor extends BaseEditor {
   savedSelection?: BaseRange;

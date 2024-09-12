@@ -129,3 +129,25 @@
   box-shadow: 0 0 0 1.5px var(--color-gray-7);
   transition: box-shadow var(--easing-fast);
 }
+
+._legoEditor_inserted,
+._legoEditor_deleted {
+  text-decoration: none;
+}
+
+._legoEditor_inserted *,
+._legoEditor_deleted * {
+  border-radius: var(--border-radius-sm);
+}
+
+._legoEditor_inserted * {
+  background-color: var(--color-green-1);
+  color: var(
+    --color-green-6
+  ); /* TODO: Replace with var(--success-color) when lego-bricks is updated */
+}
+
+._legoEditor_deleted * {
+  background-color: var(--color-red-1);
+  color: var(--danger-color);
+}

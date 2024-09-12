@@ -24,6 +24,8 @@ const ELEMENT_TAGS: TAGS = {
   figcaption: 'image_caption',
   a: 'link',
   blockquote: 'quote',
+  ins: 'ins',
+  del: 'del',
 };
 
 const MARK_TAGS = {
@@ -118,6 +120,10 @@ export const serialize = (node: SlateNode): string => {
       return `<a ${isInternalLink(node.url) ? '' : 'target="_blank" '}href="${node.url}">${children}</a>`;
     case 'quote':
       return `<blockquote>${children}</blockquote>`;
+    case 'ins':
+      return `<ins>${children}</ins>`;
+    case 'del':
+      return `<del>${children}</del>`;
     default:
       return children;
   }
