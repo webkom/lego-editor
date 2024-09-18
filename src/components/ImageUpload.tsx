@@ -112,13 +112,15 @@ const ImageUpload: FunctionComponent<Props> = ({ uploadFunction, cancel }) => {
     });
   };
 
-  const closeModal = (): void => {
-    cancel();
-    setShowModal(false);
+  const onModalOpenChange = (isOpen: boolean): void => {
+    if (!isOpen) {
+      cancel();
+    }
+    setShowModal(isOpen);
   };
 
   return (
-    <Modal show={showModal} onHide={closeModal}>
+    <Modal isOpen={showModal} onOpenChange={onModalOpenChange}>
       <Flex
         column
         alignItems="center"
@@ -140,10 +142,10 @@ const ImageUpload: FunctionComponent<Props> = ({ uploadFunction, cancel }) => {
           <ImageDrop onDrop={onDrop} />
         )}
         <Flex wrap gap={35}>
-          <Button flat onClick={closeModal}>
+          <Button flat onPress={() => onModalOpenChange(false)}>
             Avbryt
           </Button>
-          <Button secondary disabled={!currentImage} onClick={submitImage}>
+          <Button secondary disabled={!currentImage} onPress={submitImage}>
             Last opp
           </Button>
         </Flex>

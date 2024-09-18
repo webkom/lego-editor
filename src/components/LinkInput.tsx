@@ -33,10 +33,7 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
     props.activeLink ? Node.string(props.activeLink[0]) : '',
   );
 
-  const submit = (
-    e?: React.FocusEvent | React.KeyboardEvent | React.MouseEvent,
-  ): void => {
-    e?.preventDefault();
+  const submit = (): void => {
     props.toggleLinkInput();
     if (url == '') {
       return;
@@ -58,13 +55,15 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
     }
   };
 
-  const closeModal = (): void => {
-    props.toggleLinkInput();
-    setShowModal(false);
+  const onModalOpenChange = (isOpen: boolean): void => {
+    if (!isOpen) {
+      props.toggleLinkInput();
+    }
+    setShowModal(isOpen);
   };
 
   return (
-    <Modal show={showModal} onHide={closeModal}>
+    <Modal isOpen={showModal} onOpenChange={onModalOpenChange}>
       <Flex column alignItems="center" justifyContent="center" gap={20}>
         <Flex column>
           <label className="_legoEditor_linkInput_label">
@@ -91,10 +90,10 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
           </label>
         </Flex>
         <Flex>
-          <Button flat onClick={closeModal}>
+          <Button flat onPress={() => onModalOpenChange(false)}>
             Avbryt
           </Button>
-          <Button secondary disabled={!isUrl(url)} onClick={submit}>
+          <Button secondary disabled={!isUrl(url)} onPress={submit}>
             Bruk
           </Button>
         </Flex>
