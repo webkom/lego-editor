@@ -88,7 +88,10 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
             value={linkText}
           />
         </label>
-        <Flex className="_legoEditor_linkInput_submitContainer" justifyContent="center">
+        <Flex
+          className="_legoEditor_linkInput_submitContainer"
+          justifyContent="center"
+        >
           <Button secondary disabled={!isUrl(url)} onPress={submit}>
             Bruk
           </Button>
