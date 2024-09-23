@@ -2,14 +2,39 @@
 
 ._legoEditor_linkInput_label {
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  text-align: right;
-  margin: 10px 0;
+  flex-direction: column;
+  width: 100%;
 }
 
 ._legoEditor_linkInput_label span {
-  flex: 0 1 auto;
-  min-width: 200px;
+  width: 100%;
   text-align: start;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-7);
+  margin-bottom: var(--spacing-xs);
+}
+
+._legoEditor_linkInput_input {
+  width: 100%;
+  font-size: var(--font-size-sm);
+  font-family: Inter, sans-serif;
+  border: 1.5px solid var(--border-gray);
+  border-radius: var(--border-radius-md);
+  color: var(--lego-font-color);
+  background-color: inherit;
+  overflow: hidden;
+  height: 38px;
+
+  &:focus-within {
+    transition: border-color var(--easing-medium);
+    border-color: var(--color-gray-4);
+  }
+}
+
+._legoEditor_linkInput_submitContainer {
+  width: 100%;
+}
+
+._legoEditor_linkInput_submitContainer button {
+  width: 100%;
 }

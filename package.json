@@ -1,6 +1,6 @@
 {
   "name": "@webkom/lego-editor",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "description": "A React editor written in TS with slate.js for lego-webapp",
   "type": "module",
   "main": "./dist/lego-editor.umd.cjs",
@@ -45,7 +45,7 @@
   },
   "homepage": "https://github.com/webkom/lego-editor#readme",
   "dependencies": {
-    "@webkom/lego-bricks": "^1.3.3",
+    "@webkom/lego-bricks": "^1.3.5",
     "classnames": "^2.2.6",
     "escape-html": "^1.0.3",
     "lodash": "^4.17.15",
