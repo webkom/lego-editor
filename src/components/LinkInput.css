@@ -24,11 +24,12 @@
   background-color: inherit;
   overflow: hidden;
   height: 38px;
+  outline: none;
+}
 
-  &:focus-within {
-    transition: border-color var(--easing-medium);
-    border-color: var(--color-gray-4);
-  }
+._legoEditor_linkInput_input:focus {
+  transition: border-color var(--easing-medium);
+  border-color: var(--color-gray-4);
 }
 
 ._legoEditor_linkInput_submitContainer {
