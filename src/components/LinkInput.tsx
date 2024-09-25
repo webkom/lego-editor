@@ -65,34 +65,33 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
   return (
     <Modal isOpen={showModal} onOpenChange={onModalOpenChange}>
       <Flex column alignItems="center" justifyContent="center" gap={20}>
-        <Flex column>
-          <label className="_legoEditor_linkInput_label">
-            <span>Link:</span>
-            <input
-              className="_legoEditor_linkInput_"
-              type="link"
-              placeholder="https://example.com"
-              ref={input}
-              onChange={onChange}
-              onKeyDown={onKeyPress}
-              value={url}
-            />
-          </label>
-          <label className="_legoEditor_linkInput_label">
-            <span>Text to display:</span>
-            <input
-              type="text"
-              placeholder="Example site"
-              onChange={(e) => setLinkText(e.target.value)}
-              onKeyDown={onKeyPress}
-              value={linkText}
-            />
-          </label>
-        </Flex>
-        <Flex>
-          <Button flat onPress={() => onModalOpenChange(false)}>
-            Avbryt
-          </Button>
+        <label className="_legoEditor_linkInput_label">
+          <span>Link</span>
+          <input
+            className="_legoEditor_linkInput_input"
+            type="link"
+            placeholder="https://example.com"
+            ref={input}
+            onChange={onChange}
+            onKeyDown={onKeyPress}
+            value={url}
+          />
+        </label>
+        <label className="_legoEditor_linkInput_label">
+          <span>Text to display</span>
+          <input
+            className="_legoEditor_linkInput_input"
+            type="text"
+            placeholder="Example site"
+            onChange={(e) => setLinkText(e.target.value)}
+            onKeyDown={onKeyPress}
+            value={linkText}
+          />
+        </label>
+        <Flex
+          className="_legoEditor_linkInput_submitContainer"
+          justifyContent="center"
+        >
           <Button secondary disabled={!isUrl(url)} onPress={submit}>
             Bruk
           </Button>
