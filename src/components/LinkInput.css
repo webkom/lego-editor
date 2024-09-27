@@ -16,6 +16,7 @@
 
 ._legoEditor_linkInput_input {
   width: 100%;
+  padding-left: var(--spacing-sm);
   font-size: var(--font-size-sm);
   font-family: Inter, sans-serif;
   border: 1.5px solid var(--border-gray);

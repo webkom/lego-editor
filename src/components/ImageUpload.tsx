@@ -1,4 +1,4 @@
-import { Button, Flex, Modal } from '@webkom/lego-bricks';
+import { Button, ButtonGroup, Flex, Modal } from '@webkom/lego-bricks';
 import React, { useMemo } from 'react';
 import cx from 'classnames';
 import { type Accept, useDropzone } from 'react-dropzone';
@@ -121,13 +121,7 @@ const ImageUpload: FunctionComponent<Props> = ({ uploadFunction, cancel }) => {
 
   return (
     <Modal isOpen={showModal} onOpenChange={onModalOpenChange}>
-      <Flex
-        column
-        alignItems="center"
-        justifyContent="center"
-        gap={35}
-        className="_legoEditor_imageUploader_crop_wrapper"
-      >
+      <Flex column alignItems="center" gap="var(--spacing-md)">
         {currentImage ? (
           <div className="_legoEditor_imageUploader_crop_container">
             <ReactCrop onChange={setCrop} crop={crop}>
@@ -141,14 +135,14 @@ const ImageUpload: FunctionComponent<Props> = ({ uploadFunction, cancel }) => {
         ) : (
           <ImageDrop onDrop={onDrop} />
         )}
-        <Flex wrap gap={35}>
+        <ButtonGroup>
           <Button flat onPress={() => onModalOpenChange(false)}>
             Avbryt
           </Button>
           <Button secondary disabled={!currentImage} onPress={submitImage}>
             Last opp
           </Button>
-        </Flex>
+        </ButtonGroup>
       </Flex>
     </Modal>
   );

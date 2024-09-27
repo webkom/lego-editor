@@ -1,4 +1,4 @@
-import { Button, Flex, Modal } from '@webkom/lego-bricks';
+import { Button, ButtonGroup, Flex, Modal } from '@webkom/lego-bricks';
 import React, { useRef, useState, useEffect } from 'react';
 import { Node, NodeEntry, Element } from 'slate';
 import isUrl, { prependHttps } from '../utils/isUrl';
@@ -64,9 +64,9 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
 
   return (
     <Modal isOpen={showModal} onOpenChange={onModalOpenChange}>
-      <Flex column alignItems="center" justifyContent="center" gap={20}>
+      <Flex column gap="var(--spacing-md)">
         <label className="_legoEditor_linkInput_label">
-          <span>Link</span>
+          <span>URL</span>
           <input
             className="_legoEditor_linkInput_input"
             type="link"
@@ -78,7 +78,7 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
           />
         </label>
         <label className="_legoEditor_linkInput_label">
-          <span>Text to display</span>
+          <span>Tekst som skal vises</span>
           <input
             className="_legoEditor_linkInput_input"
             type="text"
@@ -88,14 +88,14 @@ const LinkInput = (props: LinkInputProps): JSX.Element => {
             value={linkText}
           />
         </label>
-        <Flex
-          className="_legoEditor_linkInput_submitContainer"
-          justifyContent="center"
-        >
+        <ButtonGroup>
+          <Button flat onPress={() => onModalOpenChange(false)}>
+            Avbryt
+          </Button>
           <Button secondary disabled={!isUrl(url)} onPress={submit}>
             Bruk
           </Button>
-        </Flex>
+        </ButtonGroup>
       </Flex>
     </Modal>
   );
