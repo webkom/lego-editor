@@ -49,6 +49,7 @@
     "classnames": "^2.2.6",
     "escape-html": "^1.0.3",
     "lodash": "^4.17.15",
+    "lucide-react": "^0.446.0",
     "react-dropzone": "^14.2.2",
     "react-image-crop": "^11.0.5",
     "react-modal": "^3.11.2",

@@ -2,8 +2,8 @@
 
 ._legoEditor_Toolbar_root {
   z-index: 2;
-  margin: 0 -10px;
-  padding-left: 10px;
+  margin: 0 calc(-1 * var(--spacing-sm));
+  padding-left: var(--spacing-xs);
   background-color: var(--additive-background);
 }
 
@@ -20,7 +20,7 @@
 
 ._legoEditor_Toolbar_button:hover {
   background-color: var(--color-gray-3);
-  transition: background-color var(--easing-blazingly-fast);
+  transition: background-color var(--easing-fast);
 }
 
 ._legoEditor_Toolbar_active {

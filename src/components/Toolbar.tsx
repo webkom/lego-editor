@@ -1,4 +1,23 @@
+import { Icon } from '@webkom/lego-bricks';
 import React, { useState } from 'react';
+import {
+  Bold,
+  Code,
+  Heading1,
+  Heading2,
+  Heading3,
+  Heading4,
+  Image,
+  IndentDecrease,
+  IndentIncrease,
+  Italic,
+  Link,
+  List,
+  ListOrdered,
+  SquareCode,
+  Strikethrough,
+  Underline,
+} from 'lucide-react';
 import { Editor, NodeEntry, Range, Node, Element, Transforms } from 'slate';
 import { useSlate } from 'slate-react';
 import { LEditor, nodeType } from '../index';
@@ -155,85 +174,85 @@ const Toolbar = (): JSX.Element => {
         active={checkActiveElement('h1')}
         handler={(e) => toggleBlock(e, 'h1')}
       >
-        H1
+        <Icon iconNode={<Heading1 />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveElement('h2')}
         handler={(e) => toggleBlock(e, 'h2')}
       >
-        H2
+        <Icon iconNode={<Heading2 />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveElement('h3')}
         handler={(e) => toggleBlock(e, 'h3')}
       >
-        H3
+        <Icon iconNode={<Heading3 />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveElement('h4')}
         handler={(e) => toggleBlock(e, 'h4')}
       >
-        H4
+        <Icon iconNode={<Heading4 />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('bold')}
         handler={(e) => toggleMark(e, 'bold')}
       >
-        <i className="fa fa-bold" />
+        <Icon iconNode={<Bold />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('italic')}
         handler={(e) => toggleMark(e, 'italic')}
       >
-        <i className="fa fa-italic" />
+        <Icon iconNode={<Italic />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('underline')}
         handler={(e) => toggleMark(e, 'underline')}
       >
-        <i className="fa fa-underline" />
+        <Icon iconNode={<Underline />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('strikethrough')}
         handler={(e) => toggleMark(e, 'strikethrough')}
       >
-        <i className="fa fa-strikethrough" />
+        <Icon iconNode={<Strikethrough />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('code')}
         handler={(e) => toggleMark(e, 'code')}
       >
-        <i className="fa fa-code" />
+        <Icon iconNode={<Code />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveElement('code_block')}
         handler={(e) => toggleBlock(e, 'code_block')}
       >
-        <i className="fa fa-file-code-o" />
+        <Icon iconNode={<SquareCode />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveList('ul_list')}
         handler={(e) => setListType(e, 'ul_list')}
       >
-        <i className="fa fa-list-ul" />
+        <Icon iconNode={<List />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveList('ol_list')}
         handler={(e) => setListType(e, 'ol_list')}
       >
-        <i className="fa fa-list-ol" />
+        <Icon iconNode={<ListOrdered />} />
       </ToolbarButton>
       <ToolbarButton handler={(e) => decreaseIndent(e)}>
-        <i className="fa fa-outdent" />
+        <Icon iconNode={<IndentDecrease />} />
       </ToolbarButton>
       <ToolbarButton handler={(e) => increaseIndent(e)}>
-        <i className="fa fa-indent" />
+        <Icon iconNode={<IndentIncrease />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveElement('link')}
         handler={() => toggleLinkInput()}
       >
-        <i className="fa fa-link" />
+        <Icon iconNode={<Link />} />
       </ToolbarButton>
       {insertingLink && (
         <LinkInput
@@ -247,7 +266,7 @@ const Toolbar = (): JSX.Element => {
         handler={(e) => openImageUploader(e)}
         active={insertingImage}
       >
-        <i className="fa fa-image" />
+        <Icon iconNode={<Image />} />
       </ToolbarButton>
       {insertingImage && (
         <ImageUpload
