@@ -4,7 +4,6 @@
   display: flex;
   width: 325px;
   min-width: 70%;
-  min-height: 60%;
   outline: none;
 }
 
@@ -36,10 +35,6 @@
 ._legoEditor_imageUploader_dropZone_dragReject
   ._legoEditor_imageUploader_dropArea {
   border-color: var(--danger-color);
-}
-
-._legoEditor_imageUploader_crop_wrapper {
-  min-height: 300px;
 }
 
 ._legoEditor_imageUploader_crop_container {
