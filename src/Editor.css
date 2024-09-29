@@ -3,7 +3,7 @@
 ._legoEditor_root {
   border: 1.5px solid var(--border-gray);
   border-radius: var(--border-radius-md);
-  padding: 0 10px 10px 10px;
+  padding: 0 var(--spacing-sm) var(--spacing-sm) var(--spacing-sm);
   overflow: hidden;
   background-color: var(--lego-card-color);
   color: var(--lego-font-color);

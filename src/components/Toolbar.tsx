@@ -1,4 +1,23 @@
+import { Icon } from '@webkom/lego-bricks';
 import React, { useState } from 'react';
+import {
+  Bold,
+  Code,
+  Heading1,
+  Heading2,
+  Heading3,
+  Heading4,
+  Image,
+  IndentDecrease,
+  IndentIncrease,
+  Italic,
+  Link,
+  List,
+  ListOrdered,
+  SquareCode,
+  Strikethrough,
+  Underline,
+} from 'lucide-react';
 import { Editor, NodeEntry, Range, Node, Element, Transforms } from 'slate';
 import { useSlate } from 'slate-react';
 import { LEditor, nodeType } from '../index';
@@ -12,6 +31,7 @@ import './Toolbar.css';
 interface ButtonProps extends React.PropsWithChildren {
   handler: (e: React.PointerEvent) => void;
   active?: boolean;
+  ariaLabel: string;
 }
 
 const ToolbarButton = (props: ButtonProps): JSX.Element => {
@@ -19,7 +39,7 @@ const ToolbarButton = (props: ButtonProps): JSX.Element => {
     props.handler(e);
   };
 
-  const { children, active } = props;
+  const { children, active, ariaLabel } = props;
 
   const className = active ? '_legoEditor_Toolbar_active' : '';
   return (
@@ -27,6 +47,7 @@ const ToolbarButton = (props: ButtonProps): JSX.Element => {
       className={cx('_legoEditor_Toolbar_button', className)}
       onPointerDown={(e) => handleClick(e)}
       type="button"
+      aria-label={ariaLabel}
     >
       {children}
     </button>
@@ -154,86 +175,105 @@ const Toolbar = (): JSX.Element => {
       <ToolbarButton
         active={checkActiveElement('h1')}
         handler={(e) => toggleBlock(e, 'h1')}
+        ariaLabel="Heading 1"
       >
-        H1
+        <Icon iconNode={<Heading1 />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveElement('h2')}
         handler={(e) => toggleBlock(e, 'h2')}
+        ariaLabel="Heading 2"
       >
-        H2
+        <Icon iconNode={<Heading2 />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveElement('h3')}
         handler={(e) => toggleBlock(e, 'h3')}
+        ariaLabel="Heading 3"
       >
-        H3
+        <Icon iconNode={<Heading3 />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveElement('h4')}
         handler={(e) => toggleBlock(e, 'h4')}
+        ariaLabel="Heading 4"
       >
-        H4
+        <Icon iconNode={<Heading4 />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('bold')}
         handler={(e) => toggleMark(e, 'bold')}
+        ariaLabel="Bold"
       >
-        <i className="fa fa-bold" />
+        <Icon iconNode={<Bold />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('italic')}
         handler={(e) => toggleMark(e, 'italic')}
+        ariaLabel="Italic"
       >
-        <i className="fa fa-italic" />
+        <Icon iconNode={<Italic />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('underline')}
         handler={(e) => toggleMark(e, 'underline')}
+        ariaLabel="Underline"
       >
-        <i className="fa fa-underline" />
+        <Icon iconNode={<Underline />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('strikethrough')}
         handler={(e) => toggleMark(e, 'strikethrough')}
+        ariaLabel="Strikethrough"
       >
-        <i className="fa fa-strikethrough" />
+        <Icon iconNode={<Strikethrough />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveMark('code')}
         handler={(e) => toggleMark(e, 'code')}
+        ariaLabel="Code"
       >
-        <i className="fa fa-code" />
+        <Icon iconNode={<Code />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveElement('code_block')}
         handler={(e) => toggleBlock(e, 'code_block')}
+        ariaLabel="Code block"
       >
-        <i className="fa fa-file-code-o" />
+        <Icon iconNode={<SquareCode />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveList('ul_list')}
         handler={(e) => setListType(e, 'ul_list')}
+        ariaLabel="Unordered list"
       >
-        <i className="fa fa-list-ul" />
+        <Icon iconNode={<List />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveList('ol_list')}
         handler={(e) => setListType(e, 'ol_list')}
+        ariaLabel="Ordered list"
       >
-        <i className="fa fa-list-ol" />
+        <Icon iconNode={<ListOrdered />} />
       </ToolbarButton>
-      <ToolbarButton handler={(e) => decreaseIndent(e)}>
-        <i className="fa fa-outdent" />
+      <ToolbarButton
+        handler={(e) => decreaseIndent(e)}
+        ariaLabel="Indent decrease"
+      >
+        <Icon iconNode={<IndentDecrease />} />
       </ToolbarButton>
-      <ToolbarButton handler={(e) => increaseIndent(e)}>
-        <i className="fa fa-indent" />
+      <ToolbarButton
+        handler={(e) => increaseIndent(e)}
+        ariaLabel="Indent increase"
+      >
+        <Icon iconNode={<IndentIncrease />} />
       </ToolbarButton>
       <ToolbarButton
         active={checkActiveElement('link')}
         handler={() => toggleLinkInput()}
+        ariaLabel="Link"
       >
-        <i className="fa fa-link" />
+        <Icon iconNode={<Link />} />
       </ToolbarButton>
       {insertingLink && (
         <LinkInput
@@ -246,8 +286,9 @@ const Toolbar = (): JSX.Element => {
       <ToolbarButton
         handler={(e) => openImageUploader(e)}
         active={insertingImage}
+        ariaLabel="Image"
       >
-        <i className="fa fa-image" />
+        <Icon iconNode={<Image />} />
       </ToolbarButton>
       {insertingImage && (
         <ImageUpload
