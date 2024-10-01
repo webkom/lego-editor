@@ -67,7 +67,7 @@
     "@types/escape-html": "^1.0.0",
     "@types/is-hotkey": "^0.1.1",
     "@types/lodash": "^4.14.137",
-    "@types/node": "^20.1.0",
+    "@types/node": "^22.7.4",
     "@types/react": "^18.0.15",
     "@types/react-modal": "^3.10.6",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
